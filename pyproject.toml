@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 pydantic = "^1.10.5"
+pymongo = "^4.3.3"
+motor = "^3.1.1"
+asyncio = "^3.4.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -15,6 +18,9 @@ pylint-pytest = "^1.1.2"
 pylint = "^2.16.4"
 mypy = "^1.1.1"
 isort = "^5.12.0"
+pytest-docker = "^1.0.1"
+pytest-asyncio = "^0.20.3"
+pytest-aiohttp = "^1.0.4"
 
 [build-system]
 requires = ["poetry-core"]
