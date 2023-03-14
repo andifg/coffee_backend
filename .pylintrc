@@ -1,0 +1,7 @@
+[MASTER]
+disable=C0114
+load-plugins=pylint_pydantic,pylint_pytest
+extension-pkg-whitelist=pydantic
+
+[FORMAT]
+max-line-length=80

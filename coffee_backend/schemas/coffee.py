@@ -10,4 +10,6 @@ class Coffee(BaseModel):
 
     id: str = Field(..., description="The id of the coffee", example="1")
     name: str = Field(..., description="Name of coffee")
-    ratings: List[Rating] = Field([], description="Ratings asociated with coffee")
+    ratings: List[Rating] = Field(
+        [], description="Ratings asociated with coffee"
+    )

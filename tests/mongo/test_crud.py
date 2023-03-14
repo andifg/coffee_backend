@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 
 from tests.conftest import TestDBSessions
@@ -7,27 +5,24 @@ from tests.conftest import TestDBSessions
 
 @pytest.mark.asyncio
 async def test_mongo_insert(init_mongo: TestDBSessions) -> None:
-    print(type(init_mongo))
+    """Test insert to mongodb.
 
-    async with await init_mongo.Async.start_session() as s:
+    Args:
+        init_mongo: Fixture for mongodb connections
+    """
+
+    async with await init_mongo.asncy_session.start_session() as session:
         doc = {"_id": 123, "x": 1}
-        await s.client["test_db"]["testcollection"].insert_one(doc)
-
-        breakpoint()
-
-    assert 1 == 1
+        await session.client["test_db"]["testcollection"].insert_one(doc)
 
 
 @pytest.mark.asyncio
 async def test_mongo_insert_two(init_mongo: TestDBSessions) -> None:
-    print(type(init_mongo))
+    """Second insert test to test db cleanup between tests.
 
-    breakpoint()
-
-    async with await init_mongo.Async.start_session() as s:
+    Args:
+        init_mongo: Fixture for mongodb connections
+    """
+    async with await init_mongo.asncy_session.start_session() as session:
         doc = {"_id": 1234, "x": 1}
-        await s.client["test_db"]["testcollection"].insert_one(doc)
-
-        breakpoint()
-
-    assert 1 == 1
+        await session.client["test_db"]["testcollection"].insert_one(doc)
