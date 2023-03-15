@@ -1,0 +1,11 @@
+fail_fast: false
+repos:
+  - repo: local
+    hooks:
+      # * lib
+      # ** python
+      # *** fastapi_exceptions
+      - id: fastapi_exceptions-pyflakes
+        name: Format Lint Test
+        language: system
+        entry: bash -c './scripts/format_lint_test.sh'
