@@ -55,3 +55,4 @@ def test_create_coffee_with_invalid_rating() -> None:
             Rating(_id=UUID("123e4367-e29b-12d3-a456-426655440000"), rating=3),
         ]
         Coffee(_id=coffee_id, name=coffee_name, ratings=coffee_ratings)  # type: ignore
+    # pylint: enable=C0301

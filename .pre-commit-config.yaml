@@ -7,5 +7,6 @@ repos:
       # *** fastapi_exceptions
       - id: fastapi_exceptions-pyflakes
         name: Format Lint Test
+        pass_filenames: false
         language: system
-        entry: bash -c './scripts/format_lint_test.sh'
+        entry: bash -c 'pytest -s'
