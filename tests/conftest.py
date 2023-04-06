@@ -1,10 +1,21 @@
 from dataclasses import dataclass
 from typing import AsyncGenerator
+from uuid import UUID
 
 import motor.motor_asyncio  # type: ignore
+import pytest
 import pytest_asyncio
+from bson.binary import UuidRepresentation
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
+
+from coffee_backend.schemas.coffee import Coffee
+from coffee_backend.schemas.rating import Rating
+
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 @dataclass
@@ -56,10 +67,14 @@ async def init_mongo(mongo_service: str) -> AsyncGenerator:
         TestDBSessions object with sync and asnyc session
     """
     async_client = motor.motor_asyncio.AsyncIOMotorClient(
-        mongo_service, serverSelectionTimeoutMS=5000
+        mongo_service,
+        serverSelectionTimeoutMS=5000,
+        uuidRepresentation="standard",
     )
     sync_client: MongoClient = MongoClient(
-        mongo_service, serverSelectionTimeoutMS=5000
+        mongo_service,
+        serverSelectionTimeoutMS=5000,
+        uuidRepresentation="standard",
     )
     try:
         await async_client.server_info()
@@ -68,6 +83,20 @@ async def init_mongo(mongo_service: str) -> AsyncGenerator:
 
     except ConnectionError:
         print("Unable to connect to the server.")
+
+
+@pytest.fixture()
+def dummy_coffee() -> Coffee:
+    coffee_id = UUID("123e4567-e89b-12d3-a456-426655440000")
+    coffee_name = "Colombian"
+    coffee_ratings = [
+        Rating(_id=UUID("123e4367-e89b-12d3-a456-426655440000"), rating=4),
+        Rating(_id=UUID("123e4367-e49b-12d3-a456-426655440000"), rating=2),
+        Rating(_id=UUID("123e4367-e29b-12d3-a456-426655440000"), rating=3),
+    ]
+    coffee = Coffee(_id=coffee_id, name=coffee_name, ratings=coffee_ratings)
+
+    return coffee
 
 
 def test_mongo(connection_string: str) -> bool:

@@ -12,6 +12,7 @@ async def test_mongo_insert(init_mongo: TestDBSessions) -> None:
     """
 
     async with await init_mongo.asncy_session.start_session() as session:
+        print(type(session))
         doc = {"_id": 123, "x": 1}
         await session.client["test_db"]["testcollection"].insert_one(doc)
 
