@@ -1,19 +1,46 @@
-import json
 import logging
 
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from pymongo.errors import DuplicateKeyError
+
 from coffee_backend.schemas.coffee import Coffee
 
 
 class CoffeeCRUD:
+    """CRUD class for coffee schema.
+    Args:
+        database(str): Name of the database to use for collection transactions.
+
+    """
+
     def __init__(self, database: str) -> None:
         self.database = database
 
     async def create(
         self, coffee: Coffee, db_session: AsyncIOMotorClientSession
     ) -> Coffee:
+        """Create a new coffee document in the database.
+
+        Args:
+            coffee (Coffee): The coffee document to insert.
+            db_session (AsyncIOMotorClientSession): The database session.
+
+        Returns:
+            Coffee: The inserted coffee document.
+
+        Raises:
+            ValueError: If a key duplication error occurs when inserting the
+                document.
+        """
         document = coffee.dict(by_alias=True)
-        await db_session.client[self.database]["coffee"].insert_one(document)
+        try:
+            await db_session.client[self.database]["coffee"].insert_one(
+                document
+            )
+        except DuplicateKeyError:
+            raise ValueError(  # pylint: disable=raise-missing-from
+                "Unable to store entry in database due to key duplication"
+            )
         logging.info("Stored new entry in database")
         logging.debug("Entry: %s", document)
         return coffee

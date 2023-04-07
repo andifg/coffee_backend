@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from typing import AsyncGenerator
 from uuid import UUID
@@ -5,15 +6,11 @@ from uuid import UUID
 import motor.motor_asyncio  # type: ignore
 import pytest
 import pytest_asyncio
-from bson.binary import UuidRepresentation
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
 
 from coffee_backend.schemas.coffee import Coffee
 from coffee_backend.schemas.rating import Rating
-
-
-import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -87,6 +84,7 @@ async def init_mongo(mongo_service: str) -> AsyncGenerator:
 
 @pytest.fixture()
 def dummy_coffee() -> Coffee:
+    """Fixture to provide dummy coffees for tests."""
     coffee_id = UUID("123e4567-e89b-12d3-a456-426655440000")
     coffee_name = "Colombian"
     coffee_ratings = [

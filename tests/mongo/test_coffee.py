@@ -9,7 +9,9 @@ from tests.conftest import TestDBSessions
 
 @pytest.mark.asyncio
 async def test_mongo_create(
-    init_mongo: TestDBSessions, dummy_coffee: Coffee, caplog: pytest.LogCaptureFixture
+    init_mongo: TestDBSessions,
+    dummy_coffee: Coffee,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test insert to mongodb.
 
@@ -24,10 +26,8 @@ async def test_mongo_create(
     async with await init_mongo.asncy_session.start_session() as session:
         await test_crud.create(db_session=session, coffee=dummy_coffee)
 
-
     assert "Stored new entry in database" in caplog.messages
     assert f"Entry: {dummy_coffee.dict(by_alias=True)}" in caplog.messages
-
 
     with init_mongo.sync_probe_session.start_session() as session:
         result = list(session.client[dbname]["coffee"].find())
@@ -50,3 +50,28 @@ async def test_mongo_create(
                 },
             ],
         }
+
+
+@pytest.mark.asyncio
+async def test_mongo_duplicate(
+    init_mongo: TestDBSessions, dummy_coffee: Coffee
+) -> None:
+    """Test insert two items with same _id
+
+    Args:
+        init_mongo: Fixture for mongodb connections
+    """
+
+    dbname = "test_coffee_backend"
+
+    test_crud = CoffeeCRUD(dbname)
+
+    with pytest.raises(ValueError) as value_error:
+        async with await init_mongo.asncy_session.start_session() as session:
+            await test_crud.create(db_session=session, coffee=dummy_coffee)
+            await test_crud.create(db_session=session, coffee=dummy_coffee)
+
+    assert (
+        str(value_error.value)
+        == "Unable to store entry in database due to key duplication"
+    )

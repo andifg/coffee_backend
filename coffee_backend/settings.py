@@ -1,8 +1,6 @@
 """Settings of the webservice."""
 from __future__ import annotations
 
-from typing import List
-
 from pydantic import BaseSettings
 
 
