@@ -1,12 +1,24 @@
-fail_fast: false
+fail_fast: true
 repos:
   - repo: local
     hooks:
-      # * lib
-      # ** python
-      # *** fastapi_exceptions
-      - id: fastapi_exceptions-pyflakes
-        name: Format Lint Test
+      - id: format-code-black
+        name: Format with black
+        pass_filenames: false
+        language: system
+        entry: bash -c 'black . --check'
+      - id: format-code-isort
+        name: Format with isort
+        pass_filenames: false
+        language: system
+        entry: bash -c 'isort . --check'
+      - id: lint-code
+        name: Lint
+        pass_filenames: false
+        language: system
+        entry: bash -c 'pytest -s'
+      - id: test-code
+        name: Test
         pass_filenames: false
         language: system
         entry: bash -c 'pytest -s'
