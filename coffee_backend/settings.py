@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     log_level: str = "info"
 
     mongodb_database: str = "coffee_backend"
+    mongodb_coffee_collection: str = "coffee"
 
 
 settings = Settings()

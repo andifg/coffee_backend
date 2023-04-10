@@ -11,6 +11,7 @@ from pytest_docker.plugin import Services  # type: ignore
 
 from coffee_backend.schemas.coffee import Coffee
 from coffee_backend.schemas.rating import Rating
+from coffee_backend.settings import settings
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -36,6 +37,22 @@ class TestDBSessions:
     asncy_session: motor.motor_asyncio.AsyncIOMotorClient
     sync_probe_session: MongoClient
     __test__: bool = False
+
+
+@dataclass
+class DummyCoffees:
+    """Wrapper for coffee dummy objects.
+
+    Attributes:
+        coffee_1 (Coffee): Dummy coffee instance with ratings.
+        coffee_2 (Coffee): Another dummy coffee instance with ratings.
+        coffee_without_ratings(Coffee): Dummy coffee without ratings.
+
+    """
+
+    coffee_1: Coffee
+    coffee_2: Coffee
+    coffee_without_ratings: Coffee
 
 
 @pytest_asyncio.fixture(name="mongo_service")
@@ -83,18 +100,39 @@ async def init_mongo(mongo_service: str) -> AsyncGenerator:
 
 
 @pytest.fixture()
-def dummy_coffee() -> Coffee:
+def dummy_coffees() -> DummyCoffees:
     """Fixture to provide dummy coffees for tests."""
-    coffee_id = UUID("123e4567-e89b-12d3-a456-426655440000")
-    coffee_name = "Colombian"
-    coffee_ratings = [
-        Rating(_id=UUID("123e4367-e89b-12d3-a456-426655440000"), rating=4),
-        Rating(_id=UUID("123e4367-e49b-12d3-a456-426655440000"), rating=2),
-        Rating(_id=UUID("123e4367-e29b-12d3-a456-426655440000"), rating=3),
-    ]
-    coffee = Coffee(_id=coffee_id, name=coffee_name, ratings=coffee_ratings)
 
-    return coffee
+    coffee_1 = Coffee(
+        _id=UUID("123e4567-e19b-12d3-a456-426655440000"),
+        name="Colombian",
+        ratings=[
+            Rating(_id=UUID("123e4367-e29b-12d3-a456-426655440000"), rating=4),
+            Rating(_id=UUID("123e4367-e39b-12d3-a456-426655440000"), rating=2),
+            Rating(_id=UUID("123e4367-e49b-12d3-a456-426655440000"), rating=3),
+        ],
+    )
+
+    coffee_2 = Coffee(
+        _id=UUID("123e4567-e59b-12d3-a456-426655440000"),
+        name="Colombian",
+        ratings=[
+            Rating(_id=UUID("123e4367-e69b-12d3-a456-426655440000"), rating=4),
+            Rating(_id=UUID("123e4367-e79b-12d3-a456-426655440000"), rating=2),
+            Rating(_id=UUID("123e4367-e89b-12d3-a456-426655440000"), rating=3),
+        ],
+    )
+    coffee_without_ratings = Coffee(
+        _id=UUID("123e4567-e99b-12d3-a456-426655440000"),
+        name="Colombian",
+        ratings=[],
+    )
+
+    return DummyCoffees(
+        coffee_1=coffee_1,
+        coffee_2=coffee_2,
+        coffee_without_ratings=coffee_without_ratings,
+    )
 
 
 def test_mongo(connection_string: str) -> bool:
@@ -118,5 +156,5 @@ def cleanup_db(database: MongoClient) -> None:
     Args:
         db: MongoClient
     """
-    database.drop_database("test_db")
+    database.drop_database(settings.mongodb_database)
     print("Cleaned up database between tests")
