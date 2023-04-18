@@ -106,15 +106,46 @@ class CoffeeCRUD:
         logging.debug("Received %s entries from database", len(coffees))
         return coffees
 
-    # async def update(self, coffee_id: UUID, coffee: Coffee) -> Coffee:
-    #     document = coffee.dict()
-    #     result = await self.collection.update_one(
-    #         {"_id": coffee_id}, {"$set": document}
-    #     )
-    #     if result.matched_count == 0:
-    #         return None
-    #     else:
-    #         return coffee
+    async def update(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        coffee_id: UUID,
+        coffee: Coffee,
+    ) -> Coffee:
+        """
+        Updates the coffee document with the specified ID in the database with
+        the given coffee data.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The MongoDB database session
+                to use.
+            coffee_id (UUID): The UUID of the coffee document to update.
+            coffee (Coffee): The new data to update the coffee document with.
+
+        Returns:
+            Coffee: The updated coffee document.
+
+        Raises:
+            ObjectNotFoundError: If no coffee document exists in the database
+                with the specified ID.
+            ValidationError: If the provided coffee data is invalid.
+        """
+        result = await db_session.client[self.database][
+            self.coffee_collection
+        ].update_one(
+            {"_id": coffee_id},
+            {"$set": coffee.dict(by_alias=True, exclude={"id"})},
+        )
+        if result.matched_count == 0:
+            raise ObjectNotFoundError(
+                f"Coffee with id {coffee_id} not found in collection"
+            )
+        logging.info("Updated coffe with id %s", coffee_id)
+        updated_coffee = await self.read_by_id(
+            db_session=db_session, coffee_id=coffee_id
+        )
+        logging.debug("Updated value: %s", updated_coffee.json())
+        return updated_coffee
 
     # async def delete(self, coffee_id: UUID) -> bool:
     #     result = await self.collection.delete_one({"_id": coffee_id})
