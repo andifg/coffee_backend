@@ -147,6 +147,34 @@ class CoffeeCRUD:
         logging.debug("Updated value: %s", updated_coffee.json())
         return updated_coffee
 
-    # async def delete(self, coffee_id: UUID) -> bool:
-    #     result = await self.collection.delete_one({"_id": coffee_id})
-    #     return result.deleted_count > 0
+    async def delete(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        coffee_id: UUID,
+    ) -> bool:
+        """Deletes a coffee record from the database.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session to
+                use for the operation.
+            coffee_id (UUID): The unique identifier of the coffee to delete.
+
+        Returns:
+            bool: True if the coffee record was successfully deleted.
+
+        Raises:
+            ObjectNotFoundError: If the coffee with the specified ID is not
+                found in the collection.
+        """
+        result = await db_session.client[self.database][
+            self.coffee_collection
+        ].delete_one({"_id": coffee_id})
+
+        logging.info("Deleted coffe with id %s", coffee_id)
+
+        if result.deleted_count != 1:
+            raise ObjectNotFoundError(
+                f"Coffee with id {coffee_id} not found in collection"
+            )
+
+        return True
