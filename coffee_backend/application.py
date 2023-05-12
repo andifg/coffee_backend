@@ -21,7 +21,6 @@ app.include_router(router)
 @app.on_event("startup")
 async def startup() -> None:
     """Initializes the application and its processes."""
-
     logging.info("Starting up...")
 
 

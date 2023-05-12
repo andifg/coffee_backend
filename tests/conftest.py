@@ -6,9 +6,12 @@ from uuid import UUID
 import motor.motor_asyncio  # type: ignore
 import pytest
 import pytest_asyncio
+from fastapi.datastructures import State
+from httpx import AsyncClient
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
 
+from coffee_backend.application import app, shutdown, startup
 from coffee_backend.schemas.coffee import Coffee
 from coffee_backend.schemas.rating import Rating
 from coffee_backend.settings import settings
@@ -55,6 +58,23 @@ class DummyCoffees:
     coffee_without_ratings: Coffee
 
 
+@dataclass
+class TestApp:
+    """Wrapper for using an instance of the FastAPI app within tests.
+
+    Attributes:
+        state: The starlette state of the app for probing during tests.
+        client: A httpx client running the FastAPI application under test.
+        __test__: Is set by default to enforce that pytest isn't picking up this
+            class as a test suite that should be executed even though its name
+            starts with "Test...".
+    """
+
+    state: State
+    client: AsyncClient
+    __test__: bool = False
+
+
 @pytest_asyncio.fixture(name="mongo_service")
 async def fixture_mongo_service(
     docker_ip: str, docker_services: Services
@@ -90,6 +110,7 @@ async def init_mongo(mongo_service: str) -> AsyncGenerator:
         serverSelectionTimeoutMS=5000,
         uuidRepresentation="standard",
     )
+
     try:
         await async_client.server_info()
         yield TestDBSessions(async_client, sync_client)
@@ -133,6 +154,33 @@ def dummy_coffees() -> DummyCoffees:
         coffee_2=coffee_2,
         coffee_without_ratings=coffee_without_ratings,
     )
+
+
+@pytest_asyncio.fixture()
+async def test_app(
+    monkeypatch: pytest.MonkeyPatch,
+) -> AsyncGenerator[TestApp, None]:
+    """Sets up an instance of the FastAPI application under test.
+
+    Settings are mocked so that only test resources running within docker
+    compose are used during test execution.
+
+    Args:
+        monkeypatch: The pytest monkeypatch to change settings to point to the
+            test resources before the application is spun up.
+
+    Returns:
+        AsyncGenerator[TestApp, None]: A generator that is yielding the app
+            under test and that ensures proper shutdown after test execution.
+    """
+    print("Setting up test app")
+
+    monkeypatch.setattr(settings, "mongodb_database", "coffee_backend")
+
+    async with AsyncClient(app=app, base_url="https://test") as client:
+        await startup()
+        yield TestApp(app.state, client)
+        await shutdown()
 
 
 def test_mongo(connection_string: str) -> bool:
