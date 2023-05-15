@@ -158,7 +158,7 @@ def dummy_coffees() -> DummyCoffees:
 
 @pytest_asyncio.fixture()
 async def test_app(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, mongo_service: str
 ) -> AsyncGenerator[TestApp, None]:
     """Sets up an instance of the FastAPI application under test.
 
@@ -176,6 +176,7 @@ async def test_app(
     print("Setting up test app")
 
     monkeypatch.setattr(settings, "mongodb_database", "coffee_backend")
+    monkeypatch.setattr(settings, "mongodb_connetion_string", mongo_service)
 
     async with AsyncClient(app=app, base_url="https://test") as client:
         await startup()
