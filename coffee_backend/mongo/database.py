@@ -28,7 +28,7 @@ async def get_db() -> motor.motor_asyncio.AsyncIOMotorClient:
         async with await async_client.start_session() as db_session:
             yield db_session
     except ServerSelectionTimeoutError as error:
-        logging.error(error)
+        logging.error("Unable to create database session: %s", error)
         raise HTTPException(
             status_code=500,
             detail="Internal server error, please contact administrator",
