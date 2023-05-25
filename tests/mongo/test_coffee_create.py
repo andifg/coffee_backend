@@ -19,7 +19,9 @@ async def test_mongo_coffee_create(
         init_mongo: Fixture for mongodb connections
     """
 
-    test_crud = CoffeeCRUD(settings.mongodb_database)
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
 
     dummy_coffee = dummy_coffees.coffee_1
 
@@ -70,7 +72,9 @@ async def test_mongo_coffee_create_without_ratings(
         caplog: pytest.LogCaptureFixture,
     """
 
-    test_crud = CoffeeCRUD(settings.mongodb_database)
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
 
     dummy_coffee = dummy_coffees.coffee_without_ratings
 
@@ -105,7 +109,9 @@ async def test_mongo_coffee_create_duplicate(
         dummy_coffee: Fixture that provides multiple dummy coffee objects
     """
 
-    test_crud = CoffeeCRUD(settings.mongodb_database)
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
 
     with pytest.raises(ValueError) as value_error:
         async with await init_mongo.asncy_session.start_session() as session:

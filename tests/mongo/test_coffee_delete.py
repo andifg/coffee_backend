@@ -33,7 +33,9 @@ async def test_delete_existing_coffee(
             [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
         )
 
-    test_crud = CoffeeCRUD(settings.mongodb_database)
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
 
     async with await init_mongo.asncy_session.start_session() as session:
         result = await test_crud.delete(session, coffee_2.id)
@@ -70,7 +72,9 @@ async def test_delete_nonexistent_coffee(
 
     unkown_id = uuid.uuid4()
 
-    test_crud = CoffeeCRUD(settings.mongodb_database)
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
 
     with pytest.raises(ObjectNotFoundError) as not_found_error:
         async with await init_mongo.asncy_session.start_session() as session:

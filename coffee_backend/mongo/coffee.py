@@ -17,9 +17,9 @@ class CoffeeCRUD:
 
     """
 
-    def __init__(self, database: str) -> None:
+    def __init__(self, database: str, coffee_collection: str) -> None:
         self.database = database
-        self.coffee_collection = settings.mongodb_coffee_collection
+        self.coffee_collection = coffee_collection
 
     async def create(
         self, db_session: AsyncIOMotorClientSession, coffee: Coffee
@@ -178,3 +178,9 @@ class CoffeeCRUD:
             )
 
         return True
+
+
+coffee_crud = CoffeeCRUD(
+    database=settings.mongodb_database,
+    coffee_collection=settings.mongodb_coffee_collection,
+)
