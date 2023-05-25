@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI
 
 from coffee_backend.api import router
+from coffee_backend.services.coffee import coffee_service
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -22,6 +23,8 @@ app.include_router(router)
 async def startup() -> None:
     """Initializes the application and its processes."""
     logging.info("Starting up...")
+
+    app.state.coffee_service = coffee_service
 
 
 @app.on_event("shutdown")
