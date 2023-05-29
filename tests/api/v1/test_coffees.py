@@ -15,7 +15,7 @@ async def test_api_create_coffee(
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
 ) -> None:
-    """Test health endpoint."""
+    """Test coffees endpoint post mehtod with valid coffee."""
 
     get_db_mock = AsyncMock()
 
@@ -43,3 +43,34 @@ async def test_api_create_coffee(
     )
 
     app.dependency_overrides = {}
+
+
+@pytest.mark.asyncio
+async def test_api_create_invalid_coffee(
+    test_app: TestApp,
+    dummy_coffees: DummyCoffees,
+) -> None:
+    """Test coffees endpoint post mehtod with invalid coffee."""
+
+    coffee = dummy_coffees.coffee_1
+
+    del coffee.id
+
+    coffee_jsonable = jsonable_encoder(coffee.dict(by_alias=True))
+
+    response = await test_app.client.post(
+        "/api/v1/coffees/",
+        json=coffee_jsonable,
+        headers={"Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "loc": ["body", "_id"],
+                "msg": "field required",
+                "type": "value_error.missing",
+            }
+        ]
+    }
