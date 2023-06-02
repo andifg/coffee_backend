@@ -51,32 +51,7 @@ class CoffeeCRUD:
         logging.debug("Entry: %s", document)
         return coffee
 
-    async def read_by_id(
-        self, db_session: AsyncIOMotorClientSession, coffee_id: UUID
-    ) -> Coffee:
-        """
-        Retrieves a document from the 'coffee' collection with the given ID.
-
-        Args:
-            db_session (AsyncIOMotorClientSession): The MongoDB client session.
-            coffee_id (UUID): The ID of the coffee document to retrieve.
-
-        Returns:
-            Coffee: A `Coffee` instance representing the retrieved document.
-
-        Raises:
-            ObjectNotFoundError: If no document with the given ID is found.
-        """
-        document = await db_session.client[self.database][
-            self.coffee_collection
-        ].find_one({"_id": coffee_id})
-        if document:
-            logging.debug("Received entry from database")
-            return Coffee.parse_obj(document)
-
-        raise ObjectNotFoundError(f"Couldn't find entry for _id {coffee_id}")
-
-    async def find(
+    async def read(
         self,
         db_session: AsyncIOMotorClientSession,
         query: Dict[str, Any],
@@ -105,7 +80,7 @@ class CoffeeCRUD:
             logging.debug("Received %s entries from database", len(documents))
             return [Coffee.parse_obj(document) for document in documents]
 
-        raise ObjectNotFoundError("Couldn't find entry for search string")
+        raise ObjectNotFoundError("Couldn't find entry for search query")
 
     async def read_all(
         self, db_session: AsyncIOMotorClientSession
@@ -173,9 +148,10 @@ class CoffeeCRUD:
                 f"Coffee with id {coffee_id} not found in collection"
             )
         logging.info("Updated coffe with id %s", coffee_id)
-        updated_coffee = await self.read_by_id(
-            db_session=db_session, coffee_id=coffee_id
+        search_result = await self.read(
+            db_session=db_session, query={"_id": coffee_id}
         )
+        updated_coffee = search_result[0]
         logging.debug("Updated value: %s", updated_coffee.json())
         return updated_coffee
 

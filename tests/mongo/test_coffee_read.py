@@ -9,22 +9,12 @@ from tests.conftest import DummyCoffees, TestDBSessions
 
 
 @pytest.mark.asyncio
-async def test_mongo_coffee_read_single_id(
+async def test_mongo_coffee_read_by_id(
     init_mongo: TestDBSessions,
     dummy_coffees: DummyCoffees,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test reading a single item by its _id.
-
-    This function creates two Coffee instances, inserts them into the
-    database, and then tests if the read_by_id method returns the expected
-    result for the first Coffee instance.
-
-    Args:
-        init_mongo: Fixture for MongoDB connections.
-        dummy_coffee: Fixture that provides multiple dummy coffee objects.
-        caplog: Fixture that captures log output.
-    """
+    """Find a single coffee by its id."""
 
     coffee_1 = dummy_coffees.coffee_1
     coffee_2 = dummy_coffees.coffee_2
@@ -41,13 +31,12 @@ async def test_mongo_coffee_read_single_id(
     )
 
     async with await init_mongo.asncy_session.start_session() as session:
-        result = await test_crud.read_by_id(
-            db_session=session, coffee_id=coffee_1.id
+        result = await test_crud.read(
+            db_session=session, query={"_id": coffee_1.id}
         )
 
-        assert result == coffee_1
-
-        assert "Received entry from database" in caplog.messages
+        assert result == [coffee_1]
+        assert "Received 1 entries from database" in caplog.messages
 
 
 @pytest.mark.asyncio
@@ -72,11 +61,8 @@ async def test_mongo_coffee_read_single_non_existing_id(
     with pytest.raises(ObjectNotFoundError) as not_found_error:
 
         async with await init_mongo.asncy_session.start_session() as session:
-            await test_crud.read_by_id(
-                db_session=session, coffee_id=non_existing_uuid
+            await test_crud.read(
+                db_session=session, query={"_id": non_existing_uuid}
             )
 
-    assert (
-        str(not_found_error.value)
-        == f"Couldn't find entry for _id {non_existing_uuid}"
-    )
+    assert str(not_found_error.value) == "Couldn't find entry for search query"
