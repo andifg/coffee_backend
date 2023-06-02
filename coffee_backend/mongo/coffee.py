@@ -1,8 +1,9 @@
 import logging
-from typing import List
+from typing import Any, Dict, List
 from uuid import UUID
 
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.motor_asyncio import AsyncIOMotorCursor
 from pymongo.errors import DuplicateKeyError
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
@@ -74,6 +75,37 @@ class CoffeeCRUD:
             return Coffee.parse_obj(document)
 
         raise ObjectNotFoundError(f"Couldn't find entry for _id {coffee_id}")
+
+    async def find(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        query: Dict[str, Any],
+        max_results: int = 100,
+    ) -> List[Coffee]:
+        """Find coffees based on mongo search query.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The MongoDB client session.
+            coffee_id (UUID): The ID of the coffee document to retrieve.
+            max_results (int): max number of entries retrieved from db
+
+        Returns:
+            Coffee: A `Coffee` instance representing the retrieved document.
+
+
+        """
+
+        cursor: AsyncIOMotorCursor = db_session.client[self.database][
+            self.coffee_collection
+        ].find(query)
+
+        documents = await cursor.to_list(length=max_results)
+
+        if documents:
+            logging.debug("Received %s entries from database", len(documents))
+            return [Coffee.parse_obj(document) for document in documents]
+
+        raise ObjectNotFoundError("Couldn't find entry for search string")
 
     async def read_all(
         self, db_session: AsyncIOMotorClientSession
