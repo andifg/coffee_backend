@@ -66,8 +66,6 @@ class CoffeeCRUD:
 
         Returns:
             Coffee: A `Coffee` instance representing the retrieved document.
-
-
         """
 
         cursor: AsyncIOMotorCursor = db_session.client[self.database][
@@ -81,37 +79,6 @@ class CoffeeCRUD:
             return [Coffee.parse_obj(document) for document in documents]
 
         raise ObjectNotFoundError("Couldn't find entry for search query")
-
-    async def read_all(
-        self, db_session: AsyncIOMotorClientSession
-    ) -> List[Coffee]:
-        """
-        Retrieves all documents from the 'coffee' collection.
-
-        Args:
-            db_session (AsyncIOMotorClientSession): The MongoDB client session.
-
-        Returns:
-            List[Coffee]: A list of `Coffee` instances representing the
-                          retrieved documents.
-
-        Raises:
-            ObjectNotFoundError: If the collection is empty.
-        """
-        cursor = db_session.client[self.database][self.coffee_collection].find()
-
-        coffees = [
-            Coffee.parse_obj(document)
-            for document in await cursor.to_list(length=100)
-        ]
-
-        if len(coffees) == 0:
-            raise ObjectNotFoundError(
-                f"Collection {self.coffee_collection} is empty"
-            )
-
-        logging.debug("Received %s entries from database", len(coffees))
-        return coffees
 
     async def update(
         self,
