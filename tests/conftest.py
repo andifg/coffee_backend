@@ -136,7 +136,7 @@ def dummy_coffees() -> DummyCoffees:
 
     coffee_2 = Coffee(
         _id=UUID("123e4567-e59b-12d3-a456-426655440000"),
-        name="Colombian",
+        name="Brazilian",
         ratings=[
             Rating(_id=UUID("123e4367-e69b-12d3-a456-426655440000"), rating=4),
             Rating(_id=UUID("123e4367-e79b-12d3-a456-426655440000"), rating=2),
