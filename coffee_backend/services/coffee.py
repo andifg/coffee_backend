@@ -1,5 +1,9 @@
+import logging
+
+from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
 
+from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
 from coffee_backend.mongo.coffee import coffee_crud as coffee_crud_instance
 from coffee_backend.schemas.coffee import Coffee
@@ -36,9 +40,24 @@ class CoffeeService:
         Raises:
             Exception: If an error occurs while creating the coffee.
         """
-        await self.coffee_crud.create(coffee=coffee, db_session=db_session)
+        try:
+            await self.coffee_crud.read(
+                db_session=db_session, query={"name": coffee.name}
+            )
+        except ObjectNotFoundError:
+            return await self.coffee_crud.create(
+                coffee=coffee, db_session=db_session
+            )
 
-        return coffee
+        logging.debug(
+            "Coffee with id %s will not get created due to name %s"
+            " already existing",
+            coffee.id,
+            coffee.name,
+        )
+        raise HTTPException(
+            status_code=400, detail="Coffee name is already existing"
+        )
 
 
 #     def get_coffee(self, coffee_id):q
