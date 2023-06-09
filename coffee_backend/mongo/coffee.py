@@ -3,7 +3,6 @@ from typing import Any, Dict, List
 from uuid import UUID
 
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
-from motor.motor_asyncio import AsyncIOMotorCursor
 from pymongo.errors import DuplicateKeyError
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
@@ -55,7 +54,6 @@ class CoffeeCRUD:
         self,
         db_session: AsyncIOMotorClientSession,
         query: Dict[str, Any],
-        max_results: int = 100,
     ) -> List[Coffee]:
         """Find coffees based on mongo search query.
 
@@ -68,11 +66,12 @@ class CoffeeCRUD:
             Coffee: A `Coffee` instance representing the retrieved document.
         """
 
-        cursor: AsyncIOMotorCursor = db_session.client[self.database][
-            self.coffee_collection
-        ].find(query)
-
-        documents = await cursor.to_list(length=max_results)
+        documents: List[Coffee] = [
+            doc
+            async for doc in db_session.client[self.database][
+                self.coffee_collection
+            ].find(query)
+        ]
 
         if documents:
             logging.debug("Received %s entries from database", len(documents))
