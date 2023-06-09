@@ -15,9 +15,9 @@ async def test_coffee_service_create(
 ) -> None:
     """Test the create service method with a new coffee.
 
-    This test verifies the behavior of the add_coffee method in the CoffeeService
-    class when adding a new coffee object that does not already exist in the
-    database.
+    This test verifies the behavior of the add_coffee method in the
+    CoffeeService class when adding a new coffee object that does not already
+    exist in the database.
 
     Args:
         dummy_coffees (DummyCoffees): A fixture providing dummy coffee objects.
@@ -50,9 +50,9 @@ async def test_coffee_service_create_duplicate_name(
 ) -> None:
     """Test the create service method with a duplicate coffee name.
 
-    This test verifies the behavior of the add_coffee method in the CoffeeService
-    class when attempting to add a new coffee with a name that already exists
-    in the database.
+    This test verifies the behavior of the add_coffee method in the
+    CoffeeService class when attempting to add a new coffee with a name that
+    already exists in the database.
 
     Args:
         dummy_coffees (DummyCoffees): A fixture providing dummy coffee objects.
