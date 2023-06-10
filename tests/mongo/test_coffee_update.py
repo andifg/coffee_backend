@@ -1,7 +1,7 @@
 import copy
-from uuid import uuid4
 
 import pytest
+from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
@@ -82,7 +82,7 @@ async def test_mongo_coffee_update_non_existing_coffee(
         settings.mongodb_database, settings.mongodb_coffee_collection
     )
 
-    non_existing_uuid = uuid4()
+    non_existing_uuid = uuid7()
 
     with pytest.raises(ObjectNotFoundError) as not_found_error:
 

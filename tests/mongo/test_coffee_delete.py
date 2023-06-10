@@ -1,6 +1,5 @@
-import uuid
-
 import pytest
+from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
@@ -70,7 +69,7 @@ async def test_delete_nonexistent_coffee(
         caplog (pytest.LogCaptureFixture): Fixture for capturing log messages.
     """
 
-    unkown_id = uuid.uuid4()
+    unkown_id = uuid7()
 
     test_crud = CoffeeCRUD(
         settings.mongodb_database, settings.mongodb_coffee_collection

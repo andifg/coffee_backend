@@ -1,9 +1,13 @@
-from uuid import uuid4
+import random
 
 import pytest
+from faker import Faker
+from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
+from coffee_backend.schemas.coffee import Coffee
+from coffee_backend.schemas.rating import Rating
 from coffee_backend.settings import settings
 from tests.conftest import DummyCoffees, TestDBSessions
 
@@ -52,7 +56,7 @@ async def test_mongo_coffee_read_single_non_existing_id(
         init_mongo: Fixture for MongoDB connections.
     """
 
-    non_existing_uuid = uuid4()
+    non_existing_uuid = uuid7()
 
     test_crud = CoffeeCRUD(
         settings.mongodb_database, settings.mongodb_coffee_collection
@@ -116,7 +120,7 @@ async def test_mongo_coffee_read_mutliple_entries_by_id(
     dummy_coffees: DummyCoffees,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """ "Test to query multiple coffee ids from the crud read method."""
+    """Test to query multiple coffee ids from the crud read method."""
     coffee_1 = dummy_coffees.coffee_1
     coffee_2 = dummy_coffees.coffee_2
 
@@ -173,3 +177,50 @@ async def test_mongo_coffee_read_by_name(
 
         assert result == [coffee_1]
         assert "Received 1 entries from database" in caplog.messages
+
+
+@pytest.mark.asyncio
+async def test_mongo_coffee_read_batch_tests(
+    init_mongo: TestDBSessions,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Ensure default ascending ordering by _id.
+
+    Tests ensures that mongodb returns by default entries in ascending order by
+    _id column.
+    """
+
+    faker = Faker()
+
+    test_coffees = [
+        Coffee(
+            _id=uuid7(),
+            name=faker.name(),
+            ratings=[
+                Rating(_id=uuid7(), rating=random.randint(0, 5))
+                for _ in range(random.randint(0, 10))
+            ],
+        )
+        for _ in range(random.randint(50, 100))
+    ]
+
+    with init_mongo.sync_probe_session.start_session() as session:
+        session.client[settings.mongodb_database][
+            settings.mongodb_coffee_collection
+        ].insert_many([coffee.dict(by_alias=True) for coffee in test_coffees])
+
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
+
+    async with await init_mongo.asncy_session.start_session() as session:
+        result = await test_crud.read(
+            db_session=session,
+            query={"_id": {"$in": [coffee.id for coffee in test_coffees[:50]]}},
+        )
+
+        assert result == test_coffees[:50]
+
+        assert "Received 50 entries from database" in caplog.messages
+
+        assert len(result) == 50
