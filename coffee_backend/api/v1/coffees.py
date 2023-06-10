@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
 
@@ -23,3 +25,18 @@ async def _post_coffee(
 ) -> Coffee:
 
     return await coffee_service.add_coffee(coffee=coffee, db_session=db_session)
+
+
+@router.get(
+    "/coffees",
+    status_code=200,
+    summary="",
+    description="""Get list of coffees""",
+    response_model=List[Coffee],
+)
+async def _list_coffee(
+    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    coffee_service: CoffeeService = Depends(get_coffee_service),
+) -> List[Coffee]:
+
+    return await coffee_service.list(db_session=db_session)

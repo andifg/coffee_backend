@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
@@ -30,6 +31,8 @@ class CoffeeService:
         """
         Adds a new coffee to the database.
 
+        Check whether name is already existing. If not create new coffee object.
+
         Args:
             db_session (AsyncIOMotorClientSession): The database session object.
             coffee (Coffee): The coffee object to be added.
@@ -58,6 +61,19 @@ class CoffeeService:
         raise HTTPException(
             status_code=400, detail="Coffee name is already existing"
         )
+
+    async def list(self, db_session: AsyncIOMotorClientSession) -> List[Coffee]:
+        """Retrieve a list of coffee objects from the database.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session object.
+
+        Returns:
+            List[Coffee]: A list of coffee objects retrieved from the crud
+                class.
+
+        """
+        return await self.coffee_crud.read(db_session=db_session, query={})
 
 
 #     def get_coffee(self, coffee_id):q
