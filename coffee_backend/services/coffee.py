@@ -1,5 +1,6 @@
 import logging
 from typing import List
+from uuid import UUID
 
 from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
@@ -75,9 +76,30 @@ class CoffeeService:
         """
         return await self.coffee_crud.read(db_session=db_session, query={})
 
+    async def get_by_id(
+        self, db_session: AsyncIOMotorClientSession, coffee_id: UUID
+    ) -> Coffee:
+        """
+        Retrieve a coffee object by its ID from the database.
 
-#     def get_coffee(self, coffee_id):q
-#         return self.coffee_crud.read(coffee_id)
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session object.
+            id (UUID): The ID of the coffee to retrieve.
+
+        Returns:
+            Coffee: The coffee object matching the ID.
+
+        """
+        try:
+            result = await self.coffee_crud.read(
+                db_session=db_session, query={"_id": coffee_id}
+            )
+        except ObjectNotFoundError as error:
+            raise HTTPException(
+                status_code=404, detail="No coffee found for given id"
+            ) from error
+        return result[0]
+
 
 #     def update_coffee(self, coffee_id, updated_coffee):
 #         self.coffee_crud.update(coffee_id, updated_coffee)

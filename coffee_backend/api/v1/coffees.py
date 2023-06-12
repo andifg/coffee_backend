@@ -1,4 +1,5 @@
 from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
@@ -40,3 +41,50 @@ async def _list_coffee(
 ) -> List[Coffee]:
 
     return await coffee_service.list(db_session=db_session)
+
+
+# @router.get(
+#     "/coffees/ids",
+#     status_code=200,
+#     summary="",
+#     description="Get coffee by id",
+#     response_model=List[Coffee],
+# )
+# async def _list_coffee_ids(
+#     coffee_id: UUID,
+#     db_session: AsyncIOMotorClientSession = Depends(get_db),
+#     coffee_service: CoffeeService = Depends(get_coffee_service),
+# ) -> List[Coffee]:
+
+#     return await coffee_service.get_by_id(db_session=db_session, id=coffee_id)
+
+
+@router.get(
+    "/coffees/{coffee_id}",
+    status_code=200,
+    summary="",
+    description="""Get coffee by id""",
+    response_model=Coffee,
+)
+async def _get_coffee_by_id(
+    coffee_id: UUID,
+    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    coffee_service: CoffeeService = Depends(get_coffee_service),
+) -> Coffee:
+    """
+    Retrieve a coffee object by its ID.
+
+    Args:
+        coffee_id (UUID): The ID of the coffee to retrieve.
+        db_session (AsyncIOMotorClientSession): The database session
+            object loaded via fastapi depends
+        coffee_service (CoffeeService): The CoffeeService dependency loaded via
+            fastapi depends
+
+    Returns:
+        Coffee: The coffee object matching the ID.
+
+    """
+    return await coffee_service.get_by_id(
+        db_session=db_session, coffee_id=coffee_id
+    )
