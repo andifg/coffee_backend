@@ -1,13 +1,13 @@
 from typing import List
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Extra, Field
 
 from coffee_backend.schemas.rating import Rating
 
 
 class Coffee(BaseModel):
-    """Describes one email message"""
+    """Describes a Coffee"""
 
     id: UUID = Field(
         ...,
@@ -19,3 +19,14 @@ class Coffee(BaseModel):
     ratings: List[Rating] = Field(
         [], description="Ratings asociated with coffee"
     )
+
+
+class UpdateCoffee(BaseModel):
+    """Describes the update schema for a Coffee"""
+
+    name: str = Field(..., description="Name of coffee")
+
+    class Config:
+        """Pydantic config"""
+
+        extra = Extra.forbid
