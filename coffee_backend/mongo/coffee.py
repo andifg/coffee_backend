@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
@@ -54,6 +54,7 @@ class CoffeeCRUD:
         self,
         db_session: AsyncIOMotorClientSession,
         query: Dict[str, Any],
+        projection: Optional[Dict[str, int]] = None,
     ) -> List[Coffee]:
         """Find coffees based on mongo search query.
 
@@ -61,6 +62,8 @@ class CoffeeCRUD:
             db_session (AsyncIOMotorClientSession): The MongoDB client session.
             coffee_id (UUID): The ID of the coffee document to retrieve.
             max_results (int): max number of entries retrieved from db
+            projection (Optional[Dict[str, int]]): Selection of columns to
+                include or exclude in result
 
         Returns:
             Coffee: A `Coffee` instance representing the retrieved document.
@@ -70,7 +73,7 @@ class CoffeeCRUD:
             doc
             async for doc in db_session.client[self.database][
                 self.coffee_collection
-            ].find(query)
+            ].find(filter=query, projection=projection)
         ]
 
         if documents:

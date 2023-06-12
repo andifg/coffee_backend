@@ -115,6 +115,53 @@ async def test_mongo_coffee_read_all_entries(
 
 
 @pytest.mark.asyncio
+async def test_mongo_coffee_read_all_entries_with_projection(
+    init_mongo: TestDBSessions,
+    dummy_coffees: DummyCoffees,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test reading all items from the database with projection.
+
+    This function creates two Coffee instances, inserts them into the
+    database, and then tests if the read method returns a list with only the
+    ids and names if using a projection.
+
+    Args:
+        init_mongo: Fixture for MongoDB connections.
+        dummy_coffee: Fixture that provides multiple dummy coffee objects.
+        caplog: Fixture that captures log output.
+    """
+
+    coffee_1 = dummy_coffees.coffee_1
+    coffee_2 = dummy_coffees.coffee_2
+
+    with init_mongo.sync_probe_session.start_session() as session:
+        session.client[settings.mongodb_database][
+            settings.mongodb_coffee_collection
+        ].insert_many(
+            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+        )
+
+    coffee_1.ratings = []
+    coffee_2.ratings = []
+
+    test_crud = CoffeeCRUD(
+        settings.mongodb_database, settings.mongodb_coffee_collection
+    )
+
+    async with await init_mongo.asncy_session.start_session() as session:
+        result = await test_crud.read(
+            db_session=session, query={}, projection={"_id": 1, "name": 1}
+        )
+
+        assert result == [coffee_1, coffee_2]
+
+        assert "Received 2 entries from database" in caplog.messages
+
+        assert len(result) == 2
+
+
+@pytest.mark.asyncio
 async def test_mongo_coffee_read_mutliple_entries_by_id(
     init_mongo: TestDBSessions,
     dummy_coffees: DummyCoffees,

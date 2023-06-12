@@ -84,6 +84,39 @@ class CoffeeService:
             ) from error
         return coffees
 
+    async def list_ids(
+        self, db_session: AsyncIOMotorClientSession
+    ) -> List[UUID]:
+        """Retrieve a list of all coffee ids.
+
+        This method returns a list of all coffee ids in the coffee collection.
+        It utilizes the coffee crud read method to return coffees that only
+        contain the necessary fields id and name but not the ratings for
+        performance reasons by using a mongodb projection. It then only returns
+        the ids of the returned coffees.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session object.
+
+        Returns:
+            List[UUID]: A list of coffee ids
+
+        Raises:
+            HTTPException: If no coffee IDs are found in the collection.
+
+        """
+        try:
+            coffees = await self.coffee_crud.read(
+                db_session=db_session,
+                query={},
+                projection={"_id": 1, "name": 1},
+            )
+        except ObjectNotFoundError as error:
+            raise HTTPException(
+                status_code=404, detail="No ids found"
+            ) from error
+        return [coffee.id for coffee in coffees]
+
     async def get_by_id(
         self, db_session: AsyncIOMotorClientSession, coffee_id: UUID
     ) -> Coffee:

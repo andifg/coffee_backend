@@ -17,7 +17,18 @@ async def test_api_get_coffee_by_id(
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
 ) -> None:
-    """Test coffees get by id endpoint."""
+    """Test the API endpoint for retrieving a coffee by ID.
+
+    This test ensures that the API endpoint for retrieving a coffee by ID
+    returns the expected response.
+
+    Args:
+        coffee_service_mock (AsyncMock): The mocked CoffeeService get_by_id
+            method.
+        test_app (TestApp): The TestApp instance for testing the FastAPI
+            application.
+        dummy_coffees (DummyCoffees): The dummy coffees fixture.
+    """
 
     get_db_mock = AsyncMock()
 
@@ -49,9 +60,18 @@ async def test_api_get_coffee_by_id(
 async def test_api_get_coffee_by_id_with_unkown_id(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
-    dummy_coffees: DummyCoffees,
 ) -> None:
-    """Test coffees endpoint get mehtod."""
+    """Ensure proper error transformation of service layer error
+
+
+    Args:
+        coffee_service_mock (AsyncMock): The mocked CoffeeService get_by_id
+            method.
+        test_app (TestApp): The TestApp instance for testing the FastAPI
+            application.
+        dummy_coffees (DummyCoffees): The dummy coffees fixture.
+
+    """
 
     get_db_mock = AsyncMock()
 

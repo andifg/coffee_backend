@@ -43,20 +43,30 @@ async def _list_coffee(
     return await coffee_service.list(db_session=db_session)
 
 
-# @router.get(
-#     "/coffees/ids",
-#     status_code=200,
-#     summary="",
-#     description="Get coffee by id",
-#     response_model=List[Coffee],
-# )
-# async def _list_coffee_ids(
-#     coffee_id: UUID,
-#     db_session: AsyncIOMotorClientSession = Depends(get_db),
-#     coffee_service: CoffeeService = Depends(get_coffee_service),
-# ) -> List[Coffee]:
+@router.get(
+    "/coffees/ids",
+    status_code=200,
+    summary="",
+    description="Get coffee by id",
+    response_model=List[UUID],
+)
+async def _list_coffee_ids(
+    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    coffee_service: CoffeeService = Depends(get_coffee_service),
+) -> List[UUID]:
+    """Retrieve a list of all coffee IDs.
 
-#     return await coffee_service.get_by_id(db_session=db_session, id=coffee_id)
+    This endpoint returns a list of all coffee IDs in the coffee collection.
+
+    Args:
+        db_session (AsyncIOMotorClientSession): The database session object.
+        coffee_service (CoffeeService): The CoffeeService dependency.
+
+    Returns:
+        List[UUID]: A list of coffee IDs.
+    """
+
+    return await coffee_service.list_ids(db_session=db_session)
 
 
 @router.get(
