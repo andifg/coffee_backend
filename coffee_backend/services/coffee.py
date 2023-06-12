@@ -74,7 +74,15 @@ class CoffeeService:
                 class.
 
         """
-        return await self.coffee_crud.read(db_session=db_session, query={})
+        try:
+            coffees = await self.coffee_crud.read(
+                db_session=db_session, query={}
+            )
+        except ObjectNotFoundError as error:
+            raise HTTPException(
+                status_code=404, detail="No coffees found"
+            ) from error
+        return coffees
 
     async def get_by_id(
         self, db_session: AsyncIOMotorClientSession, coffee_id: UUID
@@ -91,14 +99,14 @@ class CoffeeService:
 
         """
         try:
-            result = await self.coffee_crud.read(
+            coffees = await self.coffee_crud.read(
                 db_session=db_session, query={"_id": coffee_id}
             )
         except ObjectNotFoundError as error:
             raise HTTPException(
                 status_code=404, detail="No coffee found for given id"
             ) from error
-        return result[0]
+        return coffees[0]
 
 
 #     def update_coffee(self, coffee_id, updated_coffee):
