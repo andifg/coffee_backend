@@ -8,7 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
 from coffee_backend.mongo.coffee import coffee_crud as coffee_crud_instance
-from coffee_backend.schemas.coffee import Coffee
+from coffee_backend.schemas.coffee import Coffee, UpdateCoffee
 
 
 class CoffeeService:
@@ -141,9 +141,44 @@ class CoffeeService:
             ) from error
         return coffees[0]
 
+    async def patch_coffee(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        coffee_id: UUID,
+        update_coffee: UpdateCoffee,
+    ) -> Coffee:
+        """
+        Manage patch of coffee in database.
 
-#     def update_coffee(self, coffee_id, updated_coffee):
-#         self.coffee_crud.update(coffee_id, updated_coffee)
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session object.
+            coffee_id (UUID): The ID of the coffee to update.
+            update_coffee (UpdateCoffee): The updated coffee object.
+
+        Returns:
+            Coffee: The updated coffee object.
+
+        Raises:
+            HTTPException: If no coffee is found for the given ID.
+        """
+
+        coffee = await self.get_by_id(
+            db_session=db_session, coffee_id=coffee_id
+        )
+
+        for attribute in update_coffee.dict():
+            setattr(coffee, attribute, getattr(update_coffee, attribute))
+
+        try:
+            updated_coffee = await self.coffee_crud.update(
+                db_session=db_session, coffee_id=coffee_id, coffee=coffee
+            )
+        except ObjectNotFoundError as error:
+            raise HTTPException(
+                status_code=404, detail="No coffee found for given id"
+            ) from error
+        return updated_coffee
+
 
 #     def delete_coffee(self, coffee_id):
 #         self.coffee_crud.delete(coffee_id)
