@@ -179,9 +179,32 @@ class CoffeeService:
             ) from error
         return updated_coffee
 
+    async def delete_coffee(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        coffee_id: UUID,
+    ) -> None:
+        """
+        Delete a coffee by ID.
 
-#     def delete_coffee(self, coffee_id):
-#         self.coffee_crud.delete(coffee_id)
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session.
+            coffee_id (UUID): The ID of the coffee to delete.
+
+        Raises:
+            HTTPException: If the coffee with the given ID is not found in db.
+
+        Returns:
+            None
+        """
+        try:
+            await self.coffee_crud.delete(
+                db_session=db_session, coffee_id=coffee_id
+            )
+        except ObjectNotFoundError as error:
+            raise HTTPException(
+                status_code=404, detail="No coffee found for given id"
+            ) from error
 
 
 coffee_service = CoffeeService(coffee_crud=coffee_crud_instance)

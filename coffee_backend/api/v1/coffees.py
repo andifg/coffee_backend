@@ -1,7 +1,7 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
 
 from coffee_backend.api.deps import get_coffee_service
@@ -131,3 +131,35 @@ async def _get_coffee_by_id(
     return await coffee_service.get_by_id(
         db_session=db_session, coffee_id=coffee_id
     )
+
+
+@router.delete(
+    "/coffees/{coffee_id}",
+    status_code=200,
+    summary="",
+    description="""Get coffee by id""",
+)
+async def _delete_coffee_by_id(
+    coffee_id: UUID,
+    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    coffee_service: CoffeeService = Depends(get_coffee_service),
+) -> Response:
+    """
+    Delete a coffee object by its ID.
+
+    Args:
+        coffee_id (UUID): The ID of the coffee to retrieve.
+        db_session (AsyncIOMotorClientSession): The database session
+            object loaded via fastapi depends
+        coffee_service (CoffeeService): The CoffeeService dependency loaded via
+            fastapi depends
+
+    Returns:
+        Coffee: The coffee object matching the ID.
+
+    """
+    await coffee_service.delete_coffee(
+        db_session=db_session, coffee_id=coffee_id
+    )
+
+    return Response(status_code=200)
