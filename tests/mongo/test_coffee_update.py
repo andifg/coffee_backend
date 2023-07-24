@@ -85,7 +85,6 @@ async def test_mongo_coffee_update_non_existing_coffee(
     non_existing_uuid = uuid7()
 
     with pytest.raises(ObjectNotFoundError) as not_found_error:
-
         async with await init_mongo.asncy_session.start_session() as session:
             await test_crud.update(
                 db_session=session, coffee_id=non_existing_uuid, coffee=coffee_2

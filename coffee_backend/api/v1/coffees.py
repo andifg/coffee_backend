@@ -24,7 +24,6 @@ async def _post_coffee(
     db_session: AsyncIOMotorClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Coffee:
-
     return await coffee_service.add_coffee(coffee=coffee, db_session=db_session)
 
 
@@ -39,7 +38,6 @@ async def _list_coffee(
     db_session: AsyncIOMotorClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> List[Coffee]:
-
     return await coffee_service.list(db_session=db_session)
 
 

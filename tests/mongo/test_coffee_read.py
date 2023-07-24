@@ -63,7 +63,6 @@ async def test_mongo_coffee_read_single_non_existing_id(
     )
 
     with pytest.raises(ObjectNotFoundError) as not_found_error:
-
         async with await init_mongo.asncy_session.start_session() as session:
             await test_crud.read(
                 db_session=session, query={"_id": non_existing_uuid}
