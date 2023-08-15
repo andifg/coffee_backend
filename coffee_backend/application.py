@@ -39,7 +39,7 @@ async def startup() -> None:
     logging.info("Starting up...")
 
     app.state.database_client = motor.motor_asyncio.AsyncIOMotorClient(
-        settings.mongodb_connetion_string,
+        settings.mongodb_connection_string,
         serverSelectionTimeoutMS=5000,
         uuidRepresentation="standard",
     )
