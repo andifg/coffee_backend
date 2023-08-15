@@ -31,7 +31,10 @@ class Settings(BaseSettings):
 
     mongodb_password: str = "example"
 
-    mongodb_connection_string: str = f"mongodb://{mongodb_username}:{mongodb_password}@{mongodb_host}:{mongodb_port}"
+    mongodb_connection_string: str = (
+        f"mongodb://{mongodb_username}:"
+        f"{mongodb_password}@{mongodb_host}:{mongodb_port}"
+    )
 
 
 settings = Settings()
