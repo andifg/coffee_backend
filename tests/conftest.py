@@ -178,7 +178,7 @@ async def test_app(
     print("Setting up test app")
 
     monkeypatch.setattr(settings, "mongodb_database", "coffee_backend")
-    monkeypatch.setattr(settings, "mongodb_connection_string", mongo_service)
+    monkeypatch.setattr(app.state, "mongodb_uri", mongo_service)
 
     async with AsyncClient(app=app, base_url="https://test") as client:
         await startup()

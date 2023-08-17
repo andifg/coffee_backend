@@ -11,7 +11,11 @@ from coffee_backend.settings import settings
 logging.basicConfig(level=logging.DEBUG)
 
 
-origins = ["http://localhost:3000", "http://localhost:8080"]
+origins: list[str] = [
+    "http://localhost:3000",
+    "http://localhost:8080",
+    "https://coffee-app.tests.apps.ocp4.gummy-bears.de",
+]
 
 
 # Initialize app
@@ -19,6 +23,12 @@ app = FastAPI(
     title="Coffee Backend -  API",
     docs_url="/api-docs",
     redoc_url=None,
+)
+
+app.state.mongodb_uri = (
+    f"mongodb://{settings.mongodb_username}"
+    f":{settings.mongodb_password}"
+    f"@{settings.mongodb_host}:{settings.mongodb_port}"
 )
 
 
@@ -39,7 +49,7 @@ async def startup() -> None:
     logging.info("Starting up...")
 
     app.state.database_client = motor.motor_asyncio.AsyncIOMotorClient(
-        settings.mongodb_connection_string,
+        app.state.mongodb_uri,
         serverSelectionTimeoutMS=5000,
         uuidRepresentation="standard",
     )
