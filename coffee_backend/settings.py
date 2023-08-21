@@ -23,13 +23,13 @@ class Settings(BaseSettings):
     mongodb_database: str = "coffee_backend"
     mongodb_coffee_collection: str = "coffee"
 
-    mongodb_host: str = ""
+    mongodb_host: str = "localhost"
 
     mongodb_port: int = 27017
 
-    mongodb_username: str = ""
+    mongodb_username: str = "root"
 
-    mongodb_password: str = ""
+    mongodb_password: str = "example"
 
 
 settings = Settings()
