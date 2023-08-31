@@ -57,7 +57,6 @@ class DummyCoffees:
 
     coffee_1: Coffee
     coffee_2: Coffee
-    coffee_without_ratings: Coffee
 
 
 @dataclass
@@ -129,32 +128,16 @@ def dummy_coffees() -> DummyCoffees:
     coffee_1 = Coffee(
         _id=UUID("123e4567-e19b-12d3-a456-426655440000"),
         name="Colombian",
-        ratings=[
-            Rating(_id=UUID("123e4367-e29b-12d3-a456-426655440000"), rating=4),
-            Rating(_id=UUID("123e4367-e39b-12d3-a456-426655440000"), rating=2),
-            Rating(_id=UUID("123e4367-e49b-12d3-a456-426655440000"), rating=3),
-        ],
     )
 
     coffee_2 = Coffee(
         _id=UUID("123e4567-e59b-12d3-a456-426655440000"),
         name="Brazilian",
-        ratings=[
-            Rating(_id=UUID("123e4367-e69b-12d3-a456-426655440000"), rating=4),
-            Rating(_id=UUID("123e4367-e79b-12d3-a456-426655440000"), rating=2),
-            Rating(_id=UUID("123e4367-e89b-12d3-a456-426655440000"), rating=3),
-        ],
-    )
-    coffee_without_ratings = Coffee(
-        _id=UUID("123e4567-e99b-12d3-a456-426655440000"),
-        name="Colombian",
-        ratings=[],
     )
 
     return DummyCoffees(
         coffee_1=coffee_1,
         coffee_2=coffee_2,
-        coffee_without_ratings=coffee_without_ratings,
     )
 
 

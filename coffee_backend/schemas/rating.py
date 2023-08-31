@@ -13,3 +13,8 @@ class Rating(BaseModel):
         example=UUID("123e4567-e89b-12d3-a456-426655440000"),
     )
     rating: int = Field(..., description="Ratings for coffee")
+    # coffee_id: UUID = Field(
+    #     ...,
+    #     description="The id of the coffee",
+    #     example=UUID("123e4567-e89b-12d3-a456-426655440001")
+    # )

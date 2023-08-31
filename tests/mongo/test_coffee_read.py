@@ -141,9 +141,6 @@ async def test_mongo_coffee_read_all_entries_with_projection(
             [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
         )
 
-    coffee_1.ratings = []
-    coffee_2.ratings = []
-
     test_crud = CoffeeCRUD(
         settings.mongodb_database, settings.mongodb_coffee_collection
     )

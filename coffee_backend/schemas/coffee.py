@@ -16,9 +16,6 @@ class Coffee(BaseModel):
         example=UUID("123e4567-e89b-12d3-a456-426655440000"),
     )
     name: str = Field(..., description="Name of coffee")
-    ratings: List[Rating] = Field(
-        [], description="Ratings asociated with coffee"
-    )
 
 
 class UpdateCoffee(BaseModel):

@@ -98,12 +98,7 @@ async def test_api_patch_coffee_invalid_coffee_update_schema(
                 "loc": ["body", "_id"],
                 "msg": "extra fields not permitted",
                 "type": "value_error.extra",
-            },
-            {
-                "loc": ["body", "ratings"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
-            },
+            }
         ]
     }
 
