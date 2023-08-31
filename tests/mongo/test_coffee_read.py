@@ -239,10 +239,6 @@ async def test_mongo_coffee_read_batch_tests(
         Coffee(
             _id=uuid7(),
             name=faker.name(),
-            ratings=[
-                Rating(_id=uuid7(), rating=random.randint(0, 5))
-                for _ in range(random.randint(0, 10))
-            ],
         )
         for _ in range(random.randint(50, 100))
     ]
