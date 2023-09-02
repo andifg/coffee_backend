@@ -4,7 +4,6 @@ import pytest
 from pydantic import ValidationError
 
 from coffee_backend.schemas.coffee import Coffee
-from coffee_backend.schemas.rating import Rating
 
 
 def test_coffee_creation_without_ratings() -> None:

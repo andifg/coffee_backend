@@ -24,7 +24,11 @@ def test_rating_schema_creation() -> None:
 def test_create_rating_with_invalid_id() -> None:
     """Test creating a Rating instance with an invalid id."""
     with pytest.raises(ValidationError):
-        Rating(_id="invalid_id", rating=4, coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"))  # type: ignore
+        Rating(
+            _id="invalid_id",  # type: ignore
+            rating=4,
+            coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        )
 
 
 def test_create_rating_without_id() -> None:
