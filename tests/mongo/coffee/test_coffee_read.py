@@ -7,7 +7,6 @@ from uuid_extensions.uuid7 import uuid7
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
 from coffee_backend.schemas.coffee import Coffee
-from coffee_backend.schemas.rating import Rating
 from coffee_backend.settings import settings
 from tests.conftest import DummyCoffees, TestDBSessions
 

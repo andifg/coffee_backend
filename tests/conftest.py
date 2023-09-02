@@ -45,6 +45,21 @@ class TestDBSessions:
 
 
 @dataclass
+class DummyRatings:
+    """Wrapper for coffee dummy objects.
+
+    Attributes:
+        coffee_1 (Coffee): Dummy coffee instance with ratings.
+        coffee_2 (Coffee): Another dummy coffee instance with ratings.
+        coffee_without_ratings(Coffee): Dummy coffee without ratings.
+
+    """
+
+    rating_1: Rating
+    rating_2: Rating
+
+
+@dataclass
 class DummyCoffees:
     """Wrapper for coffee dummy objects.
 
@@ -139,6 +154,25 @@ def dummy_coffees() -> DummyCoffees:
         coffee_1=coffee_1,
         coffee_2=coffee_2,
     )
+
+
+@pytest.fixture()
+def dummy_ratings() -> DummyRatings:
+    """Fixture to provide dummy coffees for tests."""
+
+    rating_1 = Rating(
+        _id=UUID("123e4567-e20b-12d3-a456-426655440000"),
+        rating=5,
+        coffee_id=UUID("123e4567-e19b-12d3-a456-426655440000"),
+    )
+
+    rating_2 = Rating(
+        _id=UUID("123e4567-e60b-12d3-a456-426655440000"),
+        rating=4.5,
+        coffee_id=UUID("123e4567-e59b-12d3-a456-426655440000"),
+    )
+
+    return DummyRatings(rating_1=rating_1, rating_2=rating_2)
 
 
 @pytest_asyncio.fixture()
