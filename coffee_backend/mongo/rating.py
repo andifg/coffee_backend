@@ -157,7 +157,7 @@ class RatingCRUD:
         return True
 
 
-coffee_crud = RatingCRUD(
+rating_crud = RatingCRUD(
     database=settings.mongodb_database,
     rating_collection=settings.mongodb_rating_collection,
 )
