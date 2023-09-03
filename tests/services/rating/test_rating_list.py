@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi import HTTPException
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.services.rating import RatingService

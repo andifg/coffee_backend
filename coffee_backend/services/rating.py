@@ -1,13 +1,14 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import HTTPException, Response
+from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.rating import RatingCRUD
 from coffee_backend.mongo.rating import rating_crud as rating_crud_instance
 from coffee_backend.schemas.rating import Rating
+from coffee_backend.schemas.rating_summary import RatingSummary
 
 
 class RatingService:
@@ -90,6 +91,35 @@ class RatingService:
         except ObjectNotFoundError:
             return []
         return [rating.id for rating in ratings]
+
+    async def create_rating_summary_for_coffee(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        coffee_id: UUID,
+    ) -> RatingSummary:
+        """Create rating summary for a certain coffee."""
+
+        try:
+            ratings = await self.rating_crud.read(
+                db_session=db_session,
+                query={"coffee_id": coffee_id},
+                projection={},
+            )
+        except ObjectNotFoundError:
+            return RatingSummary(
+                coffee_id=coffee_id,
+                rating_average=0,
+                rating_count=0,
+            )
+
+        rating_count = len(ratings)
+        rating_average = sum(rating.rating for rating in ratings) / rating_count
+
+        return RatingSummary(
+            coffee_id=coffee_id,
+            rating_average=rating_average,
+            rating_count=rating_count,
+        )
 
     async def get_by_id(
         self, db_session: AsyncIOMotorClientSession, rating_id: UUID

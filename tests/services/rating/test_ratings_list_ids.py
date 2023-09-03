@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi import HTTPException
 from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError

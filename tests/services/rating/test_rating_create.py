@@ -1,9 +1,7 @@
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi import HTTPException
 
-from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.services.rating import RatingService
 from tests.conftest import DummyRatings
 
@@ -27,7 +25,6 @@ async def test_rating_service_create(
 
     rating_crud_mock = AsyncMock()
     rating_crud_mock.create.return_value = rating_1
-    rating_crud_mock.read.side_effect = ObjectNotFoundError("Just a test")
 
     db_session_mock = AsyncMock()
 
