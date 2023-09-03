@@ -37,7 +37,7 @@ async def test_coffee_service_delete_by_id(
 
 
 @pytest.mark.asyncio
-async def test_coffee_service_get_by_id_with_unknown_id(
+async def test_coffee_service_delete_by_id_with_unknown_id(
     dummy_coffees: DummyCoffees,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
