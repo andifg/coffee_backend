@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from coffee_backend.api import router
 from coffee_backend.services.coffee import coffee_service
+from coffee_backend.services.rating import rating_service
 from coffee_backend.settings import settings
 
 logging.basicConfig(level=logging.DEBUG)
@@ -56,6 +57,7 @@ async def startup() -> None:
     )
 
     app.state.coffee_service = coffee_service
+    app.state.rating_service = rating_service
 
 
 @app.on_event("shutdown")

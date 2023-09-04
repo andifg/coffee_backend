@@ -48,13 +48,13 @@ class RatingService:
         )
 
     async def list(self, db_session: AsyncIOMotorClientSession) -> List[Rating]:
-        """Retrieve a list of coffee objects from the database.
+        """Retrieve a list of coffee ratings from the database.
 
         Args:
             db_session (AsyncIOMotorClientSession): The database session object.
 
         Returns:
-            List[Coffee]: A list of coffee objects retrieved from the crud
+            List[Rating]: A list of rating objects retrieved from the crud
                 class.
 
         """
@@ -173,4 +173,4 @@ class RatingService:
             ) from error
 
 
-coffee_service = RatingService(rating_crud=rating_crud_instance)
+rating_service = RatingService(rating_crud=rating_crud_instance)
