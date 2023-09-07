@@ -7,7 +7,7 @@ pushd "${GIT_ROOT}" > /dev/null
 
 
 printf "Testing with pytest \n" && \
-pytest
+pytest --cov-report xml --cov=coffee_backend
 
 
 SUCCESS=$?

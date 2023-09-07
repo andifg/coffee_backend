@@ -9,6 +9,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Sonarqube files
+.scannerwork
+
+# Pytest coverage
+.coverage
+coverage.xml
+
 # C extensions
 *.so
 
