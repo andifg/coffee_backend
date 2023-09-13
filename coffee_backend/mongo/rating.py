@@ -156,6 +156,34 @@ class RatingCRUD:
 
         return True
 
+    async def delete_many(
+        self, db_session: AsyncIOMotorClientSession, query: dict[str, Any]
+    ) -> bool:
+        """Deletes multiple rating records from the database.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session to
+                use for the operation.
+            query (str): The mongodb query.
+
+        Returns:
+            bool: True if the coffee records were successfully deleted.
+
+        Raises:
+            ObjectNotFoundError: If the coffee with the specified ID is not
+                found in the collection.
+        """
+        result = await db_session.client[self.database][
+            self.rating_collection
+        ].delete_many(query)
+
+        logging.info("Deleted ratings for query %s", query)
+
+        if result.deleted_count == 0:
+            raise ObjectNotFoundError(f"No ratings found for query {query}")
+
+        return True
+
 
 rating_crud = RatingCRUD(
     database=settings.mongodb_database,

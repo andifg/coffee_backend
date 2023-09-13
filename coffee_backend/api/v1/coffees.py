@@ -4,10 +4,11 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Response
 from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
 
-from coffee_backend.api.deps import get_coffee_service
+from coffee_backend.api.deps import get_coffee_service, get_rating_service
 from coffee_backend.mongo.database import get_db
 from coffee_backend.schemas.coffee import Coffee, UpdateCoffee
 from coffee_backend.services.coffee import CoffeeService
+from coffee_backend.services.rating import RatingService
 
 router = APIRouter()
 
@@ -141,9 +142,10 @@ async def _delete_coffee_by_id(
     coffee_id: UUID,
     db_session: AsyncIOMotorClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
+    rating_service: RatingService = Depends(get_rating_service),
 ) -> Response:
     """
-    Delete a coffee object by its ID.
+    Delete a coffee object by its ID and all corresponding ratings.
 
     Args:
         coffee_id (UUID): The ID of the coffee to retrieve.
@@ -151,12 +153,18 @@ async def _delete_coffee_by_id(
             object loaded via fastapi depends
         coffee_service (CoffeeService): The CoffeeService dependency loaded via
             fastapi depends
+        rating_service (RatingService): The RatingService dependency loaded via
+            fastapi depends
 
     Returns:
-        Coffee: The coffee object matching the ID.
+        Response: An empty response with status code 200.
 
     """
     await coffee_service.delete_coffee(
+        db_session=db_session, coffee_id=coffee_id
+    )
+
+    await rating_service.delete_by_coffee_id(
         db_session=db_session, coffee_id=coffee_id
     )
 

@@ -172,5 +172,30 @@ class RatingService:
                 status_code=404, detail="No rating found for given id"
             ) from error
 
+    async def delete_by_coffee_id(
+        self,
+        db_session: AsyncIOMotorClientSession,
+        coffee_id: UUID,
+    ) -> None:
+        """
+        Delete all ratings for a certain coffee.
+
+        Args:
+            db_session (AsyncIOMotorClientSession): The database session.
+            coffee_id (UUID): The ID of the coffee to delete.
+
+        Raises:
+            HTTPException: If the coffee with the given ID is not found in db.
+
+        Returns:
+            None
+        """
+        try:
+            await self.rating_crud.delete_many(
+                db_session=db_session, query={"coffee_id": coffee_id}
+            )
+        except ObjectNotFoundError:
+            return None
+
 
 rating_service = RatingService(rating_crud=rating_crud_instance)

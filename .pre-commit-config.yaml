@@ -16,7 +16,7 @@ repos:
         name: Lint
         pass_filenames: false
         language: system
-        entry: bash -c 'pytest -s'
+        entry: bash -c 'mypy coffee_backend tests --disallow-untyped-defs && pylint coffee_backend && pylint tests'
       - id: test-code
         name: Test
         pass_filenames: false

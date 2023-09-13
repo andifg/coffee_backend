@@ -9,10 +9,12 @@ from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyCoffees, TestApp
 
 
+@patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id(
     coffee_service_mock: AsyncMock,
+    rating_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
 ) -> None:
@@ -21,6 +23,7 @@ async def test_api_delete_coffee_by_id(
 
     Args:
         coffee_service_mock (AsyncMock): The mocked CoffeeService.
+        rating_service_mock (AsyncMock): The mocked RatingService.
         test_app (TestApp): The test application.
         dummy_coffees (DummyCoffees): The dummy coffees fixture.
     """
@@ -41,13 +44,19 @@ async def test_api_delete_coffee_by_id(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
     )
 
+    rating_service_mock.assert_awaited_once_with(
+        db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
+    )
+
     app.dependency_overrides = {}
 
 
+@patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id_with_unkown_id(
     coffee_service_mock: AsyncMock,
+    rating_service_mock: AsyncMock,
     test_app: TestApp,
 ) -> None:
     """
@@ -79,5 +88,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     coffee_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=unkown_id
     )
+
+    rating_service_mock.assert_not_called()
 
     app.dependency_overrides = {}
