@@ -3,7 +3,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import HTTPException
-from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.core import AgnosticClientSession
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.coffee import CoffeeCRUD
@@ -27,7 +27,7 @@ class CoffeeService:
         self.coffee_crud = coffee_crud
 
     async def add_coffee(
-        self, db_session: AsyncIOMotorClientSession, coffee: Coffee
+        self, db_session: AgnosticClientSession, coffee: Coffee
     ) -> Coffee:
         """
         Adds a new coffee to the database.
@@ -35,7 +35,7 @@ class CoffeeService:
         Check whether name is already existing. If not create new coffee object.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
             coffee (Coffee): The coffee object to be added.
 
         Returns:
@@ -63,11 +63,11 @@ class CoffeeService:
             status_code=400, detail="Coffee name is already existing"
         )
 
-    async def list(self, db_session: AsyncIOMotorClientSession) -> List[Coffee]:
+    async def list(self, db_session: AgnosticClientSession) -> List[Coffee]:
         """Retrieve a list of coffee objects from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
 
         Returns:
             List[Coffee]: A list of coffee objects retrieved from the crud
@@ -84,9 +84,7 @@ class CoffeeService:
             ) from error
         return coffees
 
-    async def list_ids(
-        self, db_session: AsyncIOMotorClientSession
-    ) -> List[UUID]:
+    async def list_ids(self, db_session: AgnosticClientSession) -> List[UUID]:
         """Retrieve a list of all coffee ids.
 
         This method returns a list of all coffee ids in the coffee collection.
@@ -96,7 +94,7 @@ class CoffeeService:
         the ids of the returned coffees.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
 
         Returns:
             List[UUID]: A list of coffee ids
@@ -118,13 +116,13 @@ class CoffeeService:
         return [coffee.id for coffee in coffees]
 
     async def get_by_id(
-        self, db_session: AsyncIOMotorClientSession, coffee_id: UUID
+        self, db_session: AgnosticClientSession, coffee_id: UUID
     ) -> Coffee:
         """
         Retrieve a coffee object by its ID from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
             id (UUID): The ID of the coffee to retrieve.
 
         Returns:
@@ -143,7 +141,7 @@ class CoffeeService:
 
     async def patch_coffee(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         coffee_id: UUID,
         update_coffee: UpdateCoffee,
     ) -> Coffee:
@@ -151,7 +149,7 @@ class CoffeeService:
         Manage patch of coffee in database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
             coffee_id (UUID): The ID of the coffee to update.
             update_coffee (UpdateCoffee): The updated coffee object.
 
@@ -181,14 +179,14 @@ class CoffeeService:
 
     async def delete_coffee(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         coffee_id: UUID,
     ) -> None:
         """
         Delete a coffee by ID.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session.
+            db_session (AgnosticClientSession): The database session.
             coffee_id (UUID): The ID of the coffee to delete.
 
         Raises:

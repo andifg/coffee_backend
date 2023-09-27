@@ -1,13 +1,13 @@
-from fastapi import Depends, FastAPI, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from fastapi.responses import Response
 
 from coffee_backend.api.deps import get_object_crud
 from coffee_backend.s3.object import ObjectCRUD
 
-app = FastAPI()
+router = APIRouter()
 
 
-@app.post("/coffees/{coffee_id}/images")
+@router.post("/coffees/{coffee_id}/images")
 async def create_file(
     file: UploadFile = File(...),
     object_crud: ObjectCRUD = Depends(get_object_crud),

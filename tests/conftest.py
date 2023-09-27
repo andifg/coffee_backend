@@ -8,6 +8,7 @@ import pytest
 import pytest_asyncio
 from fastapi.datastructures import State
 from httpx import AsyncClient
+from motor.core import AgnosticClient
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
 
@@ -39,7 +40,7 @@ class TestDBSessions:
             starts with "Test...".
     """
 
-    asncy_session: motor.motor_asyncio.AsyncIOMotorClient
+    asncy_session: AgnosticClient
     sync_probe_session: MongoClient
     __test__: bool = False
 

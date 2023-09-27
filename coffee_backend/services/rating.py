@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import HTTPException
-from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.core import AgnosticClientSession
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.rating import RatingCRUD
@@ -27,13 +27,13 @@ class RatingService:
         self.rating_crud = rating_crud
 
     async def add_rating(
-        self, db_session: AsyncIOMotorClientSession, rating: Rating
+        self, db_session: AgnosticClientSession, rating: Rating
     ) -> Rating:
         """
         Adds a new rating to the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
             rating (Rating): The rating object to be added.
 
         Returns:
@@ -47,11 +47,11 @@ class RatingService:
             rating=rating, db_session=db_session
         )
 
-    async def list(self, db_session: AsyncIOMotorClientSession) -> List[Rating]:
+    async def list(self, db_session: AgnosticClientSession) -> List[Rating]:
         """Retrieve a list of coffee ratings from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
 
         Returns:
             List[Rating]: A list of rating objects retrieved from the crud
@@ -67,7 +67,7 @@ class RatingService:
         return coffees
 
     async def list_ids_for_coffee(
-        self, db_session: AsyncIOMotorClientSession, coffee_id: UUID
+        self, db_session: AgnosticClientSession, coffee_id: UUID
     ) -> List[UUID]:
         """Retrieve a list of all rating ids for a certain coffee.
 
@@ -76,7 +76,7 @@ class RatingService:
 
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
 
         Returns:
             List[UUID]: A list of rating ids.
@@ -94,7 +94,7 @@ class RatingService:
 
     async def create_rating_summary_for_coffee(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         coffee_id: UUID,
     ) -> RatingSummary:
         """Create rating summary for a certain coffee."""
@@ -122,13 +122,13 @@ class RatingService:
         )
 
     async def get_by_id(
-        self, db_session: AsyncIOMotorClientSession, rating_id: UUID
+        self, db_session: AgnosticClientSession, rating_id: UUID
     ) -> Rating:
         """
         Retrieve a rating object by its ID from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session object.
+            db_session (AgnosticClientSession): The database session object.
             id (UUID): The ID of the rating to retrieve.
 
         Returns:
@@ -147,14 +147,14 @@ class RatingService:
 
     async def delete_rating(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         rating_id: UUID,
     ) -> None:
         """
         Delete a coffee by ID.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session.
+            db_session (AgnosticClientSession): The database session.
             coffee_id (UUID): The ID of the coffee to delete.
 
         Raises:
@@ -174,14 +174,14 @@ class RatingService:
 
     async def delete_by_coffee_id(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         coffee_id: UUID,
     ) -> None:
         """
         Delete all ratings for a certain coffee.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session.
+            db_session (AgnosticClientSession): The database session.
             coffee_id (UUID): The ID of the coffee to delete.
 
         Raises:
