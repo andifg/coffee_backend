@@ -1,11 +1,12 @@
 import logging
 from dataclasses import dataclass
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 from uuid import UUID
 
 import motor.motor_asyncio  # type: ignore
 import pytest
 import pytest_asyncio
+from fastapi import UploadFile
 from fastapi.datastructures import State
 from httpx import AsyncClient
 from motor.core import AgnosticClient
@@ -20,6 +21,11 @@ from coffee_backend.settings import settings
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("faker")
 logger.setLevel(logging.INFO)  # Quiet faker locale messages down in tests.
+
+logger_urllib = logging.getLogger("urllib3")
+logger_urllib.setLevel(
+    logging.INFO
+)  # Quiet urllib3 connection messages down in tests.
 
 
 @dataclass
@@ -73,6 +79,24 @@ class DummyCoffees:
 
     coffee_1: Coffee
     coffee_2: Coffee
+
+
+@dataclass
+class DummyImages:
+    """Wrapper for coffee images dummy objects.
+
+    Attributes:
+        image_1: UploadFile
+        image_2: UploadFile
+        image_1_bytes: bytes
+        image_2_bytes: bytes
+
+    """
+
+    image_1: UploadFile
+    image_1_bytes: bytes
+    image_2: UploadFile
+    image_2_bytes: bytes
 
 
 @dataclass
@@ -174,6 +198,29 @@ def dummy_ratings() -> DummyRatings:
     )
 
     return DummyRatings(rating_1=rating_1, rating_2=rating_2)
+
+
+@pytest.fixture()
+def dummy_coffee_images() -> Generator[DummyImages, None, None]:
+    """Fixture to provide dummy coffee images for tests."""
+
+    with open("tests/s3/testimages/coffee.jpeg", "rb") as image_1, open(
+        "tests/s3/testimages/coffee2.jpeg", "rb"
+    ) as image_2:
+        upload_file_1 = UploadFile(file=image_1, filename="test_image_1.jpg")
+        upload_file_2 = UploadFile(file=image_2, filename="test_image_2.jpg")
+
+        image_1_bytes = image_1.read()
+        image_2_bytes = image_2.read()
+        image_1.seek(0, 0)
+        image_2.seek(0, 0)
+
+        yield DummyImages(
+            image_1=upload_file_1,
+            image_1_bytes=image_1_bytes,
+            image_2=upload_file_2,
+            image_2_bytes=image_2_bytes,
+        )
 
 
 @pytest_asyncio.fixture()

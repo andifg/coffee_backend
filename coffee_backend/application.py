@@ -8,6 +8,7 @@ from minio import Minio  # type: ignore
 from coffee_backend.api import router
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import coffee_service
+from coffee_backend.services.coffee_image import CoffeeImagesService
 from coffee_backend.services.rating import rating_service
 from coffee_backend.settings import settings
 
@@ -58,16 +59,17 @@ async def startup() -> None:
         uuidRepresentation="standard",
     )
 
-    app.state.s3_client = ObjectCRUD(
-        minio_client=Minio(
-            f"{settings.minio_host}:{settings.minio_port}",
-            settings.minio_access_key,
-            settings.minio_secret_key,
-            secure=False,
-        ),
-        bucket_name=settings.minio_coffee_images_bucket,
+    app.state.coffee_images_service = CoffeeImagesService(
+        coffee_images_crud=ObjectCRUD(
+            minio_client=Minio(
+                f"{settings.minio_host}:{settings.minio_port}",
+                settings.minio_access_key,
+                settings.minio_secret_key,
+                secure=False,
+            ),
+            bucket_name=settings.minio_coffee_images_bucket,
+        )
     )
-
     app.state.coffee_service = coffee_service
     app.state.rating_service = rating_service
 
