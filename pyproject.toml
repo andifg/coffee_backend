@@ -16,8 +16,7 @@ uvicorn = "^0.22.0"
 httpx = "^0.24.0"
 uuid7 = "^0.1.0"
 minio = "^7.1.16"
-
-
+python-multipart = "^0.0.6"
 
 [tool.poetry.group.dev.dependencies]
 pylint-pytest = "^1.1.2"
@@ -31,7 +30,7 @@ pylint-pydantic = "^0.1.7"
 pytest-cov = "^4.0.0"
 faker = "^18.10.1"
 black = "^23.7.0"
-python-multipart = "^0.0.6"
+
 
 [tool.pytest.ini_options]
 addopts = "--cov-report term-missing --cov=coffee_backend"
