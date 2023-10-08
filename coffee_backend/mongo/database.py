@@ -1,16 +1,18 @@
 import logging
+from typing import AsyncGenerator
 
-import motor.motor_asyncio  # type: ignore
 from fastapi import HTTPException, Request
-from motor.motor_asyncio import AsyncIOMotorClient  # type: ignore
+from motor.core import AgnosticClient, AgnosticClientSession
 from pymongo.errors import ServerSelectionTimeoutError
 
 
-async def get_db(request: Request) -> motor.motor_asyncio.AsyncIOMotorClient:
+async def get_db(
+    request: Request,
+) -> AsyncGenerator[AgnosticClientSession, None]:
     """Obtains a database session for executing asynchronous MongoDB operations.
 
     Returns:
-        motor.motor_asyncio.AsyncIOMotorClient: An instance of the MongoDB
+        AsyncGenerator[AgnosticClientSession, None]: An instance of the MongoDB
             client representing the database session.
 
     Raises:
@@ -18,7 +20,7 @@ async def get_db(request: Request) -> motor.motor_asyncio.AsyncIOMotorClient:
 
     """
     try:
-        async_client: AsyncIOMotorClient = request.app.state.database_client
+        async_client: AgnosticClient = request.app.state.database_client
         async with await async_client.start_session() as db_session:
             yield db_session
     except ServerSelectionTimeoutError as error:

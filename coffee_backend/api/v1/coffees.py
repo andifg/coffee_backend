@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Response
-from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.core import AgnosticClientSession
 
 from coffee_backend.api.deps import get_coffee_service, get_rating_service
 from coffee_backend.mongo.database import get_db
@@ -22,7 +22,7 @@ router = APIRouter()
 )
 async def _post_coffee(
     coffee: Coffee,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Coffee:
     return await coffee_service.add_coffee(coffee=coffee, db_session=db_session)
@@ -36,7 +36,7 @@ async def _post_coffee(
     response_model=List[Coffee],
 )
 async def _list_coffee(
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> List[Coffee]:
     return await coffee_service.list(db_session=db_session)
@@ -50,7 +50,7 @@ async def _list_coffee(
     response_model=List[UUID],
 )
 async def _list_coffee_ids(
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> List[UUID]:
     """Retrieve a list of all coffee IDs.
@@ -58,7 +58,7 @@ async def _list_coffee_ids(
     This endpoint returns a list of all coffee IDs in the coffee collection.
 
     Args:
-        db_session (AsyncIOMotorClientSession): The database session object.
+        db_session (AgnosticClientSession): The database session object.
         coffee_service (CoffeeService): The CoffeeService dependency.
 
     Returns:
@@ -78,7 +78,7 @@ async def _list_coffee_ids(
 async def _patch_coffee(
     coffee_id: UUID,
     coffee: UpdateCoffee,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Coffee:
     """Patch a coffee name.
@@ -87,7 +87,7 @@ async def _patch_coffee(
 
     Args:
         coffee_id (UUID): The ID of the coffee to retrieve.
-        db_session (AsyncIOMotorClientSession): The database session
+        db_session (AgnosticClientSession): The database session
             object loaded via fastapi depends
         coffee_service (CoffeeService): The CoffeeService dependency loaded via
             fastapi depends
@@ -110,7 +110,7 @@ async def _patch_coffee(
 )
 async def _get_coffee_by_id(
     coffee_id: UUID,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Coffee:
     """
@@ -118,7 +118,7 @@ async def _get_coffee_by_id(
 
     Args:
         coffee_id (UUID): The ID of the coffee to retrieve.
-        db_session (AsyncIOMotorClientSession): The database session
+        db_session (AgnosticClientSession): The database session
             object loaded via fastapi depends
         coffee_service (CoffeeService): The CoffeeService dependency loaded via
             fastapi depends
@@ -140,7 +140,7 @@ async def _get_coffee_by_id(
 )
 async def _delete_coffee_by_id(
     coffee_id: UUID,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> Response:
@@ -149,7 +149,7 @@ async def _delete_coffee_by_id(
 
     Args:
         coffee_id (UUID): The ID of the coffee to retrieve.
-        db_session (AsyncIOMotorClientSession): The database session
+        db_session (AgnosticClientSession): The database session
             object loaded via fastapi depends
         coffee_service (CoffeeService): The CoffeeService dependency loaded via
             fastapi depends

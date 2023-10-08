@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Response
-from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.core import AgnosticClientSession
 
 from coffee_backend.api.deps import get_coffee_service, get_rating_service
 from coffee_backend.mongo.database import get_db
@@ -22,7 +22,7 @@ router = APIRouter()
     response_model=List[Rating],
 )
 async def _list_ratings(
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> List[Rating]:
     return await rating_service.list(db_session=db_session)
@@ -37,7 +37,7 @@ async def _list_ratings(
 async def _delete_rating(
     rating_id: UUID,
     coffee_id: UUID,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> Response:
@@ -58,7 +58,7 @@ async def _delete_rating(
 )
 async def _list_coffees_ratings_ids(
     coffee_id: UUID,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> List[UUID]:
@@ -77,7 +77,7 @@ async def _list_coffees_ratings_ids(
 )
 async def _get_coffees_rating_summary(
     coffee_id: UUID,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> RatingSummary:
@@ -97,7 +97,7 @@ async def _get_coffees_rating_summary(
 async def _create_coffee_rating(
     coffee_id: UUID,
     rating: Rating,
-    db_session: AsyncIOMotorClientSession = Depends(get_db),
+    db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> Rating:

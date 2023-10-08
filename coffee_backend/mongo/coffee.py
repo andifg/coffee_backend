@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.core import AgnosticClientSession
 from pymongo.errors import DuplicateKeyError
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
@@ -22,13 +22,13 @@ class CoffeeCRUD:
         self.coffee_collection = coffee_collection
 
     async def create(
-        self, db_session: AsyncIOMotorClientSession, coffee: Coffee
+        self, db_session: AgnosticClientSession, coffee: Coffee
     ) -> Coffee:
         """Create a new coffee document in the database.
 
         Args:
             coffee (Coffee): The coffee document to insert.
-            db_session (AsyncIOMotorClientSession): The database session.
+            db_session (AgnosticClientSession): The database session.
 
         Returns:
             Coffee: The inserted coffee document.
@@ -52,14 +52,14 @@ class CoffeeCRUD:
 
     async def read(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         query: Dict[str, Any],
         projection: Optional[Dict[str, int]] = None,
     ) -> List[Coffee]:
         """Find coffees based on mongo search query.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The MongoDB client session.
+            db_session (AgnosticClientSession): The MongoDB client session.
             coffee_id (UUID): The ID of the coffee document to retrieve.
             max_results (int): max number of entries retrieved from db
             projection (Optional[Dict[str, int]]): Selection of columns to
@@ -84,7 +84,7 @@ class CoffeeCRUD:
 
     async def update(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         coffee_id: UUID,
         coffee: Coffee,
     ) -> Coffee:
@@ -93,7 +93,7 @@ class CoffeeCRUD:
         the given coffee data.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The MongoDB database session
+            db_session (AgnosticClientSession): The MongoDB database session
                 to use.
             coffee_id (UUID): The UUID of the coffee document to update.
             coffee (Coffee): The new data to update the coffee document with.
@@ -126,13 +126,13 @@ class CoffeeCRUD:
 
     async def delete(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         coffee_id: UUID,
     ) -> bool:
         """Deletes a coffee record from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session to
+            db_session (AgnosticClientSession): The database session to
                 use for the operation.
             coffee_id (UUID): The unique identifier of the coffee to delete.
 

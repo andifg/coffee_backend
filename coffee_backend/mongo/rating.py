@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from motor.motor_asyncio import AsyncIOMotorClientSession  # type: ignore
+from motor.core import AgnosticClientSession
 from pymongo.errors import DuplicateKeyError
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
@@ -22,13 +22,13 @@ class RatingCRUD:
         self.rating_collection = rating_collection
 
     async def create(
-        self, db_session: AsyncIOMotorClientSession, rating: Rating
+        self, db_session: AgnosticClientSession, rating: Rating
     ) -> Rating:
         """Create a new rating document in the database.
 
         Args:
             coffee (Coffee): The coffee document to insert.
-            db_session (AsyncIOMotorClientSession): The database session.
+            db_session (AgnosticClientSession): The database session.
 
         Returns:
             Coffee: The inserted coffee document.
@@ -52,14 +52,14 @@ class RatingCRUD:
 
     async def read(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         query: Dict[str, Any],
         projection: Optional[Dict[str, int]] = None,
     ) -> List[Rating]:
         """Find ratings based on mongo search query.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The MongoDB client session.
+            db_session (AgnosticClientSession): The MongoDB client session.
             rating_id (UUID): The ID of the rating document to retrieve.
             max_results (int): max number of entries retrieved from db
             projection (Optional[Dict[str, int]]): Selection of columns to
@@ -84,7 +84,7 @@ class RatingCRUD:
 
     async def update(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         rating_id: UUID,
         rating: Rating,
     ) -> Rating:
@@ -93,7 +93,7 @@ class RatingCRUD:
         the given rating data.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The MongoDB database
+            db_session (AgnosticClientSession): The MongoDB database
                   session to use.
             rating_id (UUID): The UUID of the rating document to update.
             rating (Rating): The new data to update the rating document with.
@@ -126,13 +126,13 @@ class RatingCRUD:
 
     async def delete(
         self,
-        db_session: AsyncIOMotorClientSession,
+        db_session: AgnosticClientSession,
         rating_id: UUID,
     ) -> bool:
         """Deletes a rating record from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session to
+            db_session (AgnosticClientSession): The database session to
                 use for the operation.
             rating_id (UUID): The unique identifier of the rating to delete.
 
@@ -157,12 +157,12 @@ class RatingCRUD:
         return True
 
     async def delete_many(
-        self, db_session: AsyncIOMotorClientSession, query: dict[str, Any]
+        self, db_session: AgnosticClientSession, query: dict[str, Any]
     ) -> bool:
         """Deletes multiple rating records from the database.
 
         Args:
-            db_session (AsyncIOMotorClientSession): The database session to
+            db_session (AgnosticClientSession): The database session to
                 use for the operation.
             query (str): The mongodb query.
 

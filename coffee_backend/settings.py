@@ -25,12 +25,19 @@ class Settings(BaseSettings):
     mongodb_rating_collection: str = "rating"
 
     mongodb_host: str = "localhost"
-
     mongodb_port: int = 27017
-
     mongodb_username: str = "root"
-
     mongodb_password: str = "example"
+
+    minio_host: str = "localhost"
+    minio_port: int = 9000
+
+    minio_access_key: str = "minio-root-user"
+    minio_secret_key: str = "minio-root-password"
+
+    minio_original_images_prefix: str = "original"
+
+    minio_coffee_images_bucket: str = "coffee-images"
 
 
 settings = Settings()
