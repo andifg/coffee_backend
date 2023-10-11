@@ -2,6 +2,7 @@ from typing import Tuple
 
 from minio import Minio  # type: ignore
 from minio import S3Error  # type: ignore
+from minio.deleteobjects import DeleteObject  # type: ignore
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.s3.types.readable import Readable
@@ -77,3 +78,29 @@ class ObjectCRUD:
         filetype = result.headers.get("x-amz-meta-filetype", "")
 
         return result.data, filetype
+
+    def delete(self, filename: str) -> None:
+        """Delete an object from the S3 bucket recursively with all versions.
+
+        Args:
+            filename (str): The name of the object to be deleted.
+
+        Returns:
+            None
+
+        """
+
+        delete_object_list = [
+            DeleteObject(object.object_name, object.version_id)
+            for object in self.client.list_objects(
+                "coffee-images",
+                f"original/{filename}",
+                recursive=True,
+                include_version=True,
+            )
+        ]
+
+        errors = self.client.remove_objects("coffee-images", delete_object_list)
+
+        for error in errors:
+            print("error occurred when deleting object", error)

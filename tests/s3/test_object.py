@@ -148,3 +148,89 @@ def test_object_read_uncatched_error() -> None:
 
     with pytest.raises(S3Error, match="^S3 operation failed.*"):
         test_object_crud.read("nonexisting_object")
+
+
+def test_object_delete(
+    init_minio: Minio, dummy_coffee_images: DummyImages
+) -> None:
+    """Test the ObjectCRUD delete method for deleting S3 objects.
+
+    Test the deletion of an S3 object by first creating two versions of a
+    single object, then deleting the object. This test verifies that the
+    deletion of the object is successful and that the object is no longer
+    retrievable.
+
+    Args:
+        init_minio (Minio): The initialized Minio client for S3 interactions.
+        dummy_coffee_images (DummyImages): An instance providing dummy coffee
+            image data.
+    """
+    test_object_crud = ObjectCRUD(
+        minio_client=init_minio, bucket_name="coffee-images"
+    )
+
+    test_object_crud.create(
+        "uploaded_file.jpeg", dummy_coffee_images.image_1.file, "jpeg"
+    )
+
+    test_object_crud.create(
+        "uploaded_file.jpeg", dummy_coffee_images.image_2.file, "jpeg"
+    )
+
+    test_object_crud.delete("uploaded_file.jpeg")
+
+    with pytest.raises(ObjectNotFoundError):
+        test_object_crud.read("uploaded_file.jpeg")
+
+
+def test_object_delete_verify_other_objects_stay_untouched(
+    init_minio: Minio, dummy_coffee_images: DummyImages
+) -> None:
+    """Test the ObjectCRUD delete method for deleting S3 objects to not
+    influence other objects.
+
+    Args:
+        init_minio (Minio): The initialized Minio client for S3 interactions.
+        dummy_coffee_images (DummyImages): An instance providing dummy coffee
+            image data.
+    """
+    test_object_crud = ObjectCRUD(
+        minio_client=init_minio, bucket_name="coffee-images"
+    )
+
+    test_object_crud.create(
+        "uploaded_file.jpeg", dummy_coffee_images.image_1.file, "jpeg"
+    )
+
+    test_object_crud.create(
+        "uploaded_file_2.jpeg", dummy_coffee_images.image_2.file, "jpeg"
+    )
+
+    test_object_crud.delete("uploaded_file.jpeg")
+
+    with pytest.raises(ObjectNotFoundError):
+        test_object_crud.read("uploaded_file.jpeg")
+
+    returned_object, filetype = test_object_crud.read("uploaded_file_2.jpeg")
+
+    assert filetype == "jpeg"
+
+    assert returned_object == dummy_coffee_images.image_2_bytes
+
+
+def test_object_delete_nonexisting_image(init_minio: Minio) -> None:
+    """Test the ObjectCRUD delete method for a non-existing S3 object.
+
+    Make sure that the ObjectCRUD delete method works without an erorr when
+    deleting a non-existing S3 object.
+
+    Args:
+        init_minio (Minio): The initialized Minio client for S3 interactions.
+    """
+    test_object_crud = ObjectCRUD(
+        minio_client=init_minio, bucket_name="coffee-images"
+    )
+
+    assert test_object_crud.bucket_name == "coffee-images"
+
+    test_object_crud.delete("nonexisting_object")
