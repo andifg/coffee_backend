@@ -89,6 +89,8 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
         db_session=get_db_mock, coffee_id=unkown_id
     )
 
-    rating_service_mock.assert_not_called()
+    rating_service_mock.assert_awaited_once_with(
+        db_session=get_db_mock, coffee_id=unkown_id
+    )
 
     app.dependency_overrides = {}

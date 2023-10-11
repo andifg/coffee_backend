@@ -160,11 +160,11 @@ async def _delete_coffee_by_id(
         Response: An empty response with status code 200.
 
     """
-    await coffee_service.delete_coffee(
+    await rating_service.delete_by_coffee_id(
         db_session=db_session, coffee_id=coffee_id
     )
 
-    await rating_service.delete_by_coffee_id(
+    await coffee_service.delete_coffee(
         db_session=db_session, coffee_id=coffee_id
     )
 
