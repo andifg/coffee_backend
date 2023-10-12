@@ -70,3 +70,16 @@ class CoffeeImagesService:
             raise HTTPException(
                 status_code=404, detail="Coffee image not found"
             ) from exception
+
+    def delete_coffee_image(self, coffee_id: UUID) -> None:
+        """Delete all coffee images from the S3 bucket associated with a coffee.
+
+        Args:
+            coffee_id (UUID): The ID of the coffee associated with the image.
+        """
+        self.coffee_images_crud.delete(str(coffee_id))
+
+        logging.debug(
+            "Deleted all versions for coffee image for coffee with id %s",
+            coffee_id,
+        )
