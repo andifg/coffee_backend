@@ -85,10 +85,12 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     assert response.status_code == 404
     assert response.json() == {"detail": "No coffee found for given id"}
 
-    coffee_service_mock.assert_awaited_once_with(
+    rating_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=unkown_id
     )
 
-    rating_service_mock.assert_not_called()
+    coffee_service_mock.assert_awaited_once_with(
+        db_session=get_db_mock, coffee_id=unkown_id
+    )
 
     app.dependency_overrides = {}
