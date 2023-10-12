@@ -2,7 +2,7 @@ from fastapi import Request
 
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import CoffeeService
-from coffee_backend.services.coffee_image import CoffeeImagesService
+from coffee_backend.services.coffee_image import ImageService
 from coffee_backend.services.rating import RatingService
 
 
@@ -24,9 +24,9 @@ async def get_object_crud(request: Request) -> ObjectCRUD:
     return object_crud
 
 
-async def get_coffee_images_service(request: Request) -> CoffeeImagesService:
+async def get_coffee_images_service(request: Request) -> ImageService:
     """Extract coffee images service from app state."""
-    coffee_images_service: CoffeeImagesService = (
+    coffee_images_service: ImageService = (
         request.app.state.coffee_images_service
     )
     return coffee_images_service

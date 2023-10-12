@@ -13,9 +13,7 @@ from tests.conftest import DummyCoffees, DummyImages, TestApp
 
 
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
-@patch(
-    "coffee_backend.services.coffee_image.CoffeeImagesService.add_coffee_image"
-)
+@patch("coffee_backend.services.coffee_image.ImageService.add_coffee_image")
 @pytest.mark.asyncio
 async def test_api_create_coffee(
     coffee_image_service_mock: MagicMock,

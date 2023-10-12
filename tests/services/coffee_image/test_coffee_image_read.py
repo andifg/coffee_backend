@@ -5,7 +5,7 @@ import pytest
 from fastapi import HTTPException
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
-from coffee_backend.services.coffee_image import CoffeeImagesService
+from coffee_backend.services.coffee_image import ImageService
 from tests.conftest import DummyImages
 
 
@@ -29,9 +29,7 @@ async def test_coffee_image_service_get_coffee_image(
 
     coffe_uuid = UUID("123e4567-e19b-12d3-a456-426655440000")
 
-    test_coffee_service = CoffeeImagesService(
-        coffee_images_crud=coffee_image_crud
-    )
+    test_coffee_service = ImageService(coffee_images_crud=coffee_image_crud)
 
     result = test_coffee_service.get_coffee_image(coffe_uuid)
 
@@ -68,9 +66,7 @@ async def test_coffee_image_service_get_coffee_image_object_not_found(
 
     coffe_uuid = UUID("123e4567-e19b-12d3-a456-426655440000")
 
-    test_coffee_service = CoffeeImagesService(
-        coffee_images_crud=coffee_image_crud
-    )
+    test_coffee_service = ImageService(coffee_images_crud=coffee_image_crud)
 
     with pytest.raises(HTTPException):
         test_coffee_service.get_coffee_image(coffe_uuid)

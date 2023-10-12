@@ -10,7 +10,7 @@ from coffee_backend.api.deps import (
 )
 from coffee_backend.mongo.database import get_db
 from coffee_backend.services.coffee import CoffeeService
-from coffee_backend.services.coffee_image import CoffeeImagesService
+from coffee_backend.services.coffee_image import ImageService
 
 router = APIRouter()
 
@@ -24,9 +24,7 @@ async def _create_image(
     ),
     # object_crud: ObjectCRUD = Depends(get_object_crud),
     db_session: AgnosticClientSession = Depends(get_db),
-    coffee_images_service: CoffeeImagesService = Depends(
-        get_coffee_images_service
-    ),
+    coffee_images_service: ImageService = Depends(get_coffee_images_service),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Response:
     """Upload a coffee image to the S3 bucket associated with a coffee.
@@ -63,9 +61,7 @@ async def _create_image(
 )
 async def _get_image(
     coffee_id: UUID,
-    coffee_images_service: CoffeeImagesService = Depends(
-        get_coffee_images_service
-    ),
+    coffee_images_service: ImageService = Depends(get_coffee_images_service),
 ) -> Response:
     """Retrieve a coffee image from the S3 bucket associated with a coffee.
 

@@ -11,9 +11,7 @@ from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyCoffees, DummyImages, TestApp
 
 
-@patch(
-    "coffee_backend.services.coffee_image.CoffeeImagesService.get_coffee_image"
-)
+@patch("coffee_backend.services.coffee_image.ImageService.get_coffee_image")
 @pytest.mark.asyncio
 async def test_api_get_coffee_image_by_id(
     coffee_image_service_mock: MagicMock,
@@ -53,9 +51,7 @@ async def test_api_get_coffee_image_by_id(
     app.dependency_overrides = {}
 
 
-@patch(
-    "coffee_backend.services.coffee_image.CoffeeImagesService.get_coffee_image"
-)
+@patch("coffee_backend.services.coffee_image.ImageService.get_coffee_image")
 @pytest.mark.asyncio
 async def test_api_get_coffee_image_by_id_nonexisting(
     coffee_image_service_mock: MagicMock,

@@ -9,7 +9,7 @@ from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.s3.object import ObjectCRUD
 
 
-class CoffeeImagesService:
+class ImageService:
     """Service layer between the API and CRUD layer for handling coffee-images
     related operations.
     """

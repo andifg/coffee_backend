@@ -9,12 +9,14 @@ from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyCoffees, TestApp
 
 
+@patch("coffee_backend.services.coffee_image.ImageService.delete_coffee_image")
 @patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id(
     coffee_service_mock: AsyncMock,
     rating_service_mock: AsyncMock,
+    coffee_image_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
 ) -> None:
@@ -40,23 +42,29 @@ async def test_api_delete_coffee_by_id(
     assert response.status_code == 200
     assert response.text == ""
 
-    coffee_service_mock.assert_awaited_once_with(
+    rating_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
     )
 
-    rating_service_mock.assert_awaited_once_with(
+    coffee_image_service_mock.assert_called_once_with(
+        coffee_id=dummy_coffees.coffee_1.id
+    )
+
+    coffee_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
     )
 
     app.dependency_overrides = {}
 
 
+@patch("coffee_backend.services.coffee_image.ImageService.delete_coffee_image")
 @patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id_with_unkown_id(
     coffee_service_mock: AsyncMock,
     rating_service_mock: AsyncMock,
+    coffee_image_service_mock: AsyncMock,
     test_app: TestApp,
 ) -> None:
     """
@@ -88,6 +96,8 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     rating_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=unkown_id
     )
+
+    coffee_image_service_mock.assert_called_once_with(coffee_id=unkown_id)
 
     coffee_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=unkown_id
