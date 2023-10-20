@@ -36,8 +36,12 @@ class Settings(BaseSettings):
     minio_secret_key: str = "minio-root-password"
 
     minio_original_images_prefix: str = "original"
-
     minio_coffee_images_bucket: str = "coffee-images"
+
+    keykloak_host: str = "localhost:8080"
+    keykloak_realm: str = "Coffee-App"
+    keykloak_protocol: str = "http"
+    keykloak_client_id: str = "react-app"
 
 
 settings = Settings()

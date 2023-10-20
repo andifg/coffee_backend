@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -18,6 +19,7 @@ async def test_api_get_coffees_ratings_ids(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_ratings: DummyRatings,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test coffees ratings ids endpoint get method."""
 
@@ -57,9 +59,18 @@ async def test_api_get_coffees_ratings_ids_for_non_existing_coffee(
     rating_service_mock: AsyncMock,
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test coffees ratings ids endpoint get method with non existing
-    coffee id."""
+    coffee id.
+
+    Args:
+        rating_service_mock (AsyncMock): The mocked RatingService.
+        coffee_service_mock (AsyncMock): The mocked CoffeeService.
+        test_app (TestApp): The test application.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+    """
 
     unknown_coffee_id = uuid7()
 
@@ -96,9 +107,18 @@ async def test_api_get_coffees_ratings_ids_coffee_without_ratings(
     rating_service_mock: AsyncMock,
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test coffees ratings ids endpoint get method for coffee without
-    ratings"""
+    ratings.
+
+    Args:
+        rating_service_mock (AsyncMock): The mocked RatingService.
+        coffee_service_mock (AsyncMock): The mocked CoffeeService.
+        test_app (TestApp): The test application.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+    """
 
     coffee_id = uuid7()
 

@@ -1,11 +1,11 @@
 import io
+from typing import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import UUID
 
 import pytest
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
-from starlette.datastructures import Headers, UploadFile
 
 from coffee_backend.application import app
 from coffee_backend.mongo.database import get_db
@@ -20,6 +20,7 @@ async def test_api_create_coffee(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test the API endpoint for creating a coffee image.
 
@@ -29,6 +30,8 @@ async def test_api_create_coffee(
         test_app (TestApp): A FastAPI test client.
         dummy_coffee_images (DummyImages): An instance providing dummy coffee
             image data.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
 
     get_db_mock = MagicMock()
@@ -65,6 +68,7 @@ async def test_api_create_coffee_for_nonexisting_coffee(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test the API endpoint for creating a coffee image for a
         non-existing coffee.
@@ -73,6 +77,8 @@ async def test_api_create_coffee_for_nonexisting_coffee(
         coffee_service_mock (AsyncMock): A mock of the CoffeeService.
         test_app (TestApp): A FastAPI test client.
         dummy_coffee_images (DummyImages): An instance providing dummy coffee image data.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
 
     get_db_mock = MagicMock()

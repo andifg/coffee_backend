@@ -13,6 +13,7 @@ from motor.core import AgnosticClient
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
 
+from coffee_backend.api import auth
 from coffee_backend.application import app, shutdown, startup
 from coffee_backend.schemas.coffee import Coffee
 from coffee_backend.schemas.rating import Rating
@@ -249,6 +250,26 @@ async def test_app(
         await startup()
         yield TestApp(app.state, client)
         await shutdown()
+
+
+@pytest.fixture()
+def mock_security_dependency() -> Generator[None, None, None]:
+    """Fixture for mocking the security dependency during tests.
+
+    This fixture sets up a mock security dependency by overriding the
+    authentication verification function with a lambda that always returns True.
+    This allows testing scenarios where authentication is always successful.
+
+    """
+    print("Setting up mock security dependency")
+
+    app.dependency_overrides[auth.verify] = lambda: True
+
+    yield
+
+    print("Cleaning up mock security dependency")
+
+    app.dependency_overrides = {}
 
 
 def test_mongo(connection_string: str) -> bool:

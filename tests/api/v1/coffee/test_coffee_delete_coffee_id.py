@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -19,6 +20,7 @@ async def test_api_delete_coffee_by_id(
     coffee_image_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Test deleting a coffee by ID.
@@ -28,6 +30,8 @@ async def test_api_delete_coffee_by_id(
         rating_service_mock (AsyncMock): The mocked RatingService.
         test_app (TestApp): The test application.
         dummy_coffees (DummyCoffees): The dummy coffees fixture.
+        mock_security_dependency: Fixture to mock the authentication
+            and authorization check within api to always return True
     """
 
     get_db_mock = AsyncMock()
@@ -66,6 +70,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     rating_service_mock: AsyncMock,
     coffee_image_service_mock: AsyncMock,
     test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Ensuring error is returned when id is not known.
@@ -73,6 +78,8 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     Args:
         coffee_service_mock (AsyncMock): The mocked CoffeeService.
         test_app (TestApp): The test application.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
 
     get_db_mock = AsyncMock()

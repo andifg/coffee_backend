@@ -74,6 +74,7 @@ async def _get_image(
     Raises:
         HTTPException: If the coffee image is not found in the S3 bucket.
     """
+
     image_bytes, filetype = coffee_images_service.get_coffee_image(coffee_id)
 
     return Response(
