@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:    
+  sso:
+    image: quay.io/keycloak/keycloak:22.0
+    container_name: "keycloak"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # - ./keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ./realms:/opt/keycloak/data/import
+    ports:
+      - 8080:8080
+    command:
+      - start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=changeme
+      - PROXY_ADDRESS_FORWARDING=true
+      - VIRTUAL_HOST=dev-keycloak.mydomain.com
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=dev-keycloak.mydomain.com
+
+  database:
+    image: postgres:15
+    container_name: "postgres"
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_DATABASE=keycloak
+      - POSTGRES_PASSWORD=changeme
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
