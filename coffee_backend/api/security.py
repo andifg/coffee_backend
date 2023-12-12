@@ -102,4 +102,9 @@ class VerifyToken:
                 self.userinfo_endpoint, headers=headers
             ) as response:
                 if response.status != 200:
+                    logging.debug(
+                        "Token validation failed with status %s from %s",
+                        response.status,
+                        self.userinfo_endpoint,
+                    )
                     raise UnauthenticatedException()
