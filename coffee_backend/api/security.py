@@ -74,6 +74,7 @@ class VerifyToken:
 
         except Exception as error:
             print(error)
+            logging.debug("Token verification failed with error %s", error)
             raise UnauthenticatedException() from error
 
         logging.debug(
