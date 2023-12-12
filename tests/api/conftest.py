@@ -12,6 +12,8 @@ def verify_token_test_class() -> VerifyToken:
         hostname="localhost",
         realm_name="Coffee-App",
         client_id="coffee-app",
+        issuer_hostname="localhost",
+        issuer_protocoll="http",
     )
 
     return test_auth

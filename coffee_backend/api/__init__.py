@@ -10,6 +10,8 @@ auth = VerifyToken(
     hostname=settings.keykloak_host,
     realm_name=settings.keykloak_realm,
     client_id=settings.keykloak_client_id,
+    issuer_hostname=settings.keycloak_issuer_host,
+    issuer_protocoll=settings.keykloak_issuer_protocol,
 )
 
 router = APIRouter()

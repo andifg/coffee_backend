@@ -1,5 +1,5 @@
 [MASTER]
-disable=C0114,R0903,R0801
+disable=C0114,R0903,R0801,R0913
 load-plugins=pylint_pydantic,pylint_pytest
 extension-pkg-whitelist=pydantic
 

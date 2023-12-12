@@ -17,7 +17,13 @@ class VerifyToken:
     """
 
     def __init__(
-        self, protocol: str, hostname: str, realm_name: str, client_id: str
+        self,
+        protocol: str,
+        hostname: str,
+        realm_name: str,
+        client_id: str,
+        issuer_hostname: str,
+        issuer_protocoll: str,
     ) -> None:
         """Initializes a VerifyToken instance.
 
@@ -31,7 +37,9 @@ class VerifyToken:
         base_url = f"{protocol}://{hostname}/realms/{realm_name}"
         jwks_url = f"{base_url}/protocol/openid-connect/certs"
         self.userinfo_endpoint = f"{base_url}/protocol/openid-connect/userinfo"
-        self.issuer_url: str = base_url
+        self.issuer_url: str = (
+            f"{issuer_protocoll}://{issuer_hostname}/realms/{realm_name}"
+        )
         self.jwks_client = jwt.PyJWKClient(jwks_url)
         self.client_id = client_id
 
@@ -69,7 +77,7 @@ class VerifyToken:
             await self._check_token_validity(token)
 
         except Exception as error:
-            print(error)
+            logging.debug("Token verification failed with error %s", error)
             raise UnauthenticatedException() from error
 
         logging.debug(
