@@ -6,22 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from minio import Minio  # type: ignore
 
 from coffee_backend.api import router
+from coffee_backend.config.log_levels import log_levels
+from coffee_backend.config.origins import origins
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import coffee_service
 from coffee_backend.services.coffee_image import ImageService
 from coffee_backend.services.rating import rating_service
 from coffee_backend.settings import settings
 
-logging.basicConfig(level=logging.DEBUG)
-
-
-origins: list[str] = [
-    "http://localhost:3000",
-    "http://localhost:8080",
-    "http://localhost:5173",
-    "https://coffee-app.tests.apps.ocp4.gummy-bears.de",
-]
-
+logging.basicConfig(level=log_levels.get(settings.log_level, logging.INFO))
 
 # Initialize app
 app = FastAPI(

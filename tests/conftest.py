@@ -19,7 +19,8 @@ from coffee_backend.schemas.coffee import Coffee
 from coffee_backend.schemas.rating import Rating
 from coffee_backend.settings import settings
 
-logging.basicConfig(level=logging.DEBUG)
+logging.getLogger().setLevel(logging.DEBUG)
+
 logger = logging.getLogger("faker")
 logger.setLevel(logging.INFO)  # Quiet faker locale messages down in tests.
 
