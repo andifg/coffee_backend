@@ -12,6 +12,9 @@ auth = VerifyToken(
     client_id=settings.keykloak_client_id,
 )
 
+print(f"Created auth with {auth.issuer_url} and {auth.client_id} and " +
+      auth.userinfo_endpoint)
+
 router = APIRouter()
 router.include_router(health.router, prefix="/health", tags=["health"])
 router.include_router(
