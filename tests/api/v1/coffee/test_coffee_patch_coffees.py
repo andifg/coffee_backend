@@ -1,4 +1,5 @@
 import copy
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -18,6 +19,7 @@ async def test_api_patch_coffee(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Test the PATCH /coffees/{id} API endpoint with a valid patch.
@@ -27,6 +29,8 @@ async def test_api_patch_coffee(
             CoffeeService.patch_coffee method.
         test_app (TestApp): Test application instance.
         dummy_coffees (DummyCoffees): Fixture for dummy coffee objects.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
 
     get_db_mock = AsyncMock()
@@ -69,6 +73,7 @@ async def test_api_patch_coffee(
 async def test_api_patch_coffee_invalid_coffee_update_schema(
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Test the PATCH /coffees/{id} API endpoint with an invalid coffee update
@@ -79,6 +84,8 @@ async def test_api_patch_coffee_invalid_coffee_update_schema(
     Args:
         test_app (TestApp): Test application instance.
         dummy_coffees (DummyCoffees): Fixture for dummy coffee objects.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
 
     """
     coffee = dummy_coffees.coffee_1
@@ -106,7 +113,9 @@ async def test_api_patch_coffee_invalid_coffee_update_schema(
 @patch("coffee_backend.services.coffee.CoffeeService.patch_coffee")
 @pytest.mark.asyncio
 async def test_api_patch_coffees_unknown_id(
-    coffee_service_mock: AsyncMock, test_app: TestApp
+    coffee_service_mock: AsyncMock,
+    test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Test the PATCH /coffees/{id} API endpoint with an unknown coffee ID.
@@ -114,6 +123,8 @@ async def test_api_patch_coffees_unknown_id(
     Args:
         coffee_service_mock (AsyncMock): Mocked coffee service.
         test_app (TestApp): Test application instance.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
 
     Returns:
         None

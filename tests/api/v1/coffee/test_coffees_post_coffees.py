@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -14,8 +15,18 @@ async def test_api_create_coffee(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
-    """Test coffees endpoint post mehtod with valid coffee."""
+    """Test coffees endpoint post mehtod with valid coffee.
+
+    Args:
+        coffee_service_mock (AsyncMock): A mocked CoffeeService.add_coffee method.
+        test_app (TestApp): An instance of the TestApp class for making test
+            requests.
+        dummy_coffees (DummyCoffees): The dummy coffees fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+    """
 
     get_db_mock = AsyncMock()
 
@@ -49,8 +60,19 @@ async def test_api_create_coffee(
 async def test_api_create_invalid_coffee(
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
-    """Test coffees endpoint post mehtod with invalid coffee."""
+    """Test coffees endpoint post mehtod with invalid coffee.
+
+    Args:
+        test_app (TestApp): An instance of the TestApp class for making test
+            requests.
+        dummy_coffees (DummyCoffees): The dummy coffees fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+
+
+    """
 
     coffee = dummy_coffees.coffee_1
 

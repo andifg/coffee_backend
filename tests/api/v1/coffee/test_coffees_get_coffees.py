@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -15,8 +16,19 @@ async def test_api_get_coffees(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
-    """Test coffees endpoint get method."""
+    """Test coffees endpoint get method.
+
+    Args:
+        coffee_service_mock (AsyncMock): A mocked CoffeeService.list method.
+        test_app (TestApp): An instance of the TestApp class for making test
+            requests.
+        dummy_coffees (DummyCoffees): The dummy coffees fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+
+    """
 
     get_db_mock = AsyncMock()
 
@@ -46,7 +58,9 @@ async def test_api_get_coffees(
 @patch("coffee_backend.services.coffee.CoffeeService.list")
 @pytest.mark.asyncio
 async def test_api_get_coffees_with_emtpy_crud_response(
-    coffee_service_mock: AsyncMock, test_app: TestApp
+    coffee_service_mock: AsyncMock,
+    test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test the coffee 'get coffees' endpoint with an empty coffee database
         collection.
@@ -61,6 +75,8 @@ async def test_api_get_coffees_with_emtpy_crud_response(
         coffee_service_mock (AsyncMock): A mocked CoffeeService.list method.
         test_app (TestApp): An instance of the TestApp class for making test
             requests.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
     """
     get_db_mock = AsyncMock()
 

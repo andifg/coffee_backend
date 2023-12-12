@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import UUID
 
@@ -17,8 +18,16 @@ async def test_api_get_coffee_image_by_id(
     coffee_image_service_mock: MagicMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
+    mock_security_dependency: Generator,
 ) -> None:
-    """ """
+    """Test the API endpoint to retrieve a coffee image by ID.
+
+    Args:
+        coffee_image_service_mock (MagicMock): A mock object for the ImageService.
+        test_app (TestApp): An instance of the TestApp for testing.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
+    """
 
     get_db_mock = AsyncMock()
 
@@ -57,8 +66,17 @@ async def test_api_get_coffee_image_by_id_nonexisting(
     coffee_image_service_mock: MagicMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
+    mock_security_dependency: Generator,
 ) -> None:
-    """ """
+    """Test the API endpoint to retrieve a non-existing coffee image by ID.
+
+    Args:
+        coffee_image_service_mock (MagicMock): A mock object for the ImageService.
+        test_app (TestApp): An instance of the TestApp for testing.
+        dummy_coffee_images (DummyImages): A fixture providing dummy coffee images.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
+    """
 
     get_db_mock = AsyncMock()
 

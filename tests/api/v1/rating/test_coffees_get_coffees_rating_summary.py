@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -21,8 +22,17 @@ async def test_api_get_coffees_rating_summary(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_ratings: DummyRatings,
+    mock_security_dependency: Generator,
 ) -> None:
-    """Test coffees rating summary get endpoint."""
+    """Test coffees rating summary get endpoint.
+
+    Args:
+        rating_service_mock (AsyncMock): The mocked RatingService.
+        test_app (TestApp): The test application.
+        dummy_ratings (DummyRatings): The dummy ratings fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+    """
 
     dummy_id = uuid7()
 
@@ -65,8 +75,19 @@ async def test_api_get_coffees_rating_summary_for_non_existing_coffee(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_ratings: DummyRatings,
+    mock_security_dependency: Generator,
 ) -> None:
-    """Test coffees rating summary get endpoint."""
+    """Test coffees rating summary get endpoint.
+
+    Args:
+        rating_service_mock (AsyncMock): The mocked RatingService.
+        coffee_service_mock (AsyncMock): The mocked CoffeeService.
+        test_app (TestApp): The test application.
+        dummy_ratings (DummyRatings): The dummy ratings fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True.
+
+    """
 
     unknown_coffee_id = uuid7()
 

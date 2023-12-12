@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -18,6 +19,7 @@ async def test_api_delete_rating_by_id(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_ratings: DummyRatings,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Test deleting a rating by ID.
@@ -26,6 +28,8 @@ async def test_api_delete_rating_by_id(
         rating_service_mock (AsyncMock): The mocked RatingService.
         test_app (TestApp): The test application.
         dummy_rating (DummyRatings): The dummy ratings fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
     rating_1 = dummy_ratings.rating_1
 
@@ -56,6 +60,7 @@ async def test_api_delete_rating_by_id(
 async def test_api_delete_rating_by_id_with_unkown_coffee_id(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """
     Test deleting a rating by ID for an unknown coffee id.
@@ -63,6 +68,8 @@ async def test_api_delete_rating_by_id_with_unkown_coffee_id(
     Args:
         coffee_service_mock (AsyncMock): The mocked RatingService.
         test_app (TestApp): The test application.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
     unkown_coffee_id = uuid7()
 

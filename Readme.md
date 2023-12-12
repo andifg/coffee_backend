@@ -44,6 +44,16 @@ docker build -t coffee_backend:v1 -f ./Containerfile .
 docker run -it -p 9000:8000  --name coffee_backend coffee_backend:v1
 ```
 
+## Devservices
+
+In Order to do a full end to end test locally you can start the compose files
+inside the [devservices](devservices) directory to launch dependent services that are not
+spawn up during the pytest execution (these services can be run executing the
+compose file inside the [tests](tests) directory)
+Currently available devservices:
+- Keycloak
+
+
 
 ## TODOs:
 - Include pagination in coffee read endpoint

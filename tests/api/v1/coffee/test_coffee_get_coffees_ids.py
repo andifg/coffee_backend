@@ -1,3 +1,4 @@
+from typing import Generator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -15,6 +16,7 @@ async def test_api_get_coffees_ids(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
+    mock_security_dependency: Generator,
 ) -> None:
     """Test the API endpoint for retrieving coffee ids.
 
@@ -27,6 +29,8 @@ async def test_api_get_coffees_ids(
         test_app (TestApp): The TestApp instance for testing the FastAPI
             application.
         dummy_coffees (DummyCoffees): The dummy coffees fixture.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
 
     Returns:
         None
@@ -65,6 +69,7 @@ async def test_api_get_coffees_ids(
 async def test_api_get_coffees_ids_empty_db_collection(
     coffee_service_mock: AsyncMock,
     test_app: TestApp,
+    mock_security_dependency: Generator,
 ) -> None:
     """Ensure proper error transformation of service layer error
 
@@ -73,6 +78,8 @@ async def test_api_get_coffees_ids_empty_db_collection(
             method.
         test_app (TestApp): The TestApp instance for testing the FastAPI
             application.
+        mock_security_dependency (Generator): Fixture to mock the authentication
+            and authorization check within api to always return True
     """
 
     get_db_mock = AsyncMock()
