@@ -48,6 +48,10 @@ class VerifyToken:
             token (HTTPAuthorizationCredentials): The bearer token.
 
         """
+        print(
+            f"verify with {self.issuer_url} and {self.client_id} and " +
+            self.userinfo_endpoint
+        )
         if token is None:
             logging.debug("No token provided in request")
             raise UnauthenticatedException
