@@ -99,6 +99,13 @@ class VerifyToken:
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": f"Bearer {token.credentials}",
             }
+
+            logging.debug(
+                "Sending request to %s with headers %s",
+                self.userinfo_endpoint,
+                headers,
+            )
+
             async with session.get(
                 self.userinfo_endpoint, headers=headers
             ) as response:
