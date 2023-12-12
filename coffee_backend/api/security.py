@@ -49,6 +49,7 @@ class VerifyToken:
 
         """
         if token is None:
+            logging.debug("No token provided in request")
             raise UnauthenticatedException
 
         try:

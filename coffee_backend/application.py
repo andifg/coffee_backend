@@ -45,6 +45,8 @@ app.add_middleware(
 async def startup() -> None:
     """Initializes the application and its processes."""
     logging.info("Starting up...")
+    logging.info("Log level is %s", logging.getLogger().level)
+    logging.debug("Debug logging is enabled")
 
     app.state.database_client = motor.motor_asyncio.AsyncIOMotorClient(
         app.state.mongodb_uri,
