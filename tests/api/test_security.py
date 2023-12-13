@@ -69,6 +69,7 @@ async def test_verify_token_verify_successfull_case(
     jwt_decode_mock.return_value = {
         "scope": "openid profile email address roles",
         "preferred_username": "test",
+        "iat": 1701676597,
     }
 
     jwks_client_mock.get_signing_key_from_jwt.return_value = singing_key_mock
@@ -88,11 +89,19 @@ async def test_verify_token_verify_successfull_case(
         algorithms=["RS256"],
         issuer=verify_token_test_class.issuer_url,
         audience=verify_token_test_class.client_id,
+        options={
+            "verify_signature": True,
+            "verify_exp": True,
+            "verify_nbf": True,
+            "verify_iat": False,
+            "verify_aud": True,
+            "verify_iss": True,
+        },
     )
 
     # pylint: disable=C0301
     assert (
-        "Authenticated user {'test'} with scopes {'openid profile email address roles'}"
+        "Authenticated user test with scopes openid profile email address roles with token iat 1701676597"
         in caplog.messages
     )
     # pylint: enable=C0301
@@ -132,6 +141,14 @@ async def test_verify_token_verify_unsucessfull_decode(
         algorithms=["RS256"],
         issuer=verify_token_test_class.issuer_url,
         audience=verify_token_test_class.client_id,
+        options={
+            "verify_signature": True,
+            "verify_exp": True,
+            "verify_nbf": True,
+            "verify_iat": False,
+            "verify_aud": True,
+            "verify_iss": True,
+        },
     )
 
 
@@ -172,6 +189,14 @@ async def test_verify_token_verify_deleted_session_on_idp(
         algorithms=["RS256"],
         issuer=verify_token_test_class.issuer_url,
         audience=verify_token_test_class.client_id,
+        options={
+            "verify_signature": True,
+            "verify_exp": True,
+            "verify_nbf": True,
+            "verify_iat": False,
+            "verify_aud": True,
+            "verify_iss": True,
+        },
     )
 
 

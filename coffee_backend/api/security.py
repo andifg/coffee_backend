@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
@@ -65,13 +66,27 @@ class VerifyToken:
                 token.credentials
             ).key
 
+            logging.debug(
+                "Time now: %s", datetime.now(tz=timezone.utc).timestamp()
+            )
+
             payload: dict[str, Any] = jwt.decode(
                 token.credentials,
                 signing_key,
                 algorithms=["RS256"],
                 issuer=self.issuer_url,
                 audience=self.client_id,
+                options={
+                    "verify_signature": True,
+                    "verify_exp": True,
+                    "verify_nbf": True,
+                    "verify_iat": False,
+                    "verify_aud": True,
+                    "verify_iss": True,
+                },
             )
+
+            logging.debug("Decoded token payload: %s", payload)
 
             # Use userinfo endpoint for token validation
             await self._check_token_validity(token)
@@ -81,9 +96,10 @@ class VerifyToken:
             raise UnauthenticatedException() from error
 
         logging.debug(
-            "Authenticated user %s with scopes %s",
-            {payload["preferred_username"]},
-            {payload["scope"]},
+            "Authenticated user %s with scopes %s with token iat %s",
+            payload["preferred_username"],
+            payload["scope"],
+            payload["iat"],
         )
 
         request.state.token = payload
@@ -109,9 +125,7 @@ class VerifyToken:
             }
 
             logging.debug(
-                "Sending request to %s with headers %s",
-                self.userinfo_endpoint,
-                headers,
+                "Sending request to %s with headers", self.userinfo_endpoint
             )
 
             async with session.get(
