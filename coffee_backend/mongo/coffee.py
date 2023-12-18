@@ -73,7 +73,9 @@ class CoffeeCRUD:
             doc
             async for doc in db_session.client[self.database][
                 self.coffee_collection
-            ].find(filter=query, projection=projection)
+            ]
+            .find(filter=query, projection=projection)
+            .sort("_id", -1)
         ]
 
         if documents:

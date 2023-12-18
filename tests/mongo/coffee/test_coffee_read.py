@@ -105,7 +105,7 @@ async def test_mongo_coffee_read_all_entries(
     async with await init_mongo.asncy_session.start_session() as session:
         result = await test_crud.read(db_session=session, query={})
 
-        assert result == [coffee_1, coffee_2]
+        assert result == [coffee_2, coffee_1]
 
         assert "Received 2 entries from database" in caplog.messages
 
@@ -149,7 +149,7 @@ async def test_mongo_coffee_read_all_entries_with_projection(
             db_session=session, query={}, projection={"_id": 1, "name": 1}
         )
 
-        assert result == [coffee_1, coffee_2]
+        assert result == [coffee_2, coffee_1]
 
         assert "Received 2 entries from database" in caplog.messages
 
@@ -183,7 +183,7 @@ async def test_mongo_coffee_read_mutliple_entries_by_id(
             query={"_id": {"$in": [coffee_1.id, coffee_2.id]}},
         )
 
-        assert result == [coffee_1, coffee_2]
+        assert result == [coffee_2, coffee_1]
 
         assert "Received 2 entries from database" in caplog.messages
 
@@ -226,9 +226,9 @@ async def test_mongo_coffee_read_batch_tests(
     init_mongo: TestDBSessions,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Ensure default ascending ordering by _id.
+    """Ensure default descending ordering by _id.
 
-    Tests ensures that mongodb returns by default entries in ascending order by
+    Tests ensures that mongodb returns by default entries in descending order by
     _id column.
     """
 
@@ -257,7 +257,7 @@ async def test_mongo_coffee_read_batch_tests(
             query={"_id": {"$in": [coffee.id for coffee in test_coffees[:50]]}},
         )
 
-        assert result == test_coffees[:50]
+        assert result == test_coffees[:50][::-1]
 
         assert "Received 50 entries from database" in caplog.messages
 
