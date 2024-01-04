@@ -52,6 +52,7 @@
       "firstName": "test",
       "lastName": "test",
       "email": "test@example.com",
+      "realmRoles" : [ "default-roles-demo" ],
       "credentials": [
         {
           "type": "password",
@@ -72,6 +73,7 @@
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
         "http://localhost:5173/home",
+        "http://localhost:5173/feed",
         "http://localhost:5173"
       ],
       "webOrigins": [
