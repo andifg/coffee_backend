@@ -19,7 +19,7 @@ minio = "^7.1.16"
 python-multipart = "^0.0.6"
 pyjwt = "^2.8.0"
 cryptography = "^41.0.4"
-aiohttp = "^3.8.6"
+aiohttp = "3.9.3"
 
 [tool.poetry.group.dev.dependencies]
 pylint-pytest = "^1.1.2"
