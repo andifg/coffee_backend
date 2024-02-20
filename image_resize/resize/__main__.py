@@ -1,0 +1,1 @@
+from resize.kafka import consumer
