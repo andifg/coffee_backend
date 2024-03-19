@@ -69,8 +69,10 @@ class ImageService:
         """
         try:
             return self.coffee_images_crud.read(str(coffee_id), "small")
-        except ObjectNotFoundError as exception:
-            logging.debug("No small image found for coffee with id %s", coffee_id)
+        except ObjectNotFoundError:
+            logging.debug(
+                "No small image found for coffee with id %s", coffee_id
+            )
 
             try:
                 return self.coffee_images_crud.read(str(coffee_id), "original")
