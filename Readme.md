@@ -8,6 +8,7 @@ rate different coffee beans. The project consists of the following repositories:
 - [Backend](https://github.com/andifg/coffee_backend.git) - Fastapi based python backend
 - [Helm Chart](https://github.com/andifg/coffee-app-chart.git) - Helm Chart deploying front and backend together with database and minio hem charts
 - [GitOps](https://github.com/andifg/coffee-app-gitops.git) - Gitops repository for ArgoCD reflecting deployed applications for test and prod env
+
 ## Prerequesits
 
 - Install pre-commit hocks and install them via
