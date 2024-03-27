@@ -53,6 +53,9 @@ class ImageService:
     def get_coffee_image(self, coffee_id: UUID) -> Tuple[bytes, str]:
         """Retrieve a coffee image from the S3 bucket associated with a coffee.
 
+        Try to get the small version of the image, if it does not exist, get the
+        original version.
+
         Args:
             coffee_id (UUID): The ID of the coffee associated with the image.
 
@@ -65,19 +68,33 @@ class ImageService:
 
         """
         try:
-            return self.coffee_images_crud.read(str(coffee_id))
-        except ObjectNotFoundError as exception:
-            raise HTTPException(
-                status_code=404, detail="Coffee image not found"
-            ) from exception
+            return self.coffee_images_crud.read(str(coffee_id), "small")
+        except ObjectNotFoundError:
+            logging.debug(
+                "No small image found for coffee with id %s", coffee_id
+            )
+
+            try:
+                return self.coffee_images_crud.read(str(coffee_id), "original")
+
+            except ObjectNotFoundError as exception:
+                logging.debug(
+                    "No original image found for coffee with id %s", coffee_id
+                )
+                raise HTTPException(
+                    status_code=404, detail="Coffee image not found"
+                ) from exception
 
     def delete_coffee_image(self, coffee_id: UUID) -> None:
         """Delete all coffee images from the S3 bucket associated with a coffee.
 
+        Delete both the small and original versions of the image.
+
         Args:
             coffee_id (UUID): The ID of the coffee associated with the image.
         """
-        self.coffee_images_crud.delete(str(coffee_id))
+        self.coffee_images_crud.delete(str(coffee_id), "small")
+        self.coffee_images_crud.delete(str(coffee_id), "original")
 
         logging.debug(
             "Deleted all versions for coffee image for coffee with id %s",

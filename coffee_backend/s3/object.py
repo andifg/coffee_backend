@@ -49,11 +49,15 @@ class ObjectCRUD:
             + f"version-id: {result.version_id}"
         )
 
-    def read(self, filename: str) -> Tuple[bytes, str]:
+    def read(
+        self, filename: str, prefix: str = settings.minio_original_images_prefix
+    ) -> Tuple[bytes, str]:
         """Read an object from the S3 bucket.
 
         Args:
             filename (str): The name of the object to be read.
+            prefix (str): The prefix of the object to be deleted. Defaults to
+                the original images prefix.
 
         Returns:
             Tuple[bytes, str]: A tuple containing the object data (bytes) and
@@ -67,8 +71,7 @@ class ObjectCRUD:
         try:
             result = self.client.get_object(
                 bucket_name=self.bucket_name,
-                object_name=f"{settings.minio_original_images_prefix}/"
-                + filename,
+                object_name=f"{prefix}/" + filename,
             )
         except S3Error as error:
             if error.code == "NoSuchKey":
@@ -79,11 +82,15 @@ class ObjectCRUD:
 
         return result.data, filetype
 
-    def delete(self, filename: str) -> None:
+    def delete(
+        self, filename: str, prefix: str = settings.minio_original_images_prefix
+    ) -> None:
         """Delete an object from the S3 bucket recursively with all versions.
 
         Args:
             filename (str): The name of the object to be deleted.
+            prefix (str): The prefix of the object to be deleted. Defaults to
+                the original images prefix.
 
         Returns:
             None
@@ -94,7 +101,7 @@ class ObjectCRUD:
             DeleteObject(object.object_name, object.version_id)
             for object in self.client.list_objects(
                 "coffee-images",
-                f"original/{filename}",
+                f"{prefix}/{filename}",
                 recursive=True,
                 include_version=True,
             )

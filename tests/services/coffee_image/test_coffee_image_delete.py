@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 from uuid import UUID
 
 import pytest
@@ -13,7 +13,7 @@ async def test_coffee_image_service_delete_coffee_image(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test the CoffeeImagesService delete_coffee_image method for deleting all
-    coffee images for a coffee.
+    coffee images for a coffee inside of small and original versions.
 
     """
     coffee_image_crud = MagicMock()
@@ -25,10 +25,13 @@ async def test_coffee_image_service_delete_coffee_image(
 
     test_coffee_service.delete_coffee_image(coffe_uuid)
 
-    assert coffee_image_crud.delete.call_count == 1
+    assert coffee_image_crud.delete.call_count == 2
 
-    coffee_image_crud.delete.assert_called_once_with(
-        "123e4567-e19b-12d3-a456-426655440000"
+    coffee_image_crud.delete.assert_has_calls(
+        [
+            call("123e4567-e19b-12d3-a456-426655440000", "small"),
+            call("123e4567-e19b-12d3-a456-426655440000", "original"),
+        ]
     )
 
     assert (
