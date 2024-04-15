@@ -43,7 +43,11 @@ async def test_api_patch_coffee(
 
     updated_coffee.name = "New updated name"
 
-    update_coffee = UpdateCoffee(name="New updated name")
+    update_coffee = UpdateCoffee(
+        name="New updated name",
+        owner_id=unchanged_coffee.owner_id,
+        owner_name=unchanged_coffee.owner_name,
+    )
 
     coffee_jsonable = jsonable_encoder(update_coffee.dict(by_alias=True))
 
@@ -139,7 +143,9 @@ async def test_api_patch_coffees_unknown_id(
 
     unknown_id = uuid7()
 
-    update_coffee = UpdateCoffee(name="New updated name")
+    update_coffee = UpdateCoffee(
+        name="New updated name", owner_id=unknown_id, owner_name="Unknown owner"
+    )
 
     coffee_jsonable = jsonable_encoder(update_coffee.dict(by_alias=True))
 

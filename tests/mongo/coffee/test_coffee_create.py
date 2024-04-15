@@ -41,6 +41,8 @@ async def test_mongo_coffee_create(
         assert result[0] == {
             "_id": UUID("123e4567-e19b-12d3-a456-426655440000"),
             "name": "Colombian",
+            "owner_id": UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
+            "owner_name": "Jdoe",
         }
 
 

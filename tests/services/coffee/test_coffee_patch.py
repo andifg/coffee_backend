@@ -31,7 +31,11 @@ async def test_coffee_service_patch(
 
     updated_coffee.name = "Super cool new name"
 
-    update_coffee = UpdateCoffee(name="Super cool new name")
+    update_coffee = UpdateCoffee(
+        name="Super cool new name",
+        owner_id=unchanged_coffee.owner_id,
+        owner_name=unchanged_coffee.owner_name,
+    )
 
     get_by_id_mock.return_value = unchanged_coffee
 
@@ -74,7 +78,9 @@ async def test_coffee_service_patch_invalid_id(
     """
 
     unknown_id = uuid7()
-    update_coffee = UpdateCoffee(name="New updated name")
+    update_coffee = UpdateCoffee(
+        name="New updated name", owner_id=uuid7(), owner_name="Unknown owner"
+    )
 
     db_session_mock = AsyncMock()
     coffee_crud_mock = AsyncMock()
@@ -83,7 +89,9 @@ async def test_coffee_service_patch_invalid_id(
         status_code=404, detail="No coffee found for given id"
     )
 
-    update_coffee = UpdateCoffee(name="Super cool new name")
+    update_coffee = UpdateCoffee(
+        name="Super cool new name", owner_id=uuid7(), owner_name="Unknown owner"
+    )
 
     test_coffee_service = CoffeeService(coffee_crud=coffee_crud_mock)
 

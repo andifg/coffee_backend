@@ -170,11 +170,15 @@ def dummy_coffees() -> DummyCoffees:
     coffee_1 = Coffee(
         _id=UUID("123e4567-e19b-12d3-a456-426655440000"),
         name="Colombian",
+        owner_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
+        owner_name="Jdoe",
     )
 
     coffee_2 = Coffee(
         _id=UUID("123e4567-e59b-12d3-a456-426655440000"),
         name="Brazilian",
+        owner_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
+        owner_name="Jdoe",
     )
 
     return DummyCoffees(
