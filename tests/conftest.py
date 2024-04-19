@@ -6,7 +6,7 @@ from uuid import UUID
 import motor.motor_asyncio  # type: ignore
 import pytest
 import pytest_asyncio
-from fastapi import UploadFile
+from fastapi import Request, UploadFile
 from fastapi.datastructures import State
 from httpx import AsyncClient
 from motor.core import AgnosticClient
@@ -268,7 +268,7 @@ def mock_security_dependency() -> Generator[None, None, None]:
     """
     print("Setting up mock security dependency")
 
-    app.dependency_overrides[auth.verify] = lambda: True
+    app.dependency_overrides[auth.verify] = mock_user_token_payload
 
     yield
 
@@ -300,3 +300,13 @@ def cleanup_db(database: MongoClient) -> None:
     """
     database.drop_database(settings.mongodb_database)
     print("Cleaned up database between tests")
+
+
+def mock_user_token_payload(request: Request) -> None:
+    """For the purpose of testing, we mock the user token payload."""
+    request.state.token = {
+        "sub": "018ee105-66b3-7f89-b6f3-807782e40350",
+        "family_name": "Black",
+        "preferred_username": "Jdoe",
+        "given_name": "John",
+    }

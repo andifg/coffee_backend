@@ -6,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 
 from coffee_backend.application import app
 from coffee_backend.mongo.database import get_db
+from coffee_backend.schemas.coffee import CreateCoffee
 from tests.conftest import DummyCoffees, TestApp
 
 
@@ -36,18 +37,23 @@ async def test_api_create_coffee(
         by_alias=True
     )
 
-    coffee = dummy_coffees.coffee_1
+    create_coffee = CreateCoffee(
+        _id=dummy_coffees.coffee_1.id,
+        name=dummy_coffees.coffee_1.name,
+    )
 
-    coffee_jsonable = jsonable_encoder(coffee.dict(by_alias=True))
+    create_coffee_jsonable = jsonable_encoder(create_coffee.dict(by_alias=True))
 
     response = await test_app.client.post(
         "/api/v1/coffees/",
-        json=coffee_jsonable,
+        json=create_coffee_jsonable,
         headers={"Content-Type": "application/json"},
     )
 
     assert response.status_code == 201
-    assert response.json() == coffee_jsonable
+    assert response.json() == jsonable_encoder(
+        dummy_coffees.coffee_1.dict(by_alias=True)
+    )
 
     coffee_service_mock.assert_awaited_once_with(
         coffee=dummy_coffees.coffee_1, db_session=get_db_mock
@@ -62,7 +68,8 @@ async def test_api_create_invalid_coffee(
     dummy_coffees: DummyCoffees,
     mock_security_dependency: Generator,
 ) -> None:
-    """Test coffees endpoint post mehtod with invalid coffee.
+    """Test coffees endpoint post mehtod with invalid coffee. Ensures that the
+    endpoint can only be used with create coffee schema.
 
     Args:
         test_app (TestApp): An instance of the TestApp class for making test
@@ -93,6 +100,16 @@ async def test_api_create_invalid_coffee(
                 "loc": ["body", "_id"],
                 "msg": "field required",
                 "type": "value_error.missing",
-            }
+            },
+            {
+                "loc": ["body", "owner_id"],
+                "msg": "extra fields not permitted",
+                "type": "value_error.extra",
+            },
+            {
+                "loc": ["body", "owner_name"],
+                "msg": "extra fields not permitted",
+                "type": "value_error.extra",
+            },
         ]
     }

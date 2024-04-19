@@ -107,7 +107,6 @@ class CoffeeService:
             coffees = await self.coffee_crud.read(
                 db_session=db_session,
                 query={},
-                projection={"_id": 1, "name": 1},
             )
         except ObjectNotFoundError as error:
             raise HTTPException(
