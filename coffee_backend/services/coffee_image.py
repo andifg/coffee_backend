@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import Tuple
 from uuid import UUID
 
@@ -41,8 +40,12 @@ class ImageService:
         if not coffee_image.filename:
             raise HTTPException(status_code=400, detail="No file name provided")
 
-        filetype = os.path.splitext(coffee_image.filename)[1]
-        filetype = filetype.lstrip(".")
+        if not coffee_image.content_type:
+            raise HTTPException(
+                status_code=400, detail="No content type provided"
+            )
+
+        filetype = coffee_image.content_type.split("/")[1]
 
         self.coffee_images_crud.create(
             str(coffee_id), coffee_image.file, filetype

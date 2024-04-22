@@ -12,6 +12,7 @@ from httpx import AsyncClient
 from motor.core import AgnosticClient
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
+from starlette.datastructures import Headers
 
 from coffee_backend.api import auth
 from coffee_backend.application import app, shutdown, startup
@@ -213,8 +214,16 @@ def dummy_coffee_images() -> Generator[DummyImages, None, None]:
     with open("tests/s3/testimages/coffee.jpeg", "rb") as image_1, open(
         "tests/s3/testimages/coffee2.jpeg", "rb"
     ) as image_2:
-        upload_file_1 = UploadFile(file=image_1, filename="test_image_1.jpg")
-        upload_file_2 = UploadFile(file=image_2, filename="test_image_2.jpg")
+        upload_file_1 = UploadFile(
+            file=image_1,
+            filename="test_image_1.jpg",
+            headers=Headers({"content-type": "image/jpeg"}),
+        )
+        upload_file_2 = UploadFile(
+            file=image_2,
+            filename="test_image_2.jpg",
+            headers=Headers({"content-type": "image/jpeg"}),
+        )
 
         image_1_bytes = image_1.read()
         image_2_bytes = image_2.read()
