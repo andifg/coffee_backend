@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Request, Response
 from fastapi.security import OAuth2PasswordBearer
 from motor.core import AgnosticClientSession
 
+from coffee_backend.api.authorization import authorize_coffee_edit_delete
 from coffee_backend.api.deps import (
     get_coffee_images_service,
     get_coffee_service,
@@ -92,6 +93,7 @@ async def _list_coffee_ids(
 async def _patch_coffee(
     coffee_id: UUID,
     coffee: UpdateCoffee,
+    request: Request,
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Coffee:
@@ -110,6 +112,8 @@ async def _patch_coffee(
         Coffee: The updated coffee object
 
     """
+    authorize_coffee_edit_delete(request, coffee.owner_id)
+
     return await coffee_service.patch_coffee(
         db_session=db_session, coffee_id=coffee_id, update_coffee=coffee
     )
@@ -154,6 +158,7 @@ async def _get_coffee_by_id(
 )
 async def _delete_coffee_by_id(
     coffee_id: UUID,
+    request: Request,
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
@@ -175,6 +180,12 @@ async def _delete_coffee_by_id(
         Response: An empty response with status code 200.
 
     """
+    coffee_to_delete = await coffee_service.get_by_id(
+        db_session=db_session, coffee_id=coffee_id
+    )
+
+    authorize_coffee_edit_delete(request, coffee_to_delete.owner_id)
+
     await rating_service.delete_by_coffee_id(
         db_session=db_session, coffee_id=coffee_id
     )
