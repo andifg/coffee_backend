@@ -36,7 +36,7 @@ async def test_coffee_image_service_add_coffee_image(
     assert coffee_image_crud.create.call_count == 1
 
     coffee_image_crud.create.assert_called_once_with(
-        "123e4567-e19b-12d3-a456-426655440000", image_1.file, "jpg"
+        "123e4567-e19b-12d3-a456-426655440000", image_1.file, "jpeg"
     )
 
     assert (

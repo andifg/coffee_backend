@@ -6,12 +6,13 @@ from uuid import UUID
 import motor.motor_asyncio  # type: ignore
 import pytest
 import pytest_asyncio
-from fastapi import UploadFile
+from fastapi import Request, UploadFile
 from fastapi.datastructures import State
 from httpx import AsyncClient
 from motor.core import AgnosticClient
 from pymongo import MongoClient
 from pytest_docker.plugin import Services  # type: ignore
+from starlette.datastructures import Headers
 
 from coffee_backend.api import auth
 from coffee_backend.application import app, shutdown, startup
@@ -170,11 +171,15 @@ def dummy_coffees() -> DummyCoffees:
     coffee_1 = Coffee(
         _id=UUID("123e4567-e19b-12d3-a456-426655440000"),
         name="Colombian",
+        owner_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
+        owner_name="Jdoe",
     )
 
     coffee_2 = Coffee(
         _id=UUID("123e4567-e59b-12d3-a456-426655440000"),
         name="Brazilian",
+        owner_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
+        owner_name="Jdoe",
     )
 
     return DummyCoffees(
@@ -209,8 +214,16 @@ def dummy_coffee_images() -> Generator[DummyImages, None, None]:
     with open("tests/s3/testimages/coffee.jpeg", "rb") as image_1, open(
         "tests/s3/testimages/coffee2.jpeg", "rb"
     ) as image_2:
-        upload_file_1 = UploadFile(file=image_1, filename="test_image_1.jpg")
-        upload_file_2 = UploadFile(file=image_2, filename="test_image_2.jpg")
+        upload_file_1 = UploadFile(
+            file=image_1,
+            filename="test_image_1.jpg",
+            headers=Headers({"content-type": "image/jpeg"}),
+        )
+        upload_file_2 = UploadFile(
+            file=image_2,
+            filename="test_image_2.jpg",
+            headers=Headers({"content-type": "image/jpeg"}),
+        )
 
         image_1_bytes = image_1.read()
         image_2_bytes = image_2.read()
@@ -264,7 +277,7 @@ def mock_security_dependency() -> Generator[None, None, None]:
     """
     print("Setting up mock security dependency")
 
-    app.dependency_overrides[auth.verify] = lambda: True
+    app.dependency_overrides[auth.verify] = mock_user_token_payload
 
     yield
 
@@ -296,3 +309,13 @@ def cleanup_db(database: MongoClient) -> None:
     """
     database.drop_database(settings.mongodb_database)
     print("Cleaned up database between tests")
+
+
+def mock_user_token_payload(request: Request) -> None:
+    """For the purpose of testing, we mock the user token payload."""
+    request.state.token = {
+        "sub": "018ee105-66b3-7f89-b6f3-807782e40350",
+        "family_name": "Black",
+        "preferred_username": "Jdoe",
+        "given_name": "John",
+    }

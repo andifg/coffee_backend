@@ -35,10 +35,6 @@ async def test_coffee_service_list_ids(
     coffee_crud_mock.read.assert_awaited_once_with(
         db_session=db_session_mock,
         query={},
-        projection={
-            "_id": 1,
-            "name": 1,
-        },
     )
 
     assert result == [coffee_1.id, coffee_2.id]

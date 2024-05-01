@@ -1,6 +1,6 @@
 import copy
 from typing import Generator
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.encoders import jsonable_encoder
@@ -13,10 +13,12 @@ from coffee_backend.schemas.coffee import UpdateCoffee
 from tests.conftest import DummyCoffees, TestApp
 
 
+@patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.coffee.CoffeeService.patch_coffee")
 @pytest.mark.asyncio
 async def test_api_patch_coffee(
     coffee_service_mock: AsyncMock,
+    authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
     mock_security_dependency: Generator,
@@ -37,13 +39,19 @@ async def test_api_patch_coffee(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
+    authorize_coffee_edit_delete_mock.return_value = None
+
     unchanged_coffee = dummy_coffees.coffee_1
 
     updated_coffee = copy.deepcopy(unchanged_coffee)
 
     updated_coffee.name = "New updated name"
 
-    update_coffee = UpdateCoffee(name="New updated name")
+    update_coffee = UpdateCoffee(
+        name="New updated name",
+        owner_id=unchanged_coffee.owner_id,
+        owner_name=unchanged_coffee.owner_name,
+    )
 
     coffee_jsonable = jsonable_encoder(update_coffee.dict(by_alias=True))
 
@@ -110,10 +118,12 @@ async def test_api_patch_coffee_invalid_coffee_update_schema(
     }
 
 
+@patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.coffee.CoffeeService.patch_coffee")
 @pytest.mark.asyncio
 async def test_api_patch_coffees_unknown_id(
     coffee_service_mock: AsyncMock,
+    authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
     mock_security_dependency: Generator,
 ) -> None:
@@ -133,13 +143,17 @@ async def test_api_patch_coffees_unknown_id(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
+    authorize_coffee_edit_delete_mock.return_value = None
+
     coffee_service_mock.side_effect = HTTPException(
         status_code=404, detail="No coffees found"
     )
 
     unknown_id = uuid7()
 
-    update_coffee = UpdateCoffee(name="New updated name")
+    update_coffee = UpdateCoffee(
+        name="New updated name", owner_id=unknown_id, owner_name="Unknown owner"
+    )
 
     coffee_jsonable = jsonable_encoder(update_coffee.dict(by_alias=True))
 

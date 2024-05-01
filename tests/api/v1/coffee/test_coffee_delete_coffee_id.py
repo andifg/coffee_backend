@@ -1,23 +1,28 @@
 from typing import Generator
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
 from uuid_extensions.uuid7 import uuid7
 
+from coffee_backend.api.authorization import authorize_coffee_edit_delete
 from coffee_backend.application import app
 from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyCoffees, TestApp
 
 
+@patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.coffee_image.ImageService.delete_coffee_image")
 @patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
+@patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id(
     coffee_service_mock: AsyncMock,
+    coffee_service_get_by_id_mock: AsyncMock,
     rating_service_mock: AsyncMock,
     coffee_image_service_mock: AsyncMock,
+    authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
     mock_security_dependency: Generator,
@@ -26,8 +31,12 @@ async def test_api_delete_coffee_by_id(
     Test deleting a coffee by ID.
 
     Args:
-        coffee_service_mock (AsyncMock): The mocked CoffeeService.
+        coffee_service_mock (AsyncMock): The mocked CoffeeService delete coffee method.
+        coffee_service_get_by_id_mock (AsyncMock): The mocked CoffeeService
+            get_by_id method.
         rating_service_mock (AsyncMock): The mocked RatingService.
+        coffee_image_service_mock (AsyncMock): The mocked ImageService.
+        authorize_coffee_edit_delete_mock (MagicMock): The mocked authorization check.
         test_app (TestApp): The test application.
         dummy_coffees (DummyCoffees): The dummy coffees fixture.
         mock_security_dependency: Fixture to mock the authentication
@@ -35,6 +44,10 @@ async def test_api_delete_coffee_by_id(
     """
 
     get_db_mock = AsyncMock()
+
+    coffee_service_get_by_id_mock.return_value = dummy_coffees.coffee_1
+
+    authorize_coffee_edit_delete_mock.return_value = None
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
@@ -45,6 +58,10 @@ async def test_api_delete_coffee_by_id(
 
     assert response.status_code == 200
     assert response.text == ""
+
+    coffee_service_get_by_id_mock.assert_awaited_once_with(
+        db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
+    )
 
     rating_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
@@ -61,14 +78,18 @@ async def test_api_delete_coffee_by_id(
     app.dependency_overrides = {}
 
 
+@patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.coffee_image.ImageService.delete_coffee_image")
 @patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
+@patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id_with_unkown_id(
     coffee_service_mock: AsyncMock,
+    coffee_service_get_by_id_mock: AsyncMock,
     rating_service_mock: AsyncMock,
     coffee_image_service_mock: AsyncMock,
+    authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
     mock_security_dependency: Generator,
 ) -> None:
@@ -76,17 +97,23 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     Ensuring error is returned when id is not known.
 
     Args:
-        coffee_service_mock (AsyncMock): The mocked CoffeeService.
+        coffee_service_mock (AsyncMock): The mocked CoffeeService delete coffee method.
+        coffee_service_get_by_id_mock (AsyncMock): The mocked CoffeeService
+            get_by_id method.
+        rating_service_mock (AsyncMock): The mocked RatingService.
+        coffee_image_service_mock (AsyncMock): The mocked ImageService.
+        authorize_coffee_edit_delete_mock (MagicMock): The mocked authorization check.
         test_app (TestApp): The test application.
-        mock_security_dependency (Generator): Fixture to mock the authentication
-            and authorization check within api to always return True
+        dummy_coffees (DummyCoffees): The dummy coffees fixture.
+        mock_security_dependency: Fixture to mock the authentication
+            and authorization check within api to always return True.
     """
 
     get_db_mock = AsyncMock()
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    coffee_service_mock.side_effect = HTTPException(
+    coffee_service_get_by_id_mock.side_effect = HTTPException(
         status_code=404, detail="No coffee found for given id"
     )
 
@@ -100,14 +127,16 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     assert response.status_code == 404
     assert response.json() == {"detail": "No coffee found for given id"}
 
-    rating_service_mock.assert_awaited_once_with(
+    coffee_service_get_by_id_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=unkown_id
     )
 
-    coffee_image_service_mock.assert_called_once_with(coffee_id=unkown_id)
+    authorize_coffee_edit_delete_mock.assert_not_called()
 
-    coffee_service_mock.assert_awaited_once_with(
-        db_session=get_db_mock, coffee_id=unkown_id
-    )
+    rating_service_mock.assert_not_awaited()
+
+    coffee_image_service_mock.assert_not_called()
+
+    coffee_service_mock.assert_not_awaited()
 
     app.dependency_overrides = {}
