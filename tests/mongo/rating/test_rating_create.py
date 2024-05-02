@@ -1,3 +1,4 @@
+from unittest.mock import AsyncMock
 from uuid import UUID
 
 import pytest
@@ -29,7 +30,10 @@ async def test_mongo_rating_create(
         await test_crud.create(db_session=session, rating=dummy_rating)
 
     assert "Stored new entry in database" in caplog.messages
+    assert "Ensuring index for coffee_id attribute exists" in caplog.messages
     assert f"Entry: {dummy_rating.dict(by_alias=True)}" in caplog.messages
+
+    assert test_crud.first_rating is False
 
     with init_mongo.sync_probe_session.start_session() as session:
         result = list(
@@ -73,3 +77,40 @@ async def test_mongo_coffee_create_duplicate(
         str(value_error.value)
         == "Unable to store entry in database due to key duplication"
     )
+
+
+@pytest.mark.asyncio
+async def test_mongo_rating_not_create_index_after_first_add(
+    dummy_ratings: DummyRatings,
+) -> None:
+    """Test that the index is not created after the first rating is added."""
+
+    test_db_session = AsyncMock()
+
+    insert_one_mock = AsyncMock()
+
+    create_index_mock = AsyncMock()
+
+    test_crud = RatingCRUD(
+        settings.mongodb_database, settings.mongodb_rating_collection
+    )
+
+    test_db_session.client[settings.mongodb_database][
+        settings.mongodb_rating_collection
+    ].insert_one = insert_one_mock
+
+    test_db_session.client[settings.mongodb_database][
+        settings.mongodb_rating_collection
+    ].create_index = create_index_mock
+
+    test_crud.first_rating = False
+
+    rating = await test_crud.create(
+        db_session=test_db_session, rating=dummy_ratings.rating_2
+    )
+
+    assert rating == dummy_ratings.rating_2
+
+    assert insert_one_mock.call_count == 1
+
+    assert create_index_mock.call_count == 0
