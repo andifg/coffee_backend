@@ -111,5 +111,15 @@ async def test_api_create_invalid_coffee(
                 "msg": "extra fields not permitted",
                 "type": "value_error.extra",
             },
+            {
+                "loc": ["body", "rating_average"],
+                "msg": "extra fields not permitted",
+                "type": "value_error.extra",
+            },
+            {
+                "loc": ["body", "rating_count"],
+                "msg": "extra fields not permitted",
+                "type": "value_error.extra",
+            },
         ]
     }
