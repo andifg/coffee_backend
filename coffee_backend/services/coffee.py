@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Any, List, Optional
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -84,6 +84,42 @@ class CoffeeService:
             ) from error
         return coffees
 
+    async def list_coffees_with_rating_summary(
+        self,
+        db_session: AgnosticClientSession,
+        coffee_id: Optional[UUID] = None,
+        page: int = 1,
+        page_size: int = 10,
+    ) -> List[Coffee]:
+        """Retrieve a list of coffee objects from the database with rating
+            summary.
+
+        Args:
+            db_session (AgnosticClientSession): The database session object.
+
+
+        Returns:
+            List[Coffee]: A list of coffee objects retrieved from the crud
+                class.
+
+        """
+
+        pipeline = self._create_pipeline(
+            coffee_id=coffee_id, page=page, page_size=page_size
+        )
+
+        try:
+            coffees = await self.coffee_crud.aggregate_read(
+                db_session=db_session, pipeline=pipeline
+            )
+
+        except ObjectNotFoundError as error:
+            raise HTTPException(
+                status_code=404, detail="No coffees found"
+            ) from error
+
+        return coffees
+
     async def list_ids(self, db_session: AgnosticClientSession) -> List[UUID]:
         """Retrieve a list of all coffee ids.
 
@@ -113,6 +149,53 @@ class CoffeeService:
                 status_code=404, detail="No ids found"
             ) from error
         return [coffee.id for coffee in coffees]
+
+    def _create_pipeline(
+        self,
+        coffee_id: Optional[UUID] = None,
+        page: int = 1,
+        page_size: int = 10,
+    ) -> List[dict]:
+        pipeline: List[dict[str, Any]] = []
+
+        if coffee_id:
+            pipeline.append({"$match": {"_id": coffee_id}})
+
+        pipeline.extend(
+            [
+                {
+                    "$lookup": {
+                        "from": "rating",
+                        "localField": "_id",
+                        "foreignField": "coffee_id",
+                        "as": "rating",
+                    }
+                },
+                {
+                    "$addFields": {
+                        "rating_count": {"$size": "$rating"},
+                        "rating_average": {
+                            "$round": [{"$avg": "$rating.rating"}, 2]
+                        },
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "name": 1,
+                        "owner_id": 1,
+                        "owner_name": 1,
+                        "rating_count": 1,
+                        "rating_average": 1,
+                    }
+                },
+                {"$limit": page_size},
+                {"$skip": (page - 1) * page_size},
+                {"$sort": {"_id": -1}},
+            ]
+        )
+
+        return pipeline
 
     async def get_by_id(
         self, db_session: AgnosticClientSession, coffee_id: UUID
