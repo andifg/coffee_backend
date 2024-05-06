@@ -38,7 +38,7 @@ async def test_coffee_service_list_coffees_with_rating_summary(
     )
 
     pipeline_aggregate_mock.assert_called_once_with(
-        coffee_id=None, page=1, page_size=10
+        owner_id=None, page=1, page_size=10
     )
 
     assert result == [coffee_1, coffee_2]
@@ -79,20 +79,21 @@ async def test_cof_serv_list_cof_with_rating_summary_empty_result() -> None:
     )
 
     pipeline_aggregate_mock.assert_called_once_with(
-        coffee_id=None, page=1, page_size=10
+        owner_id=None, page=1, page_size=10
     )
 
 
-def test_coffee_service_pipeline_create_without_coffee_id() -> None:
+def test_coffee_service_pipeline_create_without_owner_id() -> None:
     """Pipeline should return a pipeline with correct skip and limit values."""
     test_coffee_service = CoffeeService(coffee_crud=AsyncMock())
     # pylint: disable=W0212
     result = test_coffee_service._create_pipeline(
-        coffee_id=None, page=1, page_size=10
+        owner_id=None, page=1, page_size=10
     )
     # pylint: enable=W0212
 
     assert result == [
+        {"$sort": {"_id": -1}},
         {
             "$lookup": {
                 "from": "rating",
@@ -119,17 +120,17 @@ def test_coffee_service_pipeline_create_without_coffee_id() -> None:
         },
         {"$limit": 10},
         {"$skip": 0},
-        {"$sort": {"_id": -1}},
     ]
 
     # pylint: disable=W0212
     result_2 = test_coffee_service._create_pipeline(
-        coffee_id=None, page=2, page_size=20
+        owner_id=None, page=2, page_size=20
     )
 
     # pylint: enable=W0212
 
     assert result_2 == [
+        {"$sort": {"_id": -1}},
         {
             "$lookup": {
                 "from": "rating",
@@ -156,25 +157,25 @@ def test_coffee_service_pipeline_create_without_coffee_id() -> None:
         },
         {"$limit": 20},
         {"$skip": 20},
-        {"$sort": {"_id": -1}},
     ]
 
 
-def test_coffee_service_pipeline_create_with_coffee_id() -> None:
+def test_coffee_service_pipeline_create_with_owner_id() -> None:
     """Pipeline should return a pipeline with a match stage for the
-    coffee_id.
+    owner_id.
     """
 
     test_coffee_service = CoffeeService(coffee_crud=AsyncMock())
 
-    coffee_id = uuid7()
+    owner_id = uuid7()
     # pylint: disable=W0212
     result = test_coffee_service._create_pipeline(
-        coffee_id=coffee_id, page=1, page_size=10
+        owner_id=owner_id, page=1, page_size=10
     )
     # pylint: enable=W0212
     assert result == [
-        {"$match": {"_id": coffee_id}},
+        {"$sort": {"_id": -1}},
+        {"$match": {"owner_id": owner_id}},
         {
             "$lookup": {
                 "from": "rating",
@@ -201,5 +202,4 @@ def test_coffee_service_pipeline_create_with_coffee_id() -> None:
         },
         {"$limit": 10},
         {"$skip": 0},
-        {"$sort": {"_id": -1}},
     ]

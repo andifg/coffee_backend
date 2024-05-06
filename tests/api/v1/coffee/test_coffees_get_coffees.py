@@ -42,7 +42,7 @@ async def test_api_get_coffees(
     ]
 
     coffee_service_mock.assert_awaited_once_with(
-        db_session=get_db_mock, page=1, page_size=10, coffee_id=None
+        db_session=get_db_mock, page=1, page_size=10, owner_id=None
     )
 
     app.dependency_overrides = {}
@@ -74,7 +74,7 @@ async def test_api_get_coffees_with_emtpy_crud_response(
     assert response.json() == {"detail": "No coffees found"}
 
     coffee_service_mock.assert_awaited_once_with(
-        db_session=get_db_mock, page=1, page_size=10, coffee_id=None
+        db_session=get_db_mock, page=1, page_size=10, owner_id=None
     )
 
     app.dependency_overrides = {}
@@ -100,7 +100,7 @@ async def test_api_get_coffees_with_query_params(
     ]
 
     response = await test_app.client.get(
-        "/api/v1/coffees?page=1&page_size=10&coffee_id=12345678-1234-5678-1234-567812345678",
+        "/api/v1/coffees?page=1&page_size=10&owner_id=12345678-1234-5678-1234-567812345678",
         headers={"Content-Type": "application/json"},
     )
 
@@ -114,7 +114,7 @@ async def test_api_get_coffees_with_query_params(
         db_session=get_db_mock,
         page=1,
         page_size=10,
-        coffee_id=UUID("12345678-1234-5678-1234-567812345678"),
+        owner_id=UUID("12345678-1234-5678-1234-567812345678"),
     )
 
     app.dependency_overrides = {}

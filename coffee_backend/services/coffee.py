@@ -87,7 +87,7 @@ class CoffeeService:
     async def list_coffees_with_rating_summary(
         self,
         db_session: AgnosticClientSession,
-        coffee_id: Optional[UUID] = None,
+        owner_id: Optional[UUID] = None,
         page: int = 1,
         page_size: int = 10,
     ) -> List[Coffee]:
@@ -105,7 +105,7 @@ class CoffeeService:
         """
 
         pipeline = self._create_pipeline(
-            coffee_id=coffee_id, page=page, page_size=page_size
+            owner_id=owner_id, page=page, page_size=page_size
         )
 
         try:
@@ -152,14 +152,14 @@ class CoffeeService:
 
     def _create_pipeline(
         self,
-        coffee_id: Optional[UUID] = None,
+        owner_id: Optional[UUID] = None,
         page: int = 1,
         page_size: int = 10,
     ) -> List[dict]:
-        pipeline: List[dict[str, Any]] = []
+        pipeline: List[dict[str, Any]] = [{"$sort": {"_id": -1}}]
 
-        if coffee_id:
-            pipeline.append({"$match": {"_id": coffee_id}})
+        if owner_id:
+            pipeline.append({"$match": {"owner_id": owner_id}})
 
         pipeline.extend(
             [
@@ -191,7 +191,6 @@ class CoffeeService:
                 },
                 {"$limit": page_size},
                 {"$skip": (page - 1) * page_size},
-                {"$sort": {"_id": -1}},
             ]
         )
 

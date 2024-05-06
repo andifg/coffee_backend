@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi.security import OAuth2PasswordBearer
 from motor.core import AgnosticClientSession
 
@@ -53,15 +53,15 @@ async def _post_coffee(
 async def _list_coffees_with_rating_summary(
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
-    page: int = 1,
-    page_size: int = 10,
-    coffee_id: Optional[UUID] = None,
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=10, ge=1, description="Page size"),
+    owner_id: Optional[UUID] = None,
 ) -> List[Coffee]:
     return await coffee_service.list_coffees_with_rating_summary(
         db_session=db_session,
         page=page,
         page_size=page_size,
-        coffee_id=coffee_id,
+        owner_id=owner_id,
     )
 
 
