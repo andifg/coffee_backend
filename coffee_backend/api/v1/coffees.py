@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request, Response
@@ -47,14 +47,22 @@ async def _post_coffee(
     "/coffees",
     status_code=200,
     summary="",
-    description="""Get list of coffees""",
+    description="""Get list of coffees including rating summary""",
     response_model=List[Coffee],
 )
-async def _list_coffee(
+async def _list_coffees_with_rating_summary(
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
+    page: int = 1,
+    page_size: int = 10,
+    coffee_id: Optional[UUID] = None,
 ) -> List[Coffee]:
-    return await coffee_service.list(db_session=db_session)
+    return await coffee_service.list_coffees_with_rating_summary(
+        db_session=db_session,
+        page=page,
+        page_size=page_size,
+        coffee_id=coffee_id,
+    )
 
 
 @router.get(
