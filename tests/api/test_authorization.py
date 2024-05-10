@@ -21,7 +21,7 @@ def test_authorize_coffee_edit_delete_with_matching_user() -> None:
             "path": "/test",
             "query_string": b"param1=value1&param2=value2",
             "state": {
-                "token": {"realm_access": {"roles": ["user"]}, "sub": uuid}
+                "token": {"realm_access": {"roles": ["user"]}, "sub": str(uuid)}
             },
         }
     )

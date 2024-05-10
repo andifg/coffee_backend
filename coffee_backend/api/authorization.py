@@ -27,7 +27,7 @@ def authorize_coffee_edit_delete(
 
     user_id = token.get("sub", None)
 
-    if user_id == coffee_owner_id:
+    if user_id == str(coffee_owner_id):
         return
 
     logging.debug(
