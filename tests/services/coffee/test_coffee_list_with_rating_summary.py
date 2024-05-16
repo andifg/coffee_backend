@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from fastapi import HTTPException
 from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
@@ -67,13 +66,11 @@ async def test_cof_serv_list_cof_with_rating_summary_empty_result() -> None:
 
     setattr(test_coffee_service, "_create_pipeline", pipeline_aggregate_mock)
 
-    with pytest.raises(HTTPException) as exc_info:
-        await test_coffee_service.list_coffees_with_rating_summary(
-            db_session=db_session_mock
-        )
+    result = await test_coffee_service.list_coffees_with_rating_summary(
+        db_session=db_session_mock
+    )
 
-    assert exc_info.value.status_code == 404
-    assert exc_info.value.detail == "No coffees found"
+    assert result == []
     coffee_crud_mock.aggregate_read.assert_awaited_once_with(
         db_session=db_session_mock, pipeline=[{"$test": "test"}]
     )

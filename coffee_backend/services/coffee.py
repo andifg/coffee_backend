@@ -113,10 +113,8 @@ class CoffeeService:
                 db_session=db_session, pipeline=pipeline
             )
 
-        except ObjectNotFoundError as error:
-            raise HTTPException(
-                status_code=404, detail="No coffees found"
-            ) from error
+        except ObjectNotFoundError:
+            return []
 
         return coffees
 
