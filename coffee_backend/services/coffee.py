@@ -187,10 +187,12 @@ class CoffeeService:
                         "rating_average": 1,
                     }
                 },
-                {"$limit": page_size},
+                {"$limit": page_size * page},
                 {"$skip": (page - 1) * page_size},
             ]
         )
+
+        logging.debug("Executing pipeline: %s", pipeline)
 
         return pipeline
 

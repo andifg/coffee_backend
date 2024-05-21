@@ -152,7 +152,7 @@ def test_coffee_service_pipeline_create_without_owner_id() -> None:
                 "rating_average": 1,
             }
         },
-        {"$limit": 20},
+        {"$limit": 40},
         {"$skip": 20},
     ]
 
