@@ -2,7 +2,7 @@
 name = "backend"
 version = "0.1.0"
 description = ""
-authors = ["aguentner <mail@andreasnixel.de>"]
+authors = ["aguentner <45008199+andifg@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -22,17 +22,17 @@ cryptography = "^41.0.4"
 aiohttp = "3.9.3"
 
 [tool.poetry.group.dev.dependencies]
-pylint-pytest = "^1.1.2"
-pylint = "^2.16.4"
-mypy = "^1.1.1"
-isort = "^5.12.0"
-pytest-docker = "2.0.0"
-pytest-asyncio = "^0.20.3"
-pytest-aiohttp = "^1.0.4"
-pylint-pydantic = "^0.1.7"
-pytest-cov = "^4.0.0"
-faker = "^18.10.1"
-black = "^23.7.0"
+pylint-pytest = "^1.1.7"
+pylint = "^3.2.2"
+mypy = "^1.10.0"
+isort = "^5.13.2"
+pytest-docker = "^3.1.1"
+pytest-asyncio = "^0.23.7"
+pytest-aiohttp = "^1.0.5"
+pylint-pydantic = "^0.3.2"
+pytest-cov = "^5.0.0"
+faker = "^25.2.0"
+black = "^24.4.2"
 aioresponses = "^0.7.6"
 
 
