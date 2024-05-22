@@ -56,12 +56,14 @@ async def _list_coffees_with_rating_summary(
     page: int = Query(default=1, ge=1, description="Page number"),
     page_size: int = Query(default=10, ge=1, description="Page size"),
     owner_id: Optional[UUID] = None,
+    first_id: Optional[UUID] = None,
 ) -> List[Coffee]:
     return await coffee_service.list_coffees_with_rating_summary(
         db_session=db_session,
         page=page,
         page_size=page_size,
         owner_id=owner_id,
+        first_id=first_id,
     )
 
 

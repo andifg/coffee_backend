@@ -90,6 +90,7 @@ class CoffeeService:
         owner_id: Optional[UUID] = None,
         page: int = 1,
         page_size: int = 10,
+        first_id: Optional[UUID] = None,
     ) -> List[Coffee]:
         """Retrieve a list of coffee objects from the database with rating
             summary.
@@ -105,7 +106,7 @@ class CoffeeService:
         """
 
         pipeline = self._create_pipeline(
-            owner_id=owner_id, page=page, page_size=page_size
+            owner_id=owner_id, page=page, page_size=page_size, first_id=first_id
         )
 
         try:
@@ -153,11 +154,15 @@ class CoffeeService:
         owner_id: Optional[UUID] = None,
         page: int = 1,
         page_size: int = 10,
+        first_id: Optional[UUID] = None,
     ) -> List[dict]:
         pipeline: List[dict[str, Any]] = [{"$sort": {"_id": -1}}]
 
         if owner_id:
             pipeline.append({"$match": {"owner_id": owner_id}})
+
+        if first_id:
+            pipeline.append({"$match": {"_id": {"$lte": first_id}}})
 
         pipeline.extend(
             [

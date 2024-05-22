@@ -37,7 +37,7 @@ async def test_coffee_service_list_coffees_with_rating_summary(
     )
 
     pipeline_aggregate_mock.assert_called_once_with(
-        owner_id=None, page=1, page_size=10
+        owner_id=None, page=1, page_size=10, first_id=None
     )
 
     assert result == [coffee_1, coffee_2]
@@ -76,7 +76,7 @@ async def test_cof_serv_list_cof_with_rating_summary_empty_result() -> None:
     )
 
     pipeline_aggregate_mock.assert_called_once_with(
-        owner_id=None, page=1, page_size=10
+        owner_id=None, page=1, page_size=10, first_id=None
     )
 
 
@@ -173,6 +173,51 @@ def test_coffee_service_pipeline_create_with_owner_id() -> None:
     assert result == [
         {"$sort": {"_id": -1}},
         {"$match": {"owner_id": owner_id}},
+        {
+            "$lookup": {
+                "from": "rating",
+                "localField": "_id",
+                "foreignField": "coffee_id",
+                "as": "rating",
+            }
+        },
+        {
+            "$addFields": {
+                "rating_count": {"$size": "$rating"},
+                "rating_average": {"$round": [{"$avg": "$rating.rating"}, 2]},
+            }
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "name": 1,
+                "owner_id": 1,
+                "owner_name": 1,
+                "rating_count": 1,
+                "rating_average": 1,
+            }
+        },
+        {"$limit": 10},
+        {"$skip": 0},
+    ]
+
+
+def test_coffee_service_pipeline_create_with_first_id() -> None:
+    """Pipeline should return a pipeline with a match stage for the
+    first id.
+    """
+
+    test_coffee_service = CoffeeService(coffee_crud=AsyncMock())
+
+    first_id = uuid7()
+    # pylint: disable=W0212
+    result = test_coffee_service._create_pipeline(
+        owner_id=None, page=1, page_size=10, first_id=first_id
+    )
+    # pylint: enable=W0212
+    assert result == [
+        {"$sort": {"_id": -1}},
+        {"$match": {"_id": {"$lte": first_id}}},
         {
             "$lookup": {
                 "from": "rating",
