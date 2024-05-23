@@ -4,6 +4,7 @@ import pytest_asyncio
 from minio import Minio  # type: ignore
 from minio.commonconfig import ENABLED  # type: ignore
 from minio.deleteobjects import DeleteObject  # type: ignore
+from minio.error import S3Error  # type: ignore
 from minio.versioningconfig import VersioningConfig  # type: ignore
 from pytest_docker.plugin import Services  # type: ignore
 
@@ -45,14 +46,18 @@ async def init_minio(minio_service: Minio) -> AsyncGenerator:
 
     try:
         minio_service.make_bucket(settings.minio_coffee_images_bucket)
-        minio_service.set_bucket_versioning(
-            settings.minio_coffee_images_bucket, VersioningConfig(ENABLED)
-        )
-        yield minio_service
-        cleanup_minio(minio_service)
 
-    except ConnectionError:
-        print("Unable to connect to the minio server.")
+    except S3Error as e:
+        if e.code == "BucketAlreadyOwnedByYou":
+            pass
+        else:
+            raise e
+
+    minio_service.set_bucket_versioning(
+        settings.minio_coffee_images_bucket, VersioningConfig(ENABLED)
+    )
+    yield minio_service
+    cleanup_minio(minio_service)
 
 
 def test_minio(test_client: Minio) -> bool:
