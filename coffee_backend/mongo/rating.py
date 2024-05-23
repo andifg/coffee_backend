@@ -20,6 +20,7 @@ class RatingCRUD:
     def __init__(self, database: str, rating_collection: str) -> None:
         self.database = database
         self.rating_collection = rating_collection
+        self.first_rating = True
 
     async def create(
         self, db_session: AgnosticClientSession, rating: Rating
@@ -42,6 +43,15 @@ class RatingCRUD:
             await db_session.client[self.database][
                 self.rating_collection
             ].insert_one(document)
+
+            if self.first_rating:
+                logging.debug("Ensuring index for coffee_id attribute exists")
+                await db_session.client[self.database][
+                    self.rating_collection
+                ].create_index("coffee_id")
+
+                self.first_rating = False
+
         except DuplicateKeyError:
             raise ValueError(  # pylint: disable=raise-missing-from
                 "Unable to store entry in database due to key duplication"

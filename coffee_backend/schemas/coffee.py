@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, Extra, Field
@@ -19,6 +20,17 @@ class Coffee(BaseModel):
         example=UUID("123e4567-e89b-12d3-a456-426655440000"),
     )
     owner_name: str = Field(..., description="Name of the owner of the coffee")
+
+    rating_count: Optional[int] = Field(
+        default=None,
+        description="The number of ratings for the coffee",
+        example=3,
+    )
+    rating_average: Optional[float] = Field(
+        default=None,
+        description="The average rating for the coffee",
+        example=4.5,
+    )
 
 
 class UpdateCoffee(BaseModel):

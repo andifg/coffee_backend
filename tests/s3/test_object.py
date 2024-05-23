@@ -123,7 +123,7 @@ def test_object_read_nonexisting_image(init_minio: Minio) -> None:
         test_object_crud.read("nonexisting_object")
 
 
-def test_object_read_uncatched_error() -> None:
+def test_object_read_uncatched_error(init_minio: Minio) -> None:
     """Test the ObjectCRUD read method for an unhandled S3 error.
 
     This test verifies that when the ObjectCRUD read method encounters an

@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi.security import OAuth2PasswordBearer
 from motor.core import AgnosticClientSession
 
@@ -47,14 +47,24 @@ async def _post_coffee(
     "/coffees",
     status_code=200,
     summary="",
-    description="""Get list of coffees""",
+    description="""Get list of coffees including rating summary""",
     response_model=List[Coffee],
 )
-async def _list_coffee(
+async def _list_coffees_with_rating_summary(
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=10, ge=1, description="Page size"),
+    owner_id: Optional[UUID] = None,
+    first_id: Optional[UUID] = None,
 ) -> List[Coffee]:
-    return await coffee_service.list(db_session=db_session)
+    return await coffee_service.list_coffees_with_rating_summary(
+        db_session=db_session,
+        page=page,
+        page_size=page_size,
+        owner_id=owner_id,
+        first_id=first_id,
+    )
 
 
 @router.get(

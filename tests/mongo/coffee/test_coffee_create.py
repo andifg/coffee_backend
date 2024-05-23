@@ -43,6 +43,8 @@ async def test_mongo_coffee_create(
             "name": "Colombian",
             "owner_id": UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
             "owner_name": "Jdoe",
+            "rating_count": None,
+            "rating_average": None,
         }
 
 

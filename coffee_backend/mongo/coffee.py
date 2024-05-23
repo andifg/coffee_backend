@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from motor.core import AgnosticClientSession
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.schemas.coffee import Coffee
@@ -83,6 +83,42 @@ class CoffeeCRUD:
             return [Coffee.parse_obj(document) for document in documents]
 
         raise ObjectNotFoundError("Couldn't find entry for search query")
+
+    async def aggregate_read(
+        self, db_session: AgnosticClientSession, pipeline: List[dict[str, Any]]
+    ) -> List[Coffee]:
+        """Perform an aggregation operation on the coffee collection.
+
+        Args:
+            db_session (AgnosticClientSession): The MongoDB client session.
+            pipeline (List[dict[str, Any]]): The aggregation pipeline to
+                execute.
+
+
+        Returns:
+            List[Coffee]: A list of `Coffee` instances representing the
+                retrieved documents.
+        """
+        try:
+            documents: List[Coffee] = [
+                doc
+                async for doc in db_session.client[self.database][
+                    self.coffee_collection
+                ].aggregate(pipeline)
+            ]
+            if documents:
+                logging.debug(
+                    "Received %s entries from database", len(documents)
+                )
+                return [Coffee.parse_obj(document) for document in documents]
+
+            raise ObjectNotFoundError("Couldn't find entry for search query")
+
+        except OperationFailure as mongo_error:
+            logging.error("Error during aggregation: %s", mongo_error)
+            raise ValueError(
+                "Unable to perform aggregation operation"
+            ) from mongo_error
 
     async def update(
         self,
