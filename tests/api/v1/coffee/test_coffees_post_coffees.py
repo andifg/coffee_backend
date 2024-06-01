@@ -40,6 +40,7 @@ async def test_api_create_coffee(
     create_coffee = CreateCoffee(
         _id=dummy_coffees.coffee_1.id,
         name=dummy_coffees.coffee_1.name,
+        roasting_company=dummy_coffees.coffee_1.roasting_company,
     )
 
     create_coffee_jsonable = jsonable_encoder(create_coffee.dict(by_alias=True))

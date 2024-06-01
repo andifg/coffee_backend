@@ -109,6 +109,7 @@ def test_coffee_service_pipeline_create_without_owner_id() -> None:
             "$project": {
                 "_id": 1,
                 "name": 1,
+                "roasting_company": 1,
                 "owner_id": 1,
                 "owner_name": 1,
                 "rating_count": 1,
@@ -146,6 +147,7 @@ def test_coffee_service_pipeline_create_without_owner_id() -> None:
             "$project": {
                 "_id": 1,
                 "name": 1,
+                "roasting_company": 1,
                 "owner_id": 1,
                 "owner_name": 1,
                 "rating_count": 1,
@@ -191,6 +193,7 @@ def test_coffee_service_pipeline_create_with_owner_id() -> None:
             "$project": {
                 "_id": 1,
                 "name": 1,
+                "roasting_company": 1,
                 "owner_id": 1,
                 "owner_name": 1,
                 "rating_count": 1,
@@ -236,6 +239,7 @@ def test_coffee_service_pipeline_create_with_first_id() -> None:
             "$project": {
                 "_id": 1,
                 "name": 1,
+                "roasting_company": 1,
                 "owner_id": 1,
                 "owner_name": 1,
                 "rating_count": 1,

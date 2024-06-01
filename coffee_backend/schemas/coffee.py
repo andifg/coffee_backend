@@ -5,7 +5,7 @@ from pydantic import BaseModel, Extra, Field
 
 
 class Coffee(BaseModel):
-    """Describes a Coffee"""
+    """Describes a Coffee type"""
 
     id: UUID = Field(
         ...,
@@ -14,6 +14,9 @@ class Coffee(BaseModel):
         example=UUID("123e4567-e89b-12d3-a456-426655440000"),
     )
     name: str = Field(..., description="Name of coffee")
+    roasting_company: str = Field(
+        ..., description="Name of the roasting company"
+    )
     owner_id: UUID = Field(
         ...,
         description="The id of the owner of the coffee",
@@ -37,6 +40,10 @@ class UpdateCoffee(BaseModel):
     """Describes the update schema for a Coffee"""
 
     name: str = Field(..., description="Name of coffee")
+
+    roasting_company: str = Field(
+        ..., description="Name of the roasting company"
+    )
 
     owner_id: UUID = Field(
         ...,
@@ -66,6 +73,10 @@ class CreateCoffee(BaseModel):
         example=UUID("123e4567-e89b-12d3-a456-426655440000"),
     )
     name: str = Field(..., description="Name of coffee")
+
+    roasting_company: str = Field(
+        ..., description="Name of the roasting company"
+    )
 
     class Config:
         """Pydantic config"""
