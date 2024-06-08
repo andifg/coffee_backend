@@ -11,13 +11,19 @@ def test_rating_schema_creation() -> None:
     rating = Rating(
         _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         rating=4,
+        brewing_method="Espresso",
         coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        user_id=UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
+        user_name="test_user",
     )
 
     assert rating.dict(by_alias=True) == {
         "_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         "rating": 4,
+        "brewing_method": "Espresso",
         "coffee_id": UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        "user_id": UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
+        "user_name": "test_user",
     }
 
 
@@ -41,3 +47,14 @@ def test_create_rating_without_rating() -> None:
     """Test creating a Rating instance with an invalid id."""
     with pytest.raises(ValidationError):
         Rating(_id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"))  # type: ignore
+
+
+def test_create_rating_with_invalid_brewing_method() -> None:
+    """Test creating a Rating instance with an invalid brewing method."""
+    with pytest.raises(ValidationError):
+        Rating(
+            _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
+            rating=4,
+            brewing_method="Supa Dupa Unknown Brewing Method",
+            coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        )
