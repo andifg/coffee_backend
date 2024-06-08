@@ -95,11 +95,10 @@ async def _get_coffees_rating_summary(
     response_model=Rating,
 )
 async def _create_coffee_rating(
-    coffee_id: UUID,
     rating: Rating,
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> Rating:
-    await coffee_service.get_by_id(db_session=db_session, coffee_id=coffee_id)
+    await coffee_service.get_by_id(db_session=db_session, coffee_id=rating.coffee_id)
     return await rating_service.add_rating(db_session=db_session, rating=rating)
