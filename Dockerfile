@@ -1,4 +1,4 @@
-FROM python:3.11.1 as base
+FROM python:3.12.4 as base
 
 ARG POETRY_VERSION=1.3.2
 
@@ -12,7 +12,7 @@ RUN poetry config virtualenvs.create false
 
 RUN poetry install --without dev
 
-FROM python:3.11.1
+FROM python:3.12.4
 
 COPY --from=base /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
