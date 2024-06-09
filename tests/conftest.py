@@ -17,7 +17,7 @@ from starlette.datastructures import Headers
 from coffee_backend.api import auth
 from coffee_backend.application import app, shutdown, startup
 from coffee_backend.schemas.coffee import Coffee
-from coffee_backend.schemas.rating import Rating
+from coffee_backend.schemas.rating import BrewingMethod, Rating
 from coffee_backend.settings import settings
 
 logging.getLogger().setLevel(logging.DEBUG)
@@ -197,13 +197,19 @@ def dummy_ratings() -> DummyRatings:
     rating_1 = Rating(
         _id=UUID("123e4567-e20b-12d3-a456-426655440000"),
         rating=5,
+        brewing_method=BrewingMethod.ESPRESSO,
         coffee_id=UUID("123e4567-e19b-12d3-a456-426655440000"),
+        user_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
+        user_name="Jdoe",
     )
 
     rating_2 = Rating(
         _id=UUID("123e4567-e60b-12d3-a456-426655440000"),
         rating=4.5,
+        brewing_method=BrewingMethod.ESPRESSO,
         coffee_id=UUID("123e4567-e59b-12d3-a456-426655440000"),
+        user_id=UUID("123e4567-e89b-12d3-a456-426655440000"),
+        user_name="Berty",
     )
 
     return DummyRatings(rating_1=rating_1, rating_2=rating_2)

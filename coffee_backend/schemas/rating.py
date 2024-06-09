@@ -11,6 +11,8 @@ class BrewingMethod(Enum):
     CAPPUCCINO = "Cappuccino"
     LATTE = "Latte"
     AMERICANO = "Americano"
+    FILTER = "Filter"
+    BIALETTI = "Bialetti"
 
 
 class Rating(BaseModel):
@@ -37,3 +39,9 @@ class Rating(BaseModel):
     user_name: str = Field(
         ..., description="Name of the user created the rating"
     )
+
+    class Config:
+        """Pydantic config"""
+
+        extra = "forbid"
+        use_enum_values = True

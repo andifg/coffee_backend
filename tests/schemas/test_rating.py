@@ -3,7 +3,7 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
-from coffee_backend.schemas.rating import Rating
+from coffee_backend.schemas import BrewingMethod, Rating
 
 
 def test_rating_schema_creation() -> None:
@@ -11,7 +11,7 @@ def test_rating_schema_creation() -> None:
     rating = Rating(
         _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         rating=4,
-        brewing_method="Espresso",
+        brewing_method=BrewingMethod.ESPRESSO,
         coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
         user_id=UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
         user_name="test_user",
@@ -55,6 +55,8 @@ def test_create_rating_with_invalid_brewing_method() -> None:
         Rating(
             _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
             rating=4,
-            brewing_method="Supa Dupa Unknown Brewing Method",
+            brewing_method="Supa Dupa Unknown Brewing Method",  # type: ignore
             coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+            user_id=UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
+            user_name="test_user",
         )

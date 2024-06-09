@@ -1,11 +1,12 @@
 from copy import deepcopy
 
 import pytest
+from faker import Faker
 from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.rating import RatingCRUD
-from coffee_backend.schemas.rating import Rating
+from coffee_backend.schemas.rating import BrewingMethod, Rating
 from coffee_backend.settings import settings
 from tests.conftest import DummyRatings, TestDBSessions
 
@@ -29,8 +30,17 @@ async def test_delete_many_for_single_coffee(
     rating_1 = dummy_ratings.rating_1
     rating_2 = dummy_ratings.rating_2
 
+    fake = Faker()
+
     rating_3, rating_4, rating_5 = [
-        Rating(_id=uuid7(), rating=4.5, coffee_id=rating_1.coffee_id)
+        Rating(
+            _id=uuid7(),
+            brewing_method=BrewingMethod.ESPRESSO,
+            user_id=uuid7(),
+            user_name=fake.name(),
+            rating=4.5,
+            coffee_id=rating_1.coffee_id,
+        )
         for _ in range(3)
     ]
 
