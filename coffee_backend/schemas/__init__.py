@@ -1,5 +1,5 @@
 from .coffee import Coffee, CreateCoffee, UpdateCoffee
-from .rating import BrewingMethod, Rating
+from .rating import BrewingMethod, CreateRating, Rating
 
 __all__ = [
     "Coffee",
@@ -7,4 +7,5 @@ __all__ = [
     "CreateCoffee",
     "Rating",
     "BrewingMethod",
+    "CreateRating",
 ]

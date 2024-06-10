@@ -45,3 +45,30 @@ class Rating(BaseModel):
 
         extra = "forbid"
         use_enum_values = True
+
+
+class CreateRating(BaseModel):
+    """Describes the request body for creating a rating
+
+    We get the user id and name from the JWT token.
+    """
+
+    id: UUID = Field(
+        ...,
+        alias="_id",
+        description="The id of the rating",
+        example=UUID("123e4567-e89b-12d3-a456-426655440000"),
+    )
+    brewing_method: BrewingMethod = Field(..., description="Brewing method")
+    rating: float = Field(..., description="Ratings for coffee")
+    coffee_id: UUID = Field(
+        ...,
+        description="The id of the coffee",
+        example=UUID("123e4567-e89b-12d3-a456-426655440001"),
+    )
+
+    class Config:
+        """Pydantic config"""
+
+        extra = "forbid"
+        use_enum_values = True

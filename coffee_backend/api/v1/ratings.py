@@ -1,12 +1,12 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Request, Response
 from motor.core import AgnosticClientSession
 
 from coffee_backend.api.deps import get_coffee_service, get_rating_service
 from coffee_backend.mongo.database import get_db
-from coffee_backend.schemas import Rating
+from coffee_backend.schemas import CreateRating, Rating
 from coffee_backend.schemas.rating_summary import RatingSummary
 from coffee_backend.services.coffee import CoffeeService
 from coffee_backend.services.rating import RatingService
@@ -89,18 +89,29 @@ async def _get_coffees_rating_summary(
 
 @router.post(
     "/coffees/{coffee_id}/ratings",
-    status_code=200,
+    status_code=201,
     summary="",
     description="""Get list of all ratings""",
     response_model=Rating,
 )
 async def _create_coffee_rating(
-    rating: Rating,
+    create_rating: CreateRating,
+    request: Request,
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
     rating_service: RatingService = Depends(get_rating_service),
 ) -> Rating:
     await coffee_service.get_by_id(
-        db_session=db_session, coffee_id=rating.coffee_id
+        db_session=db_session, coffee_id=create_rating.coffee_id
     )
+
+    rating = Rating(
+        _id=create_rating.id,
+        brewing_method=create_rating.brewing_method,
+        rating=create_rating.rating,
+        coffee_id=create_rating.coffee_id,
+        user_id=request.state.token["sub"],
+        user_name=request.state.token["preferred_username"],
+    )
+
     return await rating_service.add_rating(db_session=db_session, rating=rating)
