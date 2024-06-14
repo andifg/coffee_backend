@@ -6,7 +6,7 @@ from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.rating import RatingCRUD
-from coffee_backend.schemas.rating import Rating
+from coffee_backend.schemas import BrewingMethod, Rating
 from coffee_backend.settings import settings
 from tests.conftest import DummyRatings, TestDBSessions
 
@@ -125,7 +125,14 @@ async def test_mongo_rating_read_by_coffee_id(
     equal_rating = uuid7()
     rating_1.coffee_id = equal_rating
     rating_2.coffee_id = equal_rating
-    rating_3 = Rating(_id=uuid7(), coffee_id=uuid7(), rating=5)
+    rating_3 = Rating(
+        _id=uuid7(),
+        coffee_id=uuid7(),
+        rating=5,
+        brewing_method=BrewingMethod.AMERICANO,
+        user_id=uuid7(),
+        user_name="Robin Hood",
+    )
 
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
@@ -172,6 +179,18 @@ async def test_mongo_rating_read_batch_tests(
         Rating(
             _id=uuid7(),
             coffee_id=uuid7(),
+            brewing_method=random.choice(
+                [
+                    BrewingMethod.ESPRESSO,
+                    BrewingMethod.CAPPUCCINO,
+                    BrewingMethod.LATTE,
+                    BrewingMethod.AMERICANO,
+                    BrewingMethod.FILTER,
+                    BrewingMethod.BIALETTI,
+                ]
+            ),
+            user_id=uuid7(),
+            user_name=faker.name(),
             rating=round(random.uniform(33.33, 66.66), 2),
         )
         for _ in range(random.randint(50, 100))

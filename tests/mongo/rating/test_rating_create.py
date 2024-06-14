@@ -45,6 +45,9 @@ async def test_mongo_rating_create(
         assert result[0] == {
             "_id": UUID("123e4567-e60b-12d3-a456-426655440000"),
             "rating": 4.5,
+            "brewing_method": "Espresso",
+            "user_id": UUID("123e4567-e89b-12d3-a456-426655440000"),
+            "user_name": "Berty",
             "coffee_id": UUID("123e4567-e59b-12d3-a456-426655440000"),
         }
 
