@@ -186,6 +186,7 @@ class CoffeeService:
                     "$project": {
                         "_id": 1,
                         "name": 1,
+                        "roasting_company": 1,
                         "owner_id": 1,
                         "owner_name": 1,
                         "rating_count": 1,

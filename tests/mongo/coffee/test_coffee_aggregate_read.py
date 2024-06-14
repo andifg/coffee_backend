@@ -45,6 +45,7 @@ async def test_mongo_coffee_aggregate_read(
                 "$project": {
                     "_id": 1,
                     "name": 1,
+                    "roasting_company": 1,
                     "owner_id": 1,
                     "owner_name": 1,
                     "rating_count": 1,
@@ -65,6 +66,7 @@ async def test_mongo_coffee_aggregate_read(
             Coffee(
                 _id=UUID("0664ddeb-3b5e-716d-8000-907336604f50"),
                 name="Test Coffee 5",
+                roasting_company="Martermühle",
                 owner_id=UUID("06635e42-a674-783c-8000-5647733a6497"),
                 owner_name="Peter",
                 rating_count=3,
@@ -73,6 +75,7 @@ async def test_mongo_coffee_aggregate_read(
             Coffee(
                 _id=UUID("0664ddeb-3b5e-7093-8000-fb7c6d7c12fb"),
                 name="Test Coffee 4",
+                roasting_company="Martermühle",
                 owner_id=UUID("06635e42-a674-783c-8000-5647733a6497"),
                 owner_name="Peter",
                 rating_count=3,
@@ -81,6 +84,7 @@ async def test_mongo_coffee_aggregate_read(
             Coffee(
                 _id=UUID("0664ddeb-3b5d-7f76-8000-d5667ae65996"),
                 name="Test Coffee 3",
+                roasting_company="Martermühle",
                 owner_id=UUID("06635e42-a674-783c-8000-5647733a6497"),
                 owner_name="Peter",
                 rating_count=3,
@@ -89,6 +93,7 @@ async def test_mongo_coffee_aggregate_read(
             Coffee(
                 _id=UUID("0664ddeb-3b5d-7e05-8000-bb6f99a750a7"),
                 name="Test Coffee 2",
+                roasting_company="Starbucks",
                 owner_id=UUID("06635e3d-7741-755d-8000-64c83f422732"),
                 owner_name="Jdoe",
                 rating_count=3,
@@ -97,6 +102,7 @@ async def test_mongo_coffee_aggregate_read(
             Coffee(
                 _id=UUID("0664ddeb-3b5d-73ba-8000-df8bd19c35bf"),
                 name="Test Coffee 1",
+                roasting_company="Starbucks",
                 owner_id=UUID("06635e3d-7741-755d-8000-64c83f422732"),
                 owner_name="Jdoe",
                 rating_count=3,
@@ -229,6 +235,7 @@ async def test_mongo_coffee_aggregate_with_first_id(
                 "$project": {
                     "_id": 1,
                     "name": 1,
+                    "roasting_company": 1,
                     "owner_id": 1,
                     "owner_name": 1,
                     "rating_count": 1,
@@ -249,6 +256,7 @@ async def test_mongo_coffee_aggregate_with_first_id(
             Coffee(
                 _id=UUID("0664ddeb-3b5e-7093-8000-fb7c6d7c12fb"),
                 name="Test Coffee 4",
+                roasting_company="Martermühle",
                 owner_id=UUID("06635e42-a674-783c-8000-5647733a6497"),
                 owner_name="Peter",
                 rating_count=3,
@@ -257,6 +265,7 @@ async def test_mongo_coffee_aggregate_with_first_id(
             Coffee(
                 _id=UUID("0664ddeb-3b5d-7f76-8000-d5667ae65996"),
                 name="Test Coffee 3",
+                roasting_company="Martermühle",
                 owner_id=UUID("06635e42-a674-783c-8000-5647733a6497"),
                 owner_name="Peter",
                 rating_count=3,
@@ -265,6 +274,7 @@ async def test_mongo_coffee_aggregate_with_first_id(
             Coffee(
                 _id=UUID("0664ddeb-3b5d-7e05-8000-bb6f99a750a7"),
                 name="Test Coffee 2",
+                roasting_company="Starbucks",
                 owner_id=UUID("06635e3d-7741-755d-8000-64c83f422732"),
                 owner_name="Jdoe",
                 rating_count=3,
@@ -273,6 +283,7 @@ async def test_mongo_coffee_aggregate_with_first_id(
             Coffee(
                 _id=UUID("0664ddeb-3b5d-73ba-8000-df8bd19c35bf"),
                 name="Test Coffee 1",
+                roasting_company="Starbucks",
                 owner_id=UUID("06635e3d-7741-755d-8000-64c83f422732"),
                 owner_name="Jdoe",
                 rating_count=3,

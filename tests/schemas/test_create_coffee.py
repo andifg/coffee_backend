@@ -13,10 +13,12 @@ def test_create_coffee_schema_without_ratings() -> None:
     coffee = CreateCoffee(
         _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         name="Decaf",
+        roasting_company="Starbucks",
     )
 
     assert coffee.dict(by_alias=True) == {
         "name": "Decaf",
+        "roasting_company": "Starbucks",
         "_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
     }
 

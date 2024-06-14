@@ -30,9 +30,11 @@ async def test_coffee_service_patch(
     updated_coffee = copy.deepcopy(unchanged_coffee)
 
     updated_coffee.name = "Super cool new name"
+    updated_coffee.roasting_company = "Dalmayr"
 
     update_coffee = UpdateCoffee(
         name="Super cool new name",
+        roasting_company="Dalmayr",
         owner_id=unchanged_coffee.owner_id,
         owner_name=unchanged_coffee.owner_name,
     )
@@ -79,7 +81,10 @@ async def test_coffee_service_patch_invalid_id(
 
     unknown_id = uuid7()
     update_coffee = UpdateCoffee(
-        name="New updated name", owner_id=uuid7(), owner_name="Unknown owner"
+        name="New updated name",
+        roasting_company="Dalmayr",
+        owner_id=uuid7(),
+        owner_name="Unknown owner",
     )
 
     db_session_mock = AsyncMock()
@@ -90,7 +95,10 @@ async def test_coffee_service_patch_invalid_id(
     )
 
     update_coffee = UpdateCoffee(
-        name="Super cool new name", owner_id=uuid7(), owner_name="Unknown owner"
+        name="Super cool new name",
+        roasting_company="Dalmayr",
+        owner_id=uuid7(),
+        owner_name="Unknown owner",
     )
 
     test_coffee_service = CoffeeService(coffee_crud=coffee_crud_mock)

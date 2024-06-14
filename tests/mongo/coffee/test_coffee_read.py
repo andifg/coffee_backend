@@ -148,7 +148,13 @@ async def test_mongo_coffee_read_all_entries_with_projection(
         result = await test_crud.read(
             db_session=session,
             query={},
-            projection={"_id": 1, "name": 1, "owner_id": 1, "owner_name": 1},
+            projection={
+                "_id": 1,
+                "name": 1,
+                "roasting_company": 1,
+                "owner_id": 1,
+                "owner_name": 1,
+            },
         )
 
         assert result == [coffee_2, coffee_1]
@@ -240,6 +246,7 @@ async def test_mongo_coffee_read_batch_tests(
         Coffee(
             _id=uuid7(),
             name=faker.name(),
+            roasting_company=faker.name(),
             owner_id=uuid7(),
             owner_name=faker.name(),
         )
