@@ -9,7 +9,6 @@ from minio import Minio  # type: ignore
 
 from coffee_backend.api import router
 from coffee_backend.config.log_levels import log_levels
-from coffee_backend.config.origins import origins
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import coffee_service
 from coffee_backend.services.coffee_image import ImageService
@@ -69,7 +68,7 @@ app.include_router(router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
