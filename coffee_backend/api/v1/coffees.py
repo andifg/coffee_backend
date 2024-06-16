@@ -36,7 +36,7 @@ async def _post_coffee(
     coffee_service: CoffeeService = Depends(get_coffee_service),
 ) -> Coffee:
     coffee = Coffee(
-        **create_coffee.dict(by_alias=True),
+        **create_coffee.model_dump(by_alias=True),
         owner_id=request.state.token["sub"],
         owner_name=request.state.token["preferred_username"]
     )

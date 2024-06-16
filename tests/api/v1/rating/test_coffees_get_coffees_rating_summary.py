@@ -44,7 +44,7 @@ async def test_api_get_coffees_rating_summary(
         coffee_id=dummy_id, rating_average=4.5, rating_count=2
     )
 
-    rating_jsonable = jsonable_encoder(rating_summary.dict(by_alias=True))
+    rating_jsonable = jsonable_encoder(rating_summary.model_dump(by_alias=True))
 
     rating_service_mock.return_value = rating_summary
 

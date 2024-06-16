@@ -15,7 +15,7 @@ from pytest_docker.plugin import Services  # type: ignore
 from starlette.datastructures import Headers
 
 from coffee_backend.api import auth
-from coffee_backend.application import app, shutdown, startup
+from coffee_backend.application import app, lifespan
 from coffee_backend.schemas.coffee import Coffee
 from coffee_backend.schemas.rating import BrewingMethod, Rating
 from coffee_backend.settings import settings
@@ -269,9 +269,8 @@ async def test_app(
     monkeypatch.setattr(app.state, "mongodb_uri", mongo_service)
 
     async with AsyncClient(app=app, base_url="https://test") as client:
-        await startup()
-        yield TestApp(app.state, client)
-        await shutdown()
+        async with lifespan(app):
+            yield TestApp(app.state, client)
 
 
 @pytest.fixture()

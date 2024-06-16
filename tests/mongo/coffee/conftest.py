@@ -187,11 +187,13 @@ async def insert_coffees_with_matching_ratings(
             settings.mongodb_coffee_collection
         ].insert_many(
             [
-                coffee.dict(by_alias=True, exclude_none=True)
+                coffee.model_dump(by_alias=True, exclude_none=True)
                 for coffee in dummy_coffees
             ]
         )
 
         session.client[settings.mongodb_database][
             settings.mongodb_rating_collection
-        ].insert_many([rating.dict(by_alias=True) for rating in dummy_ratings])
+        ].insert_many(
+            [rating.model_dump(by_alias=True) for rating in dummy_ratings]
+        )

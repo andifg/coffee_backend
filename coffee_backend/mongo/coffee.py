@@ -37,7 +37,7 @@ class CoffeeCRUD:
             ValueError: If a key duplication error occurs when inserting the
                 document.
         """
-        document = coffee.dict(by_alias=True)
+        document = coffee.model_dump(by_alias=True)
         try:
             await db_session.client[self.database][
                 self.coffee_collection
@@ -80,7 +80,7 @@ class CoffeeCRUD:
 
         if documents:
             logging.debug("Received %s entries from database", len(documents))
-            return [Coffee.parse_obj(document) for document in documents]
+            return [Coffee.model_validate(document) for document in documents]
 
         raise ObjectNotFoundError("Couldn't find entry for search query")
 
@@ -110,7 +110,9 @@ class CoffeeCRUD:
                 logging.debug(
                     "Received %s entries from database", len(documents)
                 )
-                return [Coffee.parse_obj(document) for document in documents]
+                return [
+                    Coffee.model_validate(document) for document in documents
+                ]
 
             raise ObjectNotFoundError("Couldn't find entry for search query")
 
@@ -148,7 +150,7 @@ class CoffeeCRUD:
             self.coffee_collection
         ].update_one(
             {"_id": coffee_id},
-            {"$set": coffee.dict(by_alias=True, exclude={"id"})},
+            {"$set": coffee.model_dump(by_alias=True, exclude={"id"})},
         )
         if result.matched_count == 0:
             raise ObjectNotFoundError(
@@ -159,7 +161,7 @@ class CoffeeCRUD:
             db_session=db_session, query={"_id": coffee_id}
         )
         updated_coffee = search_result[0]
-        logging.debug("Updated value: %s", updated_coffee.json())
+        logging.debug("Updated value: %s", updated_coffee.model_dump_json())
         return updated_coffee
 
     async def delete(

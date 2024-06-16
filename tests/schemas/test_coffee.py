@@ -22,7 +22,7 @@ def test_coffee_creation_without_ratings() -> None:
         owner_name=owner_name,
     )
 
-    assert coffee.dict(by_alias=True) == {
+    assert coffee.model_dump(by_alias=True) == {
         "_id": UUID("123e4567-e89b-12d3-a456-426655440000"),
         "name": "Decaf",
         "roasting_company": "Starbucks",
@@ -52,7 +52,7 @@ def test_create_coffee_with_rating_summary() -> None:
         rating_average=0,
     )
 
-    assert coffee.dict(by_alias=True) == {
+    assert coffee.model_dump(by_alias=True) == {
         "_id": UUID("123e4567-e89b-12d3-a456-426655440000"),
         "name": "Decaf",
         "roasting_company": "Starbucks",

@@ -29,7 +29,10 @@ async def test_delete_existing_rating(
         session.client[settings.mongodb_database][
             settings.mongodb_rating_collection
         ].insert_many(
-            [rating_1.dict(by_alias=True), rating_2.dict(by_alias=True)]
+            [
+                rating_1.model_dump(by_alias=True),
+                rating_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = RatingCRUD(
@@ -48,7 +51,7 @@ async def test_delete_existing_rating(
             ].find()
         )
         assert len(coffees_after_delete) == 1
-        assert coffees_after_delete[0] == rating_2.dict(by_alias=True)
+        assert coffees_after_delete[0] == rating_2.model_dump(by_alias=True)
 
     assert f"Deleted rating with id {rating_1.id}" in caplog.messages
 

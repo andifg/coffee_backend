@@ -14,7 +14,7 @@ def test_create_rating_summary_schema_creation() -> None:
         rating_average=4.5,
     )
 
-    assert rating_summary.dict(by_alias=True) == {
+    assert rating_summary.model_dump(by_alias=True) == {
         "coffee_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         "rating_count": 4,
         "rating_average": 4.5,

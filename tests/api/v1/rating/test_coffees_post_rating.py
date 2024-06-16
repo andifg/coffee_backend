@@ -27,7 +27,7 @@ async def test_api_create_rating(
 
     coffee_service_mock.return_value = {}
 
-    rating_service_mock.return_value = dummy_ratings.rating_1.dict(
+    rating_service_mock.return_value = dummy_ratings.rating_1.model_dump(
         by_alias=True
     )
 
@@ -38,7 +38,9 @@ async def test_api_create_rating(
         coffee_id=dummy_ratings.rating_1.coffee_id,
     )
 
-    create_coffee_jsonable = jsonable_encoder(create_rating.dict(by_alias=True))
+    create_coffee_jsonable = jsonable_encoder(
+        create_rating.model_dump(by_alias=True)
+    )
 
     response = await test_app.client.post(
         f"/api/v1/coffees/{dummy_ratings.rating_1.coffee_id}/ratings",
@@ -48,7 +50,7 @@ async def test_api_create_rating(
 
     assert response.status_code == 201
     assert response.json() == jsonable_encoder(
-        dummy_ratings.rating_1.dict(by_alias=True)
+        dummy_ratings.rating_1.model_dump(by_alias=True)
     )
 
     rating_service_mock.assert_awaited_once_with(
@@ -77,7 +79,9 @@ async def test_api_create_rating_with_not_existing_coffee(
         coffee_id=dummy_ratings.rating_1.coffee_id,
     )
 
-    create_coffee_jsonable = jsonable_encoder(create_rating.dict(by_alias=True))
+    create_coffee_jsonable = jsonable_encoder(
+        create_rating.model_dump(by_alias=True)
+    )
 
     response = await test_app.client.post(
         f"/api/v1/coffees/{dummy_ratings.rating_1.coffee_id}/ratings",

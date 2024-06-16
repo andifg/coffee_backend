@@ -251,7 +251,7 @@ class CoffeeService:
             db_session=db_session, coffee_id=coffee_id
         )
 
-        for attribute in update_coffee.dict():
+        for attribute in update_coffee.model_dump():
             setattr(coffee, attribute, getattr(update_coffee, attribute))
 
         try:

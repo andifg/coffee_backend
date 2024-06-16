@@ -26,7 +26,10 @@ async def test_mongo_rating_read_by_id(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [rating_1.dict(by_alias=True), rating_2.dict(by_alias=True)]
+            [
+                rating_1.model_dump(by_alias=True),
+                rating_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = RatingCRUD(
@@ -95,7 +98,10 @@ async def test_mongo_rating_read_all_entries(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [rating_1.dict(by_alias=True), rating_2.dict(by_alias=True)]
+            [
+                rating_1.model_dump(by_alias=True),
+                rating_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = RatingCRUD(
@@ -139,9 +145,9 @@ async def test_mongo_rating_read_by_coffee_id(
             settings.mongodb_coffee_collection
         ].insert_many(
             [
-                rating_1.dict(by_alias=True),
-                rating_2.dict(by_alias=True),
-                rating_3.dict(by_alias=True),
+                rating_1.model_dump(by_alias=True),
+                rating_2.model_dump(by_alias=True),
+                rating_3.model_dump(by_alias=True),
             ]
         )
 
@@ -199,7 +205,9 @@ async def test_mongo_rating_read_batch_tests(
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
             settings.mongodb_rating_collection
-        ].insert_many([rating.dict(by_alias=True) for rating in test_ratings])
+        ].insert_many(
+            [rating.model_dump(by_alias=True) for rating in test_ratings]
+        )
 
     test_crud = RatingCRUD(
         settings.mongodb_database, settings.mongodb_rating_collection

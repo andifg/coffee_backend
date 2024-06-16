@@ -16,7 +16,7 @@ def test_create_coffee_schema_without_ratings() -> None:
         roasting_company="Starbucks",
     )
 
-    assert coffee.dict(by_alias=True) == {
+    assert coffee.model_dump(by_alias=True) == {
         "name": "Decaf",
         "roasting_company": "Starbucks",
         "_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),

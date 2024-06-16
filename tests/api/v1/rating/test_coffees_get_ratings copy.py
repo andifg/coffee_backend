@@ -45,8 +45,8 @@ async def test_api_get_ratings(
 
     assert response.status_code == 200
     assert response.json() == [
-        jsonable_encoder(dummy_ratings.rating_1.dict(by_alias=True)),
-        jsonable_encoder(dummy_ratings.rating_2.dict(by_alias=True)),
+        jsonable_encoder(dummy_ratings.rating_1.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_ratings.rating_2.model_dump(by_alias=True)),
     ]
 
     rating_service_mock.assert_awaited_once_with(db_session=get_db_mock)

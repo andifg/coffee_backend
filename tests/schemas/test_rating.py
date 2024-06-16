@@ -17,7 +17,7 @@ def test_rating_schema_creation() -> None:
         user_name="test_user",
     )
 
-    assert rating.dict(by_alias=True) == {
+    assert rating.model_dump(by_alias=True) == {
         "_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         "rating": 4,
         "brewing_method": "Espresso",
@@ -72,7 +72,7 @@ def test_create_rating_create_schema() -> None:
         coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
     )
 
-    assert create_rating.dict(by_alias=True) == {
+    assert create_rating.model_dump(by_alias=True) == {
         "_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
         "rating": 4,
         "brewing_method": "Espresso",

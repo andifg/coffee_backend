@@ -29,7 +29,10 @@ async def test_delete_existing_coffee(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -48,7 +51,7 @@ async def test_delete_existing_coffee(
             ].find()
         )
         assert len(coffees_after_delete) == 1
-        assert coffees_after_delete[0] == coffee_1.dict(by_alias=True)
+        assert coffees_after_delete[0] == coffee_1.model_dump(by_alias=True)
 
     assert f"Deleted coffe with id {coffee_2.id}" in caplog.messages
 

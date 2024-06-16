@@ -26,7 +26,10 @@ async def test_mongo_coffee_read_by_id(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -95,7 +98,10 @@ async def test_mongo_coffee_read_all_entries(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -137,7 +143,10 @@ async def test_mongo_coffee_read_all_entries_with_projection(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -178,7 +187,10 @@ async def test_mongo_coffee_read_mutliple_entries_by_id(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -213,7 +225,10 @@ async def test_mongo_coffee_read_by_name(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -256,7 +271,9 @@ async def test_mongo_coffee_read_batch_tests(
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
-        ].insert_many([coffee.dict(by_alias=True) for coffee in test_coffees])
+        ].insert_many(
+            [coffee.model_dump(by_alias=True) for coffee in test_coffees]
+        )
 
     test_crud = CoffeeCRUD(
         settings.mongodb_database, settings.mongodb_coffee_collection
