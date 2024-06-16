@@ -19,7 +19,7 @@ logging.basicConfig(level=log_levels.get(settings.log_level, logging.INFO))
 
 
 @asynccontextmanager
-async def lifespan(application: FastAPI) -> AsyncGenerator[FastAPI, None]:
+async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
     """Initializes the application and its processes."""
     logging.info("Starting up...")
     logging.info("Log level is %s", logging.getLogger().level)
@@ -45,7 +45,7 @@ async def lifespan(application: FastAPI) -> AsyncGenerator[FastAPI, None]:
     application.state.coffee_service = coffee_service
     application.state.rating_service = rating_service
 
-    yield application
+    yield
 
     logging.info("Shutting down...")
 
@@ -55,6 +55,7 @@ app = FastAPI(
     title="Coffee Backend -  API",
     docs_url="/api-docs",
     redoc_url=None,
+    lifespan=lifespan,
 )
 
 app.state.mongodb_uri = (
