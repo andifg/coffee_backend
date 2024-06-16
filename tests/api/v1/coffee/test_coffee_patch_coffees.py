@@ -54,9 +54,9 @@ async def test_api_patch_coffee(
         owner_name=unchanged_coffee.owner_name,
     )
 
-    coffee_jsonable = jsonable_encoder(update_coffee.dict(by_alias=True))
+    coffee_jsonable = jsonable_encoder(update_coffee.model_dump(by_alias=True))
 
-    coffee_service_mock.return_value = updated_coffee.dict(by_alias=True)
+    coffee_service_mock.return_value = updated_coffee.model_dump(by_alias=True)
 
     response = await test_app.client.patch(
         f"/api/v1/coffees/{unchanged_coffee.id}",
@@ -66,7 +66,7 @@ async def test_api_patch_coffee(
 
     assert response.status_code == 200
     assert response.json() == jsonable_encoder(
-        updated_coffee.dict(by_alias=True)
+        updated_coffee.model_dump(by_alias=True)
     )
 
     coffee_service_mock.assert_awaited_once_with(
@@ -99,7 +99,7 @@ async def test_api_patch_coffee_invalid_coffee_update_schema(
     """
     coffee = dummy_coffees.coffee_1
 
-    coffee_jsonable = jsonable_encoder(coffee.dict(by_alias=True))
+    coffee_jsonable = jsonable_encoder(coffee.model_dump(by_alias=True))
 
     response = await test_app.client.patch(
         f"/api/v1/coffees/{coffee.id}",
@@ -111,19 +111,22 @@ async def test_api_patch_coffee_invalid_coffee_update_schema(
     assert response.json() == {
         "detail": [
             {
+                "type": "extra_forbidden",
                 "loc": ["body", "_id"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
+                "msg": "Extra inputs are not permitted",
+                "input": "123e4567-e19b-12d3-a456-426655440000",
             },
             {
-                "loc": ["body", "rating_average"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
-            },
-            {
+                "type": "extra_forbidden",
                 "loc": ["body", "rating_count"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
+                "msg": "Extra inputs are not permitted",
+                "input": None,
+            },
+            {
+                "type": "extra_forbidden",
+                "loc": ["body", "rating_average"],
+                "msg": "Extra inputs are not permitted",
+                "input": None,
             },
         ]
     }
@@ -169,7 +172,7 @@ async def test_api_patch_coffees_unknown_id(
         owner_name="Unknown owner",
     )
 
-    coffee_jsonable = jsonable_encoder(update_coffee.dict(by_alias=True))
+    coffee_jsonable = jsonable_encoder(update_coffee.model_dump(by_alias=True))
 
     response = await test_app.client.patch(
         f"/api/v1/coffees/{unknown_id}",

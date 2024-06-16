@@ -26,8 +26,8 @@ async def test_api_get_coffees(
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
     coffee_service_mock.return_value = [
-        dummy_coffees.coffee_1.dict(by_alias=True),
-        dummy_coffees.coffee_2.dict(by_alias=True),
+        dummy_coffees.coffee_1.model_dump(by_alias=True),
+        dummy_coffees.coffee_2.model_dump(by_alias=True),
     ]
 
     response = await test_app.client.get(
@@ -37,8 +37,8 @@ async def test_api_get_coffees(
 
     assert response.status_code == 200
     assert response.json() == [
-        jsonable_encoder(dummy_coffees.coffee_1.dict(by_alias=True)),
-        jsonable_encoder(dummy_coffees.coffee_2.dict(by_alias=True)),
+        jsonable_encoder(dummy_coffees.coffee_1.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_coffees.coffee_2.model_dump(by_alias=True)),
     ]
 
     coffee_service_mock.assert_awaited_once_with(
@@ -103,8 +103,8 @@ async def test_api_get_coffees_with_query_params(
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
     coffee_service_mock.return_value = [
-        dummy_coffees.coffee_1.dict(by_alias=True),
-        dummy_coffees.coffee_2.dict(by_alias=True),
+        dummy_coffees.coffee_1.model_dump(by_alias=True),
+        dummy_coffees.coffee_2.model_dump(by_alias=True),
     ]
 
     response = await test_app.client.get(
@@ -114,8 +114,8 @@ async def test_api_get_coffees_with_query_params(
 
     assert response.status_code == 200
     assert response.json() == [
-        jsonable_encoder(dummy_coffees.coffee_1.dict(by_alias=True)),
-        jsonable_encoder(dummy_coffees.coffee_2.dict(by_alias=True)),
+        jsonable_encoder(dummy_coffees.coffee_1.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_coffees.coffee_2.model_dump(by_alias=True)),
     ]
 
     coffee_service_mock.assert_awaited_once_with(

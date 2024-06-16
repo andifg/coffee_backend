@@ -31,7 +31,7 @@ async def test_mongo_rating_create(
 
     assert "Stored new entry in database" in caplog.messages
     assert "Ensuring index for coffee_id attribute exists" in caplog.messages
-    assert f"Entry: {dummy_rating.dict(by_alias=True)}" in caplog.messages
+    assert f"Entry: {dummy_rating.model_dump(by_alias=True)}" in caplog.messages
 
     assert test_crud.first_rating is False
 

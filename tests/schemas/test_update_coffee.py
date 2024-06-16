@@ -18,7 +18,7 @@ def test_update_coffee_creation_without_ratings() -> None:
         owner_name="Jdoe",
     )
 
-    assert coffee.dict(by_alias=True) == {
+    assert coffee.model_dump(by_alias=True) == {
         "name": "Decaf",
         "roasting_company": "Dalmayr",
         "owner_id": UUID("018ee105-66b3-7f89-b6f3-807782e40350"),

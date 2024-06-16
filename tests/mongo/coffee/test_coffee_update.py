@@ -34,7 +34,10 @@ async def test_mongo_coffee_update_non_existing_coffee(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -84,7 +87,10 @@ async def test_mongo_coffee_update_verify_other_data_is_unchanged(
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
-            [coffee_1.dict(by_alias=True), coffee_2.dict(by_alias=True)]
+            [
+                coffee_1.model_dump(by_alias=True),
+                coffee_2.model_dump(by_alias=True),
+            ]
         )
 
     test_crud = CoffeeCRUD(
@@ -99,11 +105,11 @@ async def test_mongo_coffee_update_verify_other_data_is_unchanged(
         assert result == coffee_1
 
         assert f"Updated coffe with id {coffee_1.id}" in caplog.messages
-        assert f"Updated value: {coffee_1.json()}" in caplog.messages
+        assert f"Updated value: {coffee_1.model_dump_json()}" in caplog.messages
 
     with init_mongo.sync_probe_session.start_session() as session:
         coffee_1_check = session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].find_one({"_id": coffe_1_backup.id})
 
-        assert coffee_1_check == coffe_1_backup.dict(by_alias=True)
+        assert coffee_1_check == coffe_1_backup.model_dump(by_alias=True)

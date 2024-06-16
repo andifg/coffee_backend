@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     """
 
     build_version: str = "0.0.0"
+    origins: list[str] = ["http://localhost:5173"]
 
     host: str = "0.0.0.0"
     port: int = 8000

@@ -7,19 +7,20 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pydantic = "^1.10.5"
+pydantic = "^2.7.4"
 pymongo = "^4.3.3"
 motor = "^3.1.1"
 asyncio = "^3.4.3"
-fastapi = "^0.95.0"
+fastapi = "^0.111.0"
 uvicorn = "^0.22.0"
 httpx = "^0.24.0"
 uuid7 = "^0.1.0"
 minio = "^7.1.16"
-python-multipart = "^0.0.6"
+python-multipart = "^0.0.9"
 pyjwt = "^2.8.0"
 cryptography = "^41.0.4"
 aiohttp = "3.9.3"
+pydantic-settings = "^2.3.3"
 
 [tool.poetry.group.dev.dependencies]
 pylint-pytest = "^1.1.7"

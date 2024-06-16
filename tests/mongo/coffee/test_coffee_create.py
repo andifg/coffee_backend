@@ -29,7 +29,7 @@ async def test_mongo_coffee_create(
         await test_crud.create(db_session=session, coffee=dummy_coffee)
 
     assert "Stored new entry in database" in caplog.messages
-    assert f"Entry: {dummy_coffee.dict(by_alias=True)}" in caplog.messages
+    assert f"Entry: {dummy_coffee.model_dump(by_alias=True)}" in caplog.messages
 
     with init_mongo.sync_probe_session.start_session() as session:
         result = list(

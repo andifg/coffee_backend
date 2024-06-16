@@ -38,7 +38,7 @@ class RatingCRUD:
             ValueError: If a key duplication error occurs when inserting the
                 document.
         """
-        document = rating.dict(by_alias=True)
+        document = rating.model_dump(by_alias=True)
         try:
             await db_session.client[self.database][
                 self.rating_collection
@@ -88,7 +88,7 @@ class RatingCRUD:
 
         if documents:
             logging.debug("Received %s entries from database", len(documents))
-            return [Rating.parse_obj(document) for document in documents]
+            return [Rating.model_validate(document) for document in documents]
 
         raise ObjectNotFoundError("Couldn't find entry for search query")
 
@@ -120,7 +120,7 @@ class RatingCRUD:
             self.rating_collection
         ].update_one(
             {"_id": rating_id},
-            {"$set": rating.dict(by_alias=True, exclude={"id"})},
+            {"$set": rating.model_dump(by_alias=True, exclude={"id"})},
         )
         if result.matched_count == 0:
             raise ObjectNotFoundError(
@@ -131,7 +131,7 @@ class RatingCRUD:
             db_session=db_session, query={"_id": rating_id}
         )
         updated_rating = search_result[0]
-        logging.debug("Updated value: %s", updated_rating.json())
+        logging.debug("Updated value: %s", updated_rating.model_dump_json())
         return updated_rating
 
     async def delete(

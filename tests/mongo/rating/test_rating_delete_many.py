@@ -49,11 +49,11 @@ async def test_delete_many_for_single_coffee(
             settings.mongodb_rating_collection
         ].insert_many(
             [
-                rating_1.dict(by_alias=True),
-                rating_2.dict(by_alias=True),
-                rating_3.dict(by_alias=True),
-                rating_4.dict(by_alias=True),
-                rating_5.dict(by_alias=True),
+                rating_1.model_dump(by_alias=True),
+                rating_2.model_dump(by_alias=True),
+                rating_3.model_dump(by_alias=True),
+                rating_4.model_dump(by_alias=True),
+                rating_5.model_dump(by_alias=True),
             ]
         )
 
@@ -75,7 +75,7 @@ async def test_delete_many_for_single_coffee(
             ].find()
         )
         assert len(coffees_after_delete) == 1
-        assert coffees_after_delete[0] == rating_2.dict(by_alias=True)
+        assert coffees_after_delete[0] == rating_2.model_dump(by_alias=True)
 
     assert (
         f"Deleted ratings for query {{'coffee_id': UUID('123e4567-e19b-12d3-a456-426655440000')}}"

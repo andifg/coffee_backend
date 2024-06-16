@@ -33,7 +33,7 @@ async def test_api_create_coffee(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    coffee_service_mock.return_value = dummy_coffees.coffee_1.dict(
+    coffee_service_mock.return_value = dummy_coffees.coffee_1.model_dump(
         by_alias=True
     )
 
@@ -43,7 +43,9 @@ async def test_api_create_coffee(
         roasting_company=dummy_coffees.coffee_1.roasting_company,
     )
 
-    create_coffee_jsonable = jsonable_encoder(create_coffee.dict(by_alias=True))
+    create_coffee_jsonable = jsonable_encoder(
+        create_coffee.model_dump(by_alias=True)
+    )
 
     response = await test_app.client.post(
         "/api/v1/coffees/",
@@ -53,7 +55,7 @@ async def test_api_create_coffee(
 
     assert response.status_code == 201
     assert response.json() == jsonable_encoder(
-        dummy_coffees.coffee_1.dict(by_alias=True)
+        dummy_coffees.coffee_1.model_dump(by_alias=True)
     )
 
     coffee_service_mock.assert_awaited_once_with(
@@ -86,7 +88,7 @@ async def test_api_create_invalid_coffee(
 
     del coffee.id
 
-    coffee_jsonable = jsonable_encoder(coffee.dict(by_alias=True))
+    coffee_jsonable = jsonable_encoder(coffee.model_dump(by_alias=True))
 
     response = await test_app.client.post(
         "/api/v1/coffees/",
@@ -98,29 +100,41 @@ async def test_api_create_invalid_coffee(
     assert response.json() == {
         "detail": [
             {
+                "type": "missing",
                 "loc": ["body", "_id"],
-                "msg": "field required",
-                "type": "value_error.missing",
+                "msg": "Field required",
+                "input": {
+                    "name": "Colombian",
+                    "roasting_company": "Starbucks",
+                    "owner_id": "018ee105-66b3-7f89-b6f3-807782e40350",
+                    "owner_name": "Jdoe",
+                    "rating_count": None,
+                    "rating_average": None,
+                },
             },
             {
+                "type": "extra_forbidden",
                 "loc": ["body", "owner_id"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
+                "msg": "Extra inputs are not permitted",
+                "input": "018ee105-66b3-7f89-b6f3-807782e40350",
             },
             {
+                "type": "extra_forbidden",
                 "loc": ["body", "owner_name"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
+                "msg": "Extra inputs are not permitted",
+                "input": "Jdoe",
             },
             {
-                "loc": ["body", "rating_average"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
-            },
-            {
+                "type": "extra_forbidden",
                 "loc": ["body", "rating_count"],
-                "msg": "extra fields not permitted",
-                "type": "value_error.extra",
+                "msg": "Extra inputs are not permitted",
+                "input": None,
+            },
+            {
+                "type": "extra_forbidden",
+                "loc": ["body", "rating_average"],
+                "msg": "Extra inputs are not permitted",
+                "input": None,
             },
         ]
     }
