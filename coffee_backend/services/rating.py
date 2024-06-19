@@ -8,7 +8,6 @@ from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.rating import RatingCRUD
 from coffee_backend.mongo.rating import rating_crud as rating_crud_instance
 from coffee_backend.schemas.rating import Rating
-from coffee_backend.schemas.rating_summary import RatingSummary
 
 
 class RatingService:
@@ -59,67 +58,12 @@ class RatingService:
 
         """
         try:
-            coffees = await self.rating_crud.read(
+            ratings = await self.rating_crud.read(
                 db_session=db_session, query={}
             )
         except ObjectNotFoundError:
             return []
-        return coffees
-
-    async def list_ids_for_coffee(
-        self, db_session: AgnosticClientSession, coffee_id: UUID
-    ) -> List[UUID]:
-        """Retrieve a list of all rating ids for a certain coffee.
-
-        This method returns a list of all ratings for a certain coffee. This is
-        done via the cofee_id field in the rating object.
-
-
-        Args:
-            db_session (AgnosticClientSession): The database session object.
-
-        Returns:
-            List[UUID]: A list of rating ids.
-
-        """
-        try:
-            ratings = await self.rating_crud.read(
-                db_session=db_session,
-                query={"coffee_id": coffee_id},
-                projection={},
-            )
-        except ObjectNotFoundError:
-            return []
-        return [rating.id for rating in ratings]
-
-    async def create_rating_summary_for_coffee(
-        self,
-        db_session: AgnosticClientSession,
-        coffee_id: UUID,
-    ) -> RatingSummary:
-        """Create rating summary for a certain coffee."""
-
-        try:
-            ratings = await self.rating_crud.read(
-                db_session=db_session,
-                query={"coffee_id": coffee_id},
-                projection={},
-            )
-        except ObjectNotFoundError:
-            return RatingSummary(
-                coffee_id=coffee_id,
-                rating_average=0,
-                rating_count=0,
-            )
-
-        rating_count = len(ratings)
-        rating_average = sum(rating.rating for rating in ratings) / rating_count
-
-        return RatingSummary(
-            coffee_id=coffee_id,
-            rating_average=rating_average,
-            rating_count=rating_count,
-        )
+        return ratings
 
     async def get_by_id(
         self, db_session: AgnosticClientSession, rating_id: UUID
