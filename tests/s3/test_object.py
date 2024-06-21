@@ -25,9 +25,11 @@ def test_object_create(
 
     assert test_object_crud.bucket_name == "coffee-images"
 
-    dummy_coffee_image1 = dummy_coffee_images.image_1
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_image1.file, "jpeg"
+        filepath="original",
+        filename="uploaded_file.jpeg",
+        file=dummy_coffee_images.image_1.file,
+        file_type="jpeg",
     )
 
     response = init_minio.get_object(
@@ -61,10 +63,17 @@ def test_object_create_second_version(
     assert test_object_crud.bucket_name == "coffee-images"
 
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_images.image_1.file, "jpeg"
+        filepath="original",
+        filename="uploaded_file.jpeg",
+        file=dummy_coffee_images.image_1.file,
+        file_type="jpeg",
     )
+
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_images.image_2.file, "jpeg"
+        filepath="original",
+        filename="uploaded_file.jpeg",
+        file=dummy_coffee_images.image_2.file,
+        file_type="jpeg",
     )
 
     response = init_minio.get_object(
@@ -97,10 +106,15 @@ def test_object_read(
     assert test_object_crud.bucket_name == "coffee-images"
 
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_images.image_1.file, "jpeg"
+        filepath="original",
+        filename="uploaded_file.jpeg",
+        file=dummy_coffee_images.image_1.file,
+        file_type="jpeg",
     )
 
-    returned_object, filetype = test_object_crud.read("uploaded_file.jpeg")
+    returned_object, filetype = test_object_crud.read(
+        filename="uploaded_file.jpeg", filepath="original"
+    )
 
     assert filetype == "jpeg"
 
@@ -120,7 +134,9 @@ def test_object_read_nonexisting_image(init_minio: Minio) -> None:
     assert test_object_crud.bucket_name == "coffee-images"
 
     with pytest.raises(ObjectNotFoundError):
-        test_object_crud.read("nonexisting_object")
+        test_object_crud.read(
+            filename="nonexisting_object", filepath="original"
+        )
 
 
 def test_object_read_uncatched_error(init_minio: Minio) -> None:
@@ -147,7 +163,9 @@ def test_object_read_uncatched_error(init_minio: Minio) -> None:
     assert test_object_crud.bucket_name == "coffee-images"
 
     with pytest.raises(S3Error, match="^S3 operation failed.*"):
-        test_object_crud.read("nonexisting_object")
+        test_object_crud.read(
+            filename="nonexisting_object", filepath="original"
+        )
 
 
 def test_object_delete(
@@ -170,17 +188,25 @@ def test_object_delete(
     )
 
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_images.image_1.file, "jpeg"
+        filepath="original",
+        filename="uploaded_file.jpeg",
+        file=dummy_coffee_images.image_1.file,
+        file_type="jpeg",
     )
 
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_images.image_2.file, "jpeg"
+        filepath="original",
+        filename="uploaded_file.jpeg",
+        file=dummy_coffee_images.image_2.file,
+        file_type="jpeg",
     )
 
-    test_object_crud.delete("uploaded_file.jpeg")
+    test_object_crud.delete(filename="uploaded_file.jpeg", filepath="original")
 
     with pytest.raises(ObjectNotFoundError):
-        test_object_crud.read("uploaded_file.jpeg")
+        test_object_crud.read(
+            filename="uploaded_file.jpeg", filepath="original"
+        )
 
 
 def test_object_delete_verify_other_objects_stay_untouched(
@@ -199,19 +225,29 @@ def test_object_delete_verify_other_objects_stay_untouched(
     )
 
     test_object_crud.create(
-        "uploaded_file.jpeg", dummy_coffee_images.image_1.file, "jpeg"
+        filename="uploaded_file.jpeg",
+        filepath="original",
+        file=dummy_coffee_images.image_1.file,
+        file_type="jpeg",
     )
 
     test_object_crud.create(
-        "uploaded_file_2.jpeg", dummy_coffee_images.image_2.file, "jpeg"
+        filename="uploaded_file_2.jpeg",
+        filepath="original",
+        file=dummy_coffee_images.image_2.file,
+        file_type="jpeg",
     )
 
-    test_object_crud.delete("uploaded_file.jpeg")
+    test_object_crud.delete(filename="uploaded_file.jpeg", filepath="original")
 
     with pytest.raises(ObjectNotFoundError):
-        test_object_crud.read("uploaded_file.jpeg")
+        test_object_crud.read(
+            filename="uploaded_file.jpeg", filepath="original"
+        )
 
-    returned_object, filetype = test_object_crud.read("uploaded_file_2.jpeg")
+    returned_object, filetype = test_object_crud.read(
+        filename="uploaded_file_2.jpeg", filepath="original"
+    )
 
     assert filetype == "jpeg"
 
@@ -233,4 +269,4 @@ def test_object_delete_nonexisting_image(init_minio: Minio) -> None:
 
     assert test_object_crud.bucket_name == "coffee-images"
 
-    test_object_crud.delete("nonexisting_object")
+    test_object_crud.delete(filename="nonexisting_object", filepath="original")

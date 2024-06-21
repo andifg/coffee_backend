@@ -6,7 +6,6 @@ from minio.deleteobjects import DeleteObject  # type: ignore
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.s3.types.readable import Readable
-from coffee_backend.settings import settings
 
 
 class ObjectCRUD:
@@ -24,7 +23,9 @@ class ObjectCRUD:
         self.client = minio_client
         self.bucket_name = bucket_name
 
-    def create(self, filename: str, file: Readable, file_type: str) -> None:
+    def create(
+        self, filepath: str, filename: str, file: Readable, file_type: str
+    ) -> None:
         """Create an object in the S3 bucket.
 
         Args:
@@ -38,7 +39,7 @@ class ObjectCRUD:
         """
         result = self.client.put_object(
             bucket_name=self.bucket_name,
-            object_name=f"{settings.minio_original_images_prefix}/{filename}",
+            object_name=f"{filepath}/{filename}",
             data=file,
             length=-1,
             part_size=10 * 1024 * 1024,
@@ -49,15 +50,13 @@ class ObjectCRUD:
             + f"version-id: {result.version_id}"
         )
 
-    def read(
-        self, filename: str, prefix: str = settings.minio_original_images_prefix
-    ) -> Tuple[bytes, str]:
+    def read(self, filepath: str, filename: str) -> Tuple[bytes, str]:
         """Read an object from the S3 bucket.
 
         Args:
+            filepath (str): The filepath inside s3 of the object
             filename (str): The name of the object to be read.
-            prefix (str): The prefix of the object to be deleted. Defaults to
-                the original images prefix.
+
 
         Returns:
             Tuple[bytes, str]: A tuple containing the object data (bytes) and
@@ -71,7 +70,7 @@ class ObjectCRUD:
         try:
             result = self.client.get_object(
                 bucket_name=self.bucket_name,
-                object_name=f"{prefix}/" + filename,
+                object_name=f"{filepath}/" + filename,
             )
         except S3Error as error:
             if error.code == "NoSuchKey":
@@ -83,14 +82,15 @@ class ObjectCRUD:
         return result.data, filetype
 
     def delete(
-        self, filename: str, prefix: str = settings.minio_original_images_prefix
+        self,
+        filepath: str,
+        filename: str,
     ) -> None:
         """Delete an object from the S3 bucket recursively with all versions.
 
         Args:
+            filepath (str): The filepath inside s3 of the object to be deleted
             filename (str): The name of the object to be deleted.
-            prefix (str): The prefix of the object to be deleted. Defaults to
-                the original images prefix.
 
         Returns:
             None
@@ -101,7 +101,7 @@ class ObjectCRUD:
             DeleteObject(object.object_name, object.version_id)
             for object in self.client.list_objects(
                 "coffee-images",
-                f"{prefix}/{filename}",
+                f"{filepath}/{filename}",
                 recursive=True,
                 include_version=True,
             )
