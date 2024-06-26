@@ -14,7 +14,7 @@ from coffee_backend.api.deps import (
 from coffee_backend.mongo.database import get_db
 from coffee_backend.schemas.coffee import Coffee, CreateCoffee, UpdateCoffee
 from coffee_backend.services.coffee import CoffeeService
-from coffee_backend.services.coffee_image import ImageService
+from coffee_backend.services.image_service import ImageService
 from coffee_backend.services.rating import RatingService
 
 router = APIRouter()

@@ -2,7 +2,7 @@ from fastapi import Request
 
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import CoffeeService
-from coffee_backend.services.coffee_image import ImageService
+from coffee_backend.services.image_service import ImageService
 from coffee_backend.services.rating import RatingService
 
 

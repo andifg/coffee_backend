@@ -4,12 +4,13 @@ from uuid import UUID
 import pytest
 from fastapi import HTTPException
 
-from coffee_backend.services.coffee_image import ImageService
+from coffee_backend.schemas import CoffeeDrinkImage
+from coffee_backend.services.image_service import ImageService
 from tests.conftest import DummyImages
 
 
 @pytest.mark.asyncio
-async def test_coffee_image_service_add_coffee_image(
+async def test_image_service_add_coffee_image(
     dummy_coffee_images: DummyImages,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
@@ -24,32 +25,40 @@ async def test_coffee_image_service_add_coffee_image(
     """
     image_1 = dummy_coffee_images.image_1
 
-    coffee_image_crud = MagicMock()
-    coffee_image_crud.create.return_value = None
+    object_image_crud = MagicMock()
+    object_image_crud.create.return_value = None
 
     coffe_uuid = UUID("123e4567-e19b-12d3-a456-426655440000")
 
-    test_coffee_service = ImageService(coffee_images_crud=coffee_image_crud)
+    test_coffee_service = ImageService(object_crud=object_image_crud)
 
-    test_coffee_service.add_coffee_image(image_1, coffe_uuid)
+    test_coffee_service.add_image(
+        CoffeeDrinkImage(
+            key=coffe_uuid,
+            file=image_1,
+        )
+    )
 
-    assert coffee_image_crud.create.call_count == 1
+    assert object_image_crud.create.call_count == 1
 
-    coffee_image_crud.create.assert_called_once_with(
-        "123e4567-e19b-12d3-a456-426655440000", image_1.file, "jpeg"
+    object_image_crud.create.assert_called_once_with(
+        filepath="coffee_drink/original",
+        filename="123e4567-e19b-12d3-a456-426655440000",
+        file=image_1.file,
+        file_type="jpeg",
     )
 
     assert (
-        "Added coffee image for coffee with id "
+        "Added object coffee_drink with key "
         "123e4567-e19b-12d3-a456-426655440000" in caplog.text
     )
 
 
 @pytest.mark.asyncio
-async def test_coffee_image_service_add_coffee_without_filename(
+async def test_image_service_add_coffee_without_filename(
     dummy_coffee_images: DummyImages,
 ) -> None:
-    """Test the CoffeeImagesService add_coffee_image method when no filename
+    """Test the ImagesService add_object method when no filename
         is provided.
 
     Args:
@@ -64,12 +73,17 @@ async def test_coffee_image_service_add_coffee_without_filename(
 
     image_1.filename = None
 
-    coffee_image_crud = MagicMock()
-    coffee_image_crud.create.return_value = None
+    object_image_crud = MagicMock()
+    object_image_crud.create.return_value = None
 
     coffe_uuid = UUID("123e4567-e19b-12d3-a456-426655440000")
 
-    test_coffee_service = ImageService(coffee_images_crud=coffee_image_crud)
+    test_coffee_service = ImageService(object_crud=object_image_crud)
 
     with pytest.raises(HTTPException):
-        test_coffee_service.add_coffee_image(image_1, coffe_uuid)
+        test_coffee_service.add_image(
+            CoffeeDrinkImage(
+                key=coffe_uuid,
+                file=image_1,
+            )
+        )

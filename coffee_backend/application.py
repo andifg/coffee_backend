@@ -11,7 +11,7 @@ from coffee_backend.api import router
 from coffee_backend.config.log_levels import log_levels
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import coffee_service
-from coffee_backend.services.coffee_image import ImageService
+from coffee_backend.services.image_service import ImageService
 from coffee_backend.services.rating import rating_service
 from coffee_backend.settings import settings
 

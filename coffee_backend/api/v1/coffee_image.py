@@ -10,7 +10,7 @@ from coffee_backend.api.deps import (
 )
 from coffee_backend.mongo.database import get_db
 from coffee_backend.services.coffee import CoffeeService
-from coffee_backend.services.coffee_image import ImageService
+from coffee_backend.services.image_service import ImageService
 
 router = APIRouter()
 
