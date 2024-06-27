@@ -1,22 +1,28 @@
-FROM python:3.11.1 as base
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4 as base
 
-ARG POETRY_VERSION=1.3.2
+RUN microdnf install python3.11 -y && /bin/python3.11 -m ensurepip --upgrade && \
+    pip3 install --upgrade pip && pip3 install poetry==1.8.3
 
-RUN pip install poetry==${POETRY_VERSION}
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1
 
 WORKDIR /app
 
 COPY ./pyproject.toml /app/
 
-RUN poetry config virtualenvs.create false
+RUN poetry install --without dev --no-root
 
-RUN poetry install --without dev
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4
 
-FROM python:3.11.1
+RUN microdnf install python3.11 -y
 
-COPY --from=base /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=base /app/.venv /app/.venv
 
 WORKDIR /app
+
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
 
 COPY ./coffee_backend ./coffee_backend
 
