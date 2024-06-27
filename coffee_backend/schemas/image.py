@@ -27,4 +27,14 @@ class CoffeeDrinkImage(S3Object):
 
     def __post_init__(self) -> None:
         self.contextPath = "coffee_drink"
-        self.type = "coffee_drink"
+        self.type = ImageType.COFFEE_DRINK
+
+
+@dataclass
+class CoffeeBeanImage(S3Object):
+    key: UUID
+    file: UploadFile
+
+    def __post_init__(self) -> None:
+        self.contextPath = "coffee_bean"
+        self.type = ImageType.COFFEE_BEAN

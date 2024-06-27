@@ -1,5 +1,5 @@
 from .coffee import Coffee, CreateCoffee, UpdateCoffee
-from .image import CoffeeDrinkImage, ImageType, S3Object
+from .image import CoffeeBeanImage, CoffeeDrinkImage, ImageType, S3Object
 from .rating import BrewingMethod, CreateRating, Rating
 
 __all__ = [
@@ -10,6 +10,7 @@ __all__ = [
     "BrewingMethod",
     "CreateRating",
     "CoffeeDrinkImage",
+    "CoffeeBeanImage",
     "S3Object",
     "ImageType",
 ]

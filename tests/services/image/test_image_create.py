@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from uuid import UUID
 
 import pytest
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 
 from coffee_backend.schemas import CoffeeDrinkImage
 from coffee_backend.services.image_service import ImageService
@@ -69,9 +69,11 @@ async def test_image_service_add_coffee_without_filename(
         pytest.raises(HTTPException): An HTTPException should be raised when
         attempting to add a coffee image without a filename.
     """
-    image_1 = dummy_coffee_images.image_1
 
-    image_1.filename = None
+    file_without_content_type = UploadFile(
+        filename=None,
+        file=dummy_coffee_images.image_1.file,
+    )
 
     object_image_crud = MagicMock()
     object_image_crud.create.return_value = None
@@ -83,7 +85,7 @@ async def test_image_service_add_coffee_without_filename(
     with pytest.raises(HTTPException):
         test_coffee_service.add_image(
             CoffeeDrinkImage(
-                key=coffe_uuid,
-                file=image_1,
+                key=coffe_uuid,  #
+                file=file_without_content_type,
             )
         )

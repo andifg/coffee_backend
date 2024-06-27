@@ -32,7 +32,7 @@ async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
     )
 
     application.state.coffee_images_service = ImageService(
-        coffee_images_crud=ObjectCRUD(
+        object_crud=ObjectCRUD(
             minio_client=Minio(
                 f"{settings.minio_host}:{settings.minio_port}",
                 settings.minio_access_key,

@@ -8,11 +8,12 @@ from uuid_extensions.uuid7 import uuid7
 from coffee_backend.api.authorization import authorize_coffee_edit_delete
 from coffee_backend.application import app
 from coffee_backend.mongo.database import get_db
+from coffee_backend.schemas import ImageType
 from tests.conftest import DummyCoffees, TestApp
 
 
 @patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
-@patch("coffee_backend.services.coffee_image.ImageService.delete_coffee_image")
+@patch("coffee_backend.services.image_service.ImageService.delete_image")
 @patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
@@ -21,7 +22,7 @@ async def test_api_delete_coffee_by_id(
     coffee_service_mock: AsyncMock,
     coffee_service_get_by_id_mock: AsyncMock,
     rating_service_mock: AsyncMock,
-    coffee_image_service_mock: AsyncMock,
+    image_service_mock: AsyncMock,
     authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
     dummy_coffees: DummyCoffees,
@@ -35,7 +36,7 @@ async def test_api_delete_coffee_by_id(
         coffee_service_get_by_id_mock (AsyncMock): The mocked CoffeeService
             get_by_id method.
         rating_service_mock (AsyncMock): The mocked RatingService.
-        coffee_image_service_mock (AsyncMock): The mocked ImageService.
+        image_service_mock (AsyncMock): The mocked ImageService.
         authorize_coffee_edit_delete_mock (MagicMock): The mocked authorization check.
         test_app (TestApp): The test application.
         dummy_coffees (DummyCoffees): The dummy coffees fixture.
@@ -67,8 +68,8 @@ async def test_api_delete_coffee_by_id(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
     )
 
-    coffee_image_service_mock.assert_called_once_with(
-        coffee_id=dummy_coffees.coffee_1.id
+    image_service_mock.assert_called_once_with(
+        object_id=dummy_coffees.coffee_1.id, image_type=ImageType.COFFEE_BEAN
     )
 
     coffee_service_mock.assert_awaited_once_with(
@@ -79,7 +80,7 @@ async def test_api_delete_coffee_by_id(
 
 
 @patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
-@patch("coffee_backend.services.coffee_image.ImageService.delete_coffee_image")
+@patch("coffee_backend.services.image_service.ImageService.delete_image")
 @patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
@@ -88,7 +89,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
     coffee_service_mock: AsyncMock,
     coffee_service_get_by_id_mock: AsyncMock,
     rating_service_mock: AsyncMock,
-    coffee_image_service_mock: AsyncMock,
+    image_service_mock: AsyncMock,
     authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
     mock_security_dependency: Generator,
@@ -101,7 +102,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
         coffee_service_get_by_id_mock (AsyncMock): The mocked CoffeeService
             get_by_id method.
         rating_service_mock (AsyncMock): The mocked RatingService.
-        coffee_image_service_mock (AsyncMock): The mocked ImageService.
+        image_service_mock (AsyncMock): The mocked ImageService.
         authorize_coffee_edit_delete_mock (MagicMock): The mocked authorization check.
         test_app (TestApp): The test application.
         dummy_coffees (DummyCoffees): The dummy coffees fixture.
@@ -135,7 +136,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
 
     rating_service_mock.assert_not_awaited()
 
-    coffee_image_service_mock.assert_not_called()
+    image_service_mock.assert_not_called()
 
     coffee_service_mock.assert_not_awaited()
 

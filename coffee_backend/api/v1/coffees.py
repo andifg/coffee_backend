@@ -12,7 +12,7 @@ from coffee_backend.api.deps import (
     get_rating_service,
 )
 from coffee_backend.mongo.database import get_db
-from coffee_backend.schemas.coffee import Coffee, CreateCoffee, UpdateCoffee
+from coffee_backend.schemas import Coffee, CreateCoffee, ImageType, UpdateCoffee
 from coffee_backend.services.coffee import CoffeeService
 from coffee_backend.services.image_service import ImageService
 from coffee_backend.services.rating import RatingService
@@ -181,7 +181,9 @@ async def _delete_coffee_by_id(
         db_session=db_session, coffee_id=coffee_id
     )
 
-    image_service.delete_coffee_image(coffee_id=coffee_id)
+    image_service.delete_image(
+        object_id=coffee_id, image_type=ImageType.COFFEE_BEAN
+    )
 
     await coffee_service.delete_coffee(
         db_session=db_session, coffee_id=coffee_id
