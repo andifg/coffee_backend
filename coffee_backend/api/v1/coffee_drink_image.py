@@ -6,12 +6,12 @@ from motor.core import AgnosticClientSession
 
 from coffee_backend.api.deps import (
     get_coffee_images_service,
-    get_rating_service
+    get_rating_service,
 )
 from coffee_backend.mongo.database import get_db
-from coffee_backend.schemas import ImageType, CoffeeDrinkImage
-from coffee_backend.services.rating import RatingService
+from coffee_backend.schemas import CoffeeDrinkImage, ImageType
 from coffee_backend.services.image_service import ImageService
+from coffee_backend.services.rating import RatingService
 
 router = APIRouter()
 
@@ -30,7 +30,8 @@ async def _create_image(
     """Upload a coffee drink image associated with a coffee drink.
 
     Args:
-        coffee_drink_id (UUID): The ID of the coffee drink associated with the image.
+        coffee_drink_id (UUID): The ID of the coffee drink associated with the
+            image.
         file (UploadFile): The image file to upload.
 
     Returns:
@@ -41,8 +42,7 @@ async def _create_image(
     """
 
     await coffee_drink_service.get_by_id(db_session, coffee_drink_id)
-    image_service.upload_image(CoffeeDrinkImage, coffee_drink_id, file)
-
+    image_service.add_image(CoffeeDrinkImage(file=file, key=coffee_drink_id))
 
     return Response(status_code=201)
 
@@ -67,7 +67,8 @@ async def _get_image(
     """Retrieve a coffee drink image associated with a coffee drink.
 
     Args:
-        coffee_drink_id (UUID): The ID of the coffee drink associated with the image.
+        coffee_drink_id (UUID): The ID of the coffee drink associated with the
+            image.
 
     Returns:
         Response: A response containing the coffee image.
