@@ -31,7 +31,7 @@ services:
         sleep 20
         mc alias set minio http://minio:9000 minio-root-user minio-root-password
         mc mb minio/coffee-images
-        mc event add minio/coffee-images arn:minio:sqs::COFFEE:kafka --event "put,delete" --prefix original/
+        mc event add minio/coffee-images arn:minio:sqs::COFFEE:kafka --event "put,delete" --prefix **/original/
   kafka:
     image: docker.io/bitnami/kafka:3.6
     ports:
