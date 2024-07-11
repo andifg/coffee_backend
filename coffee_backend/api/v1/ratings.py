@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from motor.core import AgnosticClientSession
 
 from coffee_backend.api.deps import get_coffee_service, get_rating_service
@@ -23,8 +23,18 @@ router = APIRouter()
 async def _list_ratings(
     db_session: AgnosticClientSession = Depends(get_db),
     rating_service: RatingService = Depends(get_rating_service),
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=5, ge=1, description="Page size"),
+    first_rating_id: Optional[UUID] = None,
+    coffee_id: Optional[UUID] = None,
 ) -> List[Rating]:
-    return await rating_service.list(db_session=db_session)
+    return await rating_service.list(
+        db_session=db_session,
+        coffee_id=coffee_id,
+        page_size=page_size,
+        page=page,
+        first_rating_id=first_rating_id,
+    )
 
 
 @router.delete(

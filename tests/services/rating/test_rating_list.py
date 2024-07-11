@@ -32,7 +32,7 @@ async def test_rating_service_read(
         db_session=db_session_mock,
     )
     coffee_crud_mock.read.assert_awaited_once_with(
-        db_session=db_session_mock, query={}
+        db_session=db_session_mock, query={}, limit=5, skip=0
     )
 
     assert result == [rating_1, rating_2]
