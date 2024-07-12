@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["aguentner <45008199+andifg@users.noreply.github.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -36,6 +37,7 @@ faker = "^25.2.0"
 black = "^24.4.2"
 aioresponses = "^0.7.6"
 pytest = "^8.2.2"
+coverage = "^7.6.0"
 
 
 [tool.pytest.ini_options]
