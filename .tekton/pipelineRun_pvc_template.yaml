@@ -41,7 +41,7 @@ spec:
   - name: source-branch
     value: {{source_branch}}
   - name: abort-deployment-branch-pattern
-    value: "^rennovate"
+    value: ^rennovate
   workspaces:
   - name: ssh-creds
     secret:
