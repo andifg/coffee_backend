@@ -40,6 +40,8 @@ spec:
     value: {{target_branch}}
   - name: source-branch
     value: {{source_branch}}
+  - name: abort-deployment-branch-pattern
+    value: ^rennovate
   workspaces:
   - name: ssh-creds
     secret:
@@ -62,5 +64,3 @@ spec:
           requests:
             storage: 300Mi
         volumeMode: Filesystem
-
-        
