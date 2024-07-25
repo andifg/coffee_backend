@@ -201,6 +201,7 @@ def dummy_ratings() -> DummyRatings:
         coffee_id=UUID("123e4567-e19b-12d3-a456-426655440000"),
         user_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
         user_name="Jdoe",
+        image_exists=True,
     )
 
     rating_2 = Rating(
@@ -210,6 +211,7 @@ def dummy_ratings() -> DummyRatings:
         coffee_id=UUID("123e4567-e59b-12d3-a456-426655440000"),
         user_id=UUID("123e4567-e89b-12d3-a456-426655440000"),
         user_name="Berty",
+        image_exists=False,
     )
 
     return DummyRatings(rating_1=rating_1, rating_2=rating_2)

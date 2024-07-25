@@ -83,6 +83,7 @@ async def _create_coffee_rating(
         coffee_id=create_rating.coffee_id,
         user_id=request.state.token["sub"],
         user_name=request.state.token["preferred_username"],
+        image_exists=getattr(create_rating, "image_exists", False),
     )
 
     return await rating_service.add_rating(db_session=db_session, rating=rating)
