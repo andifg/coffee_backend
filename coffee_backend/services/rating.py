@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List, Optional
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -46,7 +46,14 @@ class RatingService:
             rating=rating, db_session=db_session
         )
 
-    async def list(self, db_session: AgnosticClientSession) -> List[Rating]:
+    async def list(
+        self,
+        db_session: AgnosticClientSession,
+        coffee_id: Optional[UUID] = None,
+        page: int = 1,
+        page_size: int = 5,
+        first_rating_id: Optional[UUID] = None,
+    ) -> List[Rating]:
         """Retrieve a list of coffee ratings from the database.
 
         Args:
@@ -58,8 +65,20 @@ class RatingService:
 
         """
         try:
+
+            query: dict[str, Any] = {}
+
+            if first_rating_id:
+                query["_id"] = {"$lte": first_rating_id}
+
+            if coffee_id:
+                query["coffee_id"] = coffee_id
+
             ratings = await self.rating_crud.read(
-                db_session=db_session, query={}
+                db_session=db_session,
+                query=query,
+                limit=(page_size),
+                skip=(page_size * (page - 1)),
             )
         except ObjectNotFoundError:
             return []
@@ -81,7 +100,8 @@ class RatingService:
         """
         try:
             coffees = await self.rating_crud.read(
-                db_session=db_session, query={"_id": rating_id}
+                db_session=db_session,
+                query={"_id": rating_id},
             )
         except ObjectNotFoundError as error:
             raise HTTPException(

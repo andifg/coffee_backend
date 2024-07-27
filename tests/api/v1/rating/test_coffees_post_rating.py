@@ -36,6 +36,7 @@ async def test_api_create_rating(
         rating=dummy_ratings.rating_1.rating,
         brewing_method=dummy_ratings.rating_1.brewing_method,
         coffee_id=dummy_ratings.rating_1.coffee_id,
+        image_exists=dummy_ratings.rating_1.image_exists,
     )
 
     create_coffee_jsonable = jsonable_encoder(

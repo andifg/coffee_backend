@@ -64,6 +64,8 @@ class RatingCRUD:
         self,
         db_session: AgnosticClientSession,
         query: Dict[str, Any],
+        limit: int = 50,
+        skip: int = 0,
         projection: Optional[Dict[str, int]] = None,
     ) -> List[Rating]:
         """Find ratings based on mongo search query.
@@ -83,7 +85,11 @@ class RatingCRUD:
             doc
             async for doc in db_session.client[self.database][
                 self.rating_collection
-            ].find(filter=query, projection=projection)
+            ]
+            .find(filter=query, projection=projection)
+            .sort("_id", -1)
+            .limit(limit)
+            .skip(skip)
         ]
 
         if documents:
@@ -128,7 +134,7 @@ class RatingCRUD:
             )
         logging.info("Updated rating with id %s", rating_id)
         search_result = await self.read(
-            db_session=db_session, query={"_id": rating_id}
+            db_session=db_session, query={"_id": rating_id}, limit=1, skip=0
         )
         updated_rating = search_result[0]
         logging.debug("Updated value: %s", updated_rating.model_dump_json())

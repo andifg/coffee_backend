@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from coffee_backend.schemas import BrewingMethod, CreateRating, Rating
 
 
-def test_rating_schema_creation() -> None:
+def test_rating_schema_creation_without_image() -> None:
     """Test creation of rating schema."""
     rating = Rating(
         _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
@@ -24,6 +24,30 @@ def test_rating_schema_creation() -> None:
         "coffee_id": UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
         "user_id": UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
         "user_name": "test_user",
+        "image_exists": False,
+    }
+
+
+def test_rating_schema_creation_with_image() -> None:
+    """Test creation of rating schema."""
+    rating = Rating(
+        _id=UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
+        rating=4,
+        brewing_method=BrewingMethod.ESPRESSO,
+        coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        user_id=UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
+        user_name="test_user",
+        image_exists=True,
+    )
+
+    assert rating.model_dump(by_alias=True) == {
+        "_id": UUID("c9ba633e-c37c-11ed-afb4-acde48001122"),
+        "rating": 4,
+        "brewing_method": "Espresso",
+        "coffee_id": UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        "user_id": UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
+        "user_name": "test_user",
+        "image_exists": True,
     }
 
 
@@ -70,6 +94,7 @@ def test_create_rating_create_schema() -> None:
         rating=4,
         brewing_method=BrewingMethod.ESPRESSO,
         coffee_id=UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        image_exists=False,
     )
 
     assert create_rating.model_dump(by_alias=True) == {
@@ -77,4 +102,5 @@ def test_create_rating_create_schema() -> None:
         "rating": 4,
         "brewing_method": "Espresso",
         "coffee_id": UUID("c9ba633e-c38c-11ed-afb4-acde48001122"),
+        "image_exists": False,
     }

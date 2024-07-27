@@ -39,7 +39,13 @@ class Rating(BaseModel):
         examples=[UUID("123e4567-e89b-12d3-a456-426655440000")],
     )
     user_name: str = Field(
-        ..., description="Name of the user created the rating"
+        ...,
+        description="Name of the user created the rating",
+        examples=["Andi", "John"],
+    )
+    image_exists: bool = Field(
+        default=False,
+        description="Whether rating was submitted with or without a picture",
     )
 
 
@@ -63,4 +69,8 @@ class CreateRating(BaseModel):
         ...,
         description="The id of the coffee",
         examples=[UUID("123e4567-e89b-12d3-a456-426655440001")],
+    )
+    image_exists: bool = Field(
+        default=False,
+        description="Whether rating was submitted with or without a picture",
     )

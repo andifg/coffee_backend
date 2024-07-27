@@ -111,7 +111,7 @@ async def test_mongo_rating_read_all_entries(
     async with await init_mongo.asncy_session.start_session() as session:
         result = await test_crud.read(db_session=session, query={})
 
-        assert result == [rating_1, rating_2]
+        assert result == [rating_2, rating_1]
 
         assert "Received 2 entries from database" in caplog.messages
 
@@ -161,7 +161,7 @@ async def test_mongo_rating_read_by_coffee_id(
             query={"coffee_id": rating_1.coffee_id},
         )
 
-        assert result == [rating_1, rating_2]
+        assert result == [rating_2, rating_1]
 
         assert "Received 2 entries from database" in caplog.messages
 
@@ -219,8 +219,8 @@ async def test_mongo_rating_read_batch_tests(
             query={"_id": {"$in": [rating.id for rating in test_ratings[:50]]}},
         )
 
-        assert result == test_ratings[:50]
+        assert len(result) == 50
+
+        assert result == test_ratings[:50][::-1]
 
         assert "Received 50 entries from database" in caplog.messages
-
-        assert len(result) == 50
