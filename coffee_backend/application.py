@@ -11,8 +11,8 @@ from coffee_backend.api import router
 from coffee_backend.config.log_levels import log_levels
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import coffee_service
+from coffee_backend.services.drink import drink_service
 from coffee_backend.services.image_service import ImageService
-from coffee_backend.services.rating import rating_service
 from coffee_backend.settings import settings
 
 logging.basicConfig(level=log_levels.get(settings.log_level, logging.INFO))
@@ -43,7 +43,7 @@ async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
         )
     )
     application.state.coffee_service = coffee_service
-    application.state.rating_service = rating_service
+    application.state.drink_service = drink_service
 
     yield
 
