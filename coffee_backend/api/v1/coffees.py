@@ -177,8 +177,8 @@ async def _delete_coffee_by_id(
 
     authorize_coffee_edit_delete(request, coffee_to_delete.owner_id)
 
-    await drink_service.delete_by_coffee_id(
-        db_session=db_session, coffee_id=coffee_id
+    await drink_service.delete_by_coffee_bean_id(
+        db_session=db_session, coffee_bean_id=coffee_id
     )
 
     image_service.delete_image(

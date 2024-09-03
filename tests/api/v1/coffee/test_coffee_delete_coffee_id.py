@@ -14,7 +14,7 @@ from tests.conftest import DummyCoffees, TestApp
 
 @patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.image_service.ImageService.delete_image")
-@patch("coffee_backend.services.rating.DrinkService.delete_by_coffee_id")
+@patch("coffee_backend.services.drink.DrinkService.delete_by_coffee_bean_id")
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
@@ -65,7 +65,7 @@ async def test_api_delete_coffee_by_id(
     )
 
     drink_service_mock.assert_awaited_once_with(
-        db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
+        db_session=get_db_mock, coffee_bean_id=dummy_coffees.coffee_1.id
     )
 
     image_service_mock.assert_called_once_with(
@@ -81,7 +81,7 @@ async def test_api_delete_coffee_by_id(
 
 @patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.image_service.ImageService.delete_image")
-@patch("coffee_backend.services.rating.DrinkService.delete_by_coffee_id")
+@patch("coffee_backend.services.drink.DrinkService.delete_by_coffee_bean_id")
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio

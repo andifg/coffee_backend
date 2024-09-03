@@ -93,7 +93,7 @@ def test_coffee_service_pipeline_create_without_owner_id() -> None:
         {"$sort": {"_id": -1}},
         {
             "$lookup": {
-                "from": "rating",
+                "from": "drink",
                 "localField": "_id",
                 "foreignField": "coffee_id",
                 "as": "rating",
@@ -131,7 +131,7 @@ def test_coffee_service_pipeline_create_without_owner_id() -> None:
         {"$sort": {"_id": -1}},
         {
             "$lookup": {
-                "from": "rating",
+                "from": "drink",
                 "localField": "_id",
                 "foreignField": "coffee_id",
                 "as": "rating",
@@ -177,7 +177,7 @@ def test_coffee_service_pipeline_create_with_owner_id() -> None:
         {"$match": {"owner_id": owner_id}},
         {
             "$lookup": {
-                "from": "rating",
+                "from": "drink",
                 "localField": "_id",
                 "foreignField": "coffee_id",
                 "as": "rating",
@@ -223,7 +223,7 @@ def test_coffee_service_pipeline_create_with_first_id() -> None:
         {"$match": {"_id": {"$lte": first_id}}},
         {
             "$lookup": {
-                "from": "rating",
+                "from": "drink",
                 "localField": "_id",
                 "foreignField": "coffee_id",
                 "as": "rating",

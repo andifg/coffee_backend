@@ -138,7 +138,7 @@ class CoffeeService:
             [
                 {
                     "$lookup": {
-                        "from": "rating",
+                        "from": "drink",
                         "localField": "_id",
                         "foreignField": "coffee_bean_id",
                         "as": "rating",
