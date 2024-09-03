@@ -12,7 +12,7 @@ from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyImages, TestApp
 
 
-@patch("coffee_backend.services.rating.DrinkService.get_by_id")
+@patch("coffee_backend.services.drink.DrinkService.get_by_id")
 @patch("coffee_backend.services.image_service.ImageService.add_image")
 @pytest.mark.asyncio
 async def test_api_create_coffee_drink_image(
@@ -42,10 +42,10 @@ async def test_api_create_coffee_drink_image(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    coffee_drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
+    drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
 
     response = await test_app.client.post(
-        f"/api/v1/coffee-drink/{coffee_drink_id}/image",
+        f"/api/v1/drinks/{drink_id}/image",
         files={
             "file": (
                 "testfile.jpeg",
@@ -62,7 +62,7 @@ async def test_api_create_coffee_drink_image(
     app.dependency_overrides = {}
 
 
-@patch("coffee_backend.services.rating.DrinkService.get_by_id")
+@patch("coffee_backend.services.drink.DrinkService.get_by_id")
 @pytest.mark.asyncio
 async def test_api_create_image_for_nonexisting_coffee_drink(
     drink_service_mock: AsyncMock,
@@ -90,10 +90,10 @@ async def test_api_create_image_for_nonexisting_coffee_drink(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    coffee_drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
+    drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
 
     response = await test_app.client.post(
-        f"/api/v1/coffee-drink/{coffee_drink_id}/image",
+        f"/api/v1/drinks/{drink_id}/image",
         files={
             "file": (
                 "testfile.jpeg",
