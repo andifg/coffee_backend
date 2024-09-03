@@ -16,8 +16,7 @@ from starlette.datastructures import Headers
 
 from coffee_backend.api import auth
 from coffee_backend.application import app, lifespan
-from coffee_backend.schemas.coffee import Coffee
-from coffee_backend.schemas.rating import BrewingMethod, Rating
+from coffee_backend.schemas import BrewingMethod, Coffee, Drink
 from coffee_backend.settings import settings
 
 logging.getLogger().setLevel(logging.DEBUG)
@@ -55,18 +54,17 @@ class TestDBSessions:
 
 
 @dataclass
-class DummyRatings:
-    """Wrapper for coffee dummy objects.
+class DummyDrinks:
+    """Wrapper for drink dummy objects.
 
     Attributes:
-        coffee_1 (Coffee): Dummy coffee instance with ratings.
-        coffee_2 (Coffee): Another dummy coffee instance with ratings.
-        coffee_without_ratings(Coffee): Dummy coffee without ratings.
+        drink_1 (Drink): Dummy drink instance with coffee_bean_id.
+        drink_2 (Drink): Dummy drink without coffee_bean_id
 
     """
 
-    rating_1: Rating
-    rating_2: Rating
+    drink_1: Drink
+    drink_2: Drink
 
 
 @dataclass
@@ -191,30 +189,28 @@ def dummy_coffees() -> DummyCoffees:
 
 
 @pytest.fixture()
-def dummy_ratings() -> DummyRatings:
-    """Fixture to provide dummy coffees for tests."""
+def dummy_drinks() -> DummyDrinks:
+    """Fixture to provide dummy drinks for tests."""
 
-    rating_1 = Rating(
+    drink_1 = Drink(
         _id=UUID("123e4567-e20b-12d3-a456-426655440000"),
         rating=5,
         brewing_method=BrewingMethod.ESPRESSO,
-        coffee_id=UUID("123e4567-e19b-12d3-a456-426655440000"),
+        coffee_bean_id=UUID("123e4567-e19b-12d3-a456-426655440000"),
         user_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
         user_name="Jdoe",
-        image_exists=True,
-    )
-
-    rating_2 = Rating(
-        _id=UUID("123e4567-e60b-12d3-a456-426655440000"),
-        rating=4.5,
-        brewing_method=BrewingMethod.ESPRESSO,
-        coffee_id=UUID("123e4567-e59b-12d3-a456-426655440000"),
-        user_id=UUID("123e4567-e89b-12d3-a456-426655440000"),
-        user_name="Berty",
         image_exists=False,
     )
 
-    return DummyRatings(rating_1=rating_1, rating_2=rating_2)
+    drink_2 = Drink(
+        _id=UUID("123e4567-e60b-12d3-a456-426655440000"),
+        rating=4.5,
+        user_id=UUID("123e4567-e89b-12d3-a456-426655440000"),
+        user_name="Berty",
+        image_exists=True,
+    )
+
+    return DummyDrinks(drink_1=drink_1, drink_2=drink_2)
 
 
 @pytest.fixture()

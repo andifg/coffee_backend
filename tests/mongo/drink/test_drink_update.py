@@ -4,88 +4,88 @@ import pytest
 from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
-from coffee_backend.mongo.rating import RatingCRUD
+from coffee_backend.mongo.drink import DrinkCRUD
 from coffee_backend.settings import settings
-from tests.conftest import DummyRatings, TestDBSessions
+from tests.conftest import DummyDrinks, TestDBSessions
 
 
 @pytest.mark.asyncio
-async def test_mongo_rating_update_rating(
+async def test_mongo_drink_update_drink(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """
-    Test method to check the functionality of updating rating in MongoDB.
+    Test method to check the functionality of updating drink in MongoDB.
 
     Args:
         init_mongo (TestDBSessions): A fixture to provide the MongoDB test
             database session.
-        dummy_ratings (DummyRatings): A fixture to provide dummy rating data.
+        dummy_drinks (DummyDrinks): A fixture to provide dummy drink data.
         caplog (pytest.LogCaptureFixture): A fixture to capture logs.
     """
 
-    rating_1 = dummy_ratings.rating_1
-    rating_2 = dummy_ratings.rating_2
+    drink_1 = dummy_drinks.drink_1
+    drink_2 = dummy_drinks.drink_2
 
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
             settings.mongodb_coffee_collection
         ].insert_many(
             [
-                rating_1.model_dump(by_alias=True),
-                rating_2.model_dump(by_alias=True),
+                drink_1.model_dump(by_alias=True),
+                drink_2.model_dump(by_alias=True),
             ]
         )
 
-    test_crud = RatingCRUD(
+    test_crud = DrinkCRUD(
         settings.mongodb_database, settings.mongodb_coffee_collection
     )
 
     async with await init_mongo.asncy_session.start_session() as session:
-        result = await test_crud.update(session, rating_2.id, rating_1)
+        result = await test_crud.update(session, drink_2.id, drink_1)
 
-        rating_1.id = rating_2.id
+        drink_1.id = drink_2.id
 
-        assert result == rating_1
+        assert result == drink_1
 
-        assert f"Updated rating with id {rating_1.id}" in caplog.messages
-        assert f"Updated value: {rating_1.model_dump_json()}" in caplog.messages
+        assert f"Updated drink with id {drink_1.id}" in caplog.messages
+        assert f"Updated value: {drink_1.model_dump_json()}" in caplog.messages
 
 
 @pytest.mark.asyncio
-async def test_mongo_rating_update_non_existing_rating(
+async def test_mongo_drink_update_non_existing_drink(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
 ) -> None:
-    """Test updating a non-existing rating in the MongoDB collection using
-        RatingCRUD.update().
+    """Test updating a non-existing drink in the MongoDB collection using
+        DrinkCRUD.update().
 
     Args:
         init_mongo: A fixture that sets up the test database connection.
-        dummy_ratings: A fixture that provides dummy rating objects for testing.
+        dummy_drinks: A fixture that provides dummy drink objects for testing.
 
 
     Raises:
-        ObjectNotFoundError: If the given rating UUID does not exist in the
+        ObjectNotFoundError: If the given drink UUID does not exist in the
             database.
 
     """
-    rating_1 = dummy_ratings.rating_1
-    rating_2 = dummy_ratings.rating_2
+    drink_1 = dummy_drinks.drink_1
+    drink_2 = dummy_drinks.drink_2
 
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
-            settings.mongodb_rating_collection
+            settings.mongodb_drink_collection
         ].insert_many(
             [
-                rating_1.model_dump(by_alias=True),
-                rating_2.model_dump(by_alias=True),
+                drink_1.model_dump(by_alias=True),
+                drink_2.model_dump(by_alias=True),
             ]
         )
 
-    test_crud = RatingCRUD(
-        settings.mongodb_database, settings.mongodb_rating_collection
+    test_crud = DrinkCRUD(
+        settings.mongodb_database, settings.mongodb_drink_collection
     )
 
     non_existing_uuid = uuid7()
@@ -93,19 +93,19 @@ async def test_mongo_rating_update_non_existing_rating(
     with pytest.raises(ObjectNotFoundError) as not_found_error:
         async with await init_mongo.asncy_session.start_session() as session:
             await test_crud.update(
-                db_session=session, rating_id=non_existing_uuid, rating=rating_2
+                db_session=session, drink_id=non_existing_uuid, drink=drink_2
             )
 
     assert (
         str(not_found_error.value)
-        == f"Rating with id {non_existing_uuid} not found in collection"
+        == f"Drink with id {non_existing_uuid} not found in collection"
     )
 
 
 @pytest.mark.asyncio
 async def test_mongo_coffee_update_verify_other_data_is_unchanged(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """
@@ -122,38 +122,38 @@ async def test_mongo_coffee_update_verify_other_data_is_unchanged(
             during the test.
     """
 
-    rating_1 = dummy_ratings.rating_1
-    rating_2 = dummy_ratings.rating_2
+    drink_1 = dummy_drinks.drink_1
+    drink_2 = dummy_drinks.drink_2
 
-    rating_1_backup = copy.deepcopy(rating_1)
+    drink_1_backup = copy.deepcopy(drink_1)
 
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
-            settings.mongodb_rating_collection
+            settings.mongodb_drink_collection
         ].insert_many(
             [
-                rating_1.model_dump(by_alias=True),
-                rating_2.model_dump(by_alias=True),
+                drink_1.model_dump(by_alias=True),
+                drink_2.model_dump(by_alias=True),
             ]
         )
 
-    test_crud = RatingCRUD(
-        settings.mongodb_database, settings.mongodb_rating_collection
+    test_crud = DrinkCRUD(
+        settings.mongodb_database, settings.mongodb_drink_collection
     )
 
     async with await init_mongo.asncy_session.start_session() as session:
-        result = await test_crud.update(session, rating_2.id, rating_1)
+        result = await test_crud.update(session, drink_2.id, drink_1)
 
-        rating_1.id = rating_2.id
+        drink_1.id = drink_2.id
 
-        assert result == rating_1
+        assert result == drink_1
 
-        assert f"Updated rating with id {rating_1.id}" in caplog.messages
-        assert f"Updated value: {rating_1.model_dump_json()}" in caplog.messages
+        assert f"Updated drink with id {drink_1.id}" in caplog.messages
+        assert f"Updated value: {drink_1.model_dump_json()}" in caplog.messages
 
     with init_mongo.sync_probe_session.start_session() as session:
         coffee_1_check = session.client[settings.mongodb_database][
-            settings.mongodb_rating_collection
-        ].find_one({"_id": rating_1_backup.id})
+            settings.mongodb_drink_collection
+        ].find_one({"_id": drink_1_backup.id})
 
-        assert coffee_1_check == rating_1_backup.model_dump(by_alias=True)
+        assert coffee_1_check == drink_1_backup.model_dump(by_alias=True)

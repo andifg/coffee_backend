@@ -5,65 +5,65 @@ from faker import Faker
 from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
-from coffee_backend.mongo.rating import RatingCRUD
-from coffee_backend.schemas.rating import BrewingMethod, Rating
+from coffee_backend.mongo.drink import DrinkCRUD
+from coffee_backend.schemas import BrewingMethod, Drink
 from coffee_backend.settings import settings
-from tests.conftest import DummyRatings, TestDBSessions
+from tests.conftest import DummyDrinks, TestDBSessions
 
 
 @pytest.mark.asyncio
-async def test_delete_many_for_single_coffee(
+async def test_delete_many_drinks_for_single_coffee(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test deleting all ratings for an existing coffee record
+    """Test deleting all drinks for an existing coffee record
         from the database.
 
     Args:
         init_mongo (TestDBSessions): Fixture for initializing the MongoDB test
             database.
-        dummy_ratings (DummyRatings): Fixture providing dummy rating objects
+        dummy_drinks (DummyDrinks): Fixture providing dummy drink objects
             for testing.
         caplog (pytest.LogCaptureFixture): Fixture for capturing log messages.
     """
-    rating_1 = dummy_ratings.rating_1
-    rating_2 = dummy_ratings.rating_2
+    drink_1 = dummy_drinks.drink_1
+    drink_2 = dummy_drinks.drink_2
 
     fake = Faker()
 
-    rating_3, rating_4, rating_5 = [
-        Rating(
+    drink_3, drink_4, drink_5 = [
+        Drink(
             _id=uuid7(),
             brewing_method=BrewingMethod.ESPRESSO,
             user_id=uuid7(),
             user_name=fake.name(),
             rating=4.5,
-            coffee_id=rating_1.coffee_id,
+            coffee_bean_id=drink_1.coffee_bean_id,
         )
         for _ in range(3)
     ]
 
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
-            settings.mongodb_rating_collection
+            settings.mongodb_drink_collection
         ].insert_many(
             [
-                rating_1.model_dump(by_alias=True),
-                rating_2.model_dump(by_alias=True),
-                rating_3.model_dump(by_alias=True),
-                rating_4.model_dump(by_alias=True),
-                rating_5.model_dump(by_alias=True),
+                drink_1.model_dump(by_alias=True),
+                drink_2.model_dump(by_alias=True),
+                drink_3.model_dump(by_alias=True),
+                drink_4.model_dump(by_alias=True),
+                drink_5.model_dump(by_alias=True),
             ]
         )
 
-    test_crud = RatingCRUD(
-        settings.mongodb_database, settings.mongodb_rating_collection
+    test_crud = DrinkCRUD(
+        settings.mongodb_database, settings.mongodb_drink_collection
     )
 
     async with await init_mongo.asncy_session.start_session() as session:
         result = await test_crud.delete_many(
-            session, {"coffee_id": rating_1.coffee_id}
+            session, {"coffee_bean_id": drink_1.coffee_bean_id}
         )
 
         assert result is True
@@ -71,14 +71,14 @@ async def test_delete_many_for_single_coffee(
     with init_mongo.sync_probe_session.start_session() as session:
         coffees_after_delete = list(
             session.client[settings.mongodb_database][
-                settings.mongodb_rating_collection
+                settings.mongodb_drink_collection
             ].find()
         )
         assert len(coffees_after_delete) == 1
-        assert coffees_after_delete[0] == rating_2.model_dump(by_alias=True)
+        assert coffees_after_delete[0] == drink_2.model_dump(by_alias=True)
 
     assert (
-        f"Deleted ratings for query {{'coffee_id': UUID('123e4567-e19b-12d3-a456-426655440000')}}"
+        f"Deleted drinks for query {{'coffee_bean_id': UUID('123e4567-e19b-12d3-a456-426655440000')}}"
         in caplog.messages
     )
 
@@ -86,23 +86,23 @@ async def test_delete_many_for_single_coffee(
 @pytest.mark.asyncio
 async def test_delete_many_non_existent_query(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test deleting with a query that does not match to any ratings record.
+    """Test deleting with a query that does not match to any drinks record.
 
     Args:
         init_mongo (TestDBSessions): Fixture for initializing the MongoDB test
             database.
-        dummy_ratings (DummyRatings): Fixture providing dummy rating objects
+        dummy_drinks (DummyDrinks): Fixture providing dummy drink objects
             for testing.
         caplog (pytest.LogCaptureFixture): Fixture for capturing log messages.
     """
 
     unkown_id = uuid7()
 
-    test_crud = RatingCRUD(
-        settings.mongodb_database, settings.mongodb_rating_collection
+    test_crud = DrinkCRUD(
+        settings.mongodb_database, settings.mongodb_drink_collection
     )
 
     with pytest.raises(ObjectNotFoundError) as not_found_error:
@@ -111,5 +111,5 @@ async def test_delete_many_non_existent_query(
 
     assert (
         str(not_found_error.value)
-        == f"No ratings found for query {{'coffee_id': UUID('{unkown_id}')}}"
+        == f"No drinks found for query {{'coffee_id': UUID('{unkown_id}')}}"
     )

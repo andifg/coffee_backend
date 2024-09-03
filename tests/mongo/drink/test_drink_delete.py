@@ -2,80 +2,80 @@ import pytest
 from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
-from coffee_backend.mongo.rating import RatingCRUD
+from coffee_backend.mongo.drink import DrinkCRUD
 from coffee_backend.settings import settings
-from tests.conftest import DummyRatings, TestDBSessions
+from tests.conftest import DummyDrinks, TestDBSessions
 
 
 @pytest.mark.asyncio
-async def test_delete_existing_rating(
+async def test_delete_existing_drink(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test deleting an existing coffee record from the database.
+    """Test deleting an existing drink record from the database.
 
     Args:
         init_mongo (TestDBSessions): Fixture for initializing the MongoDB test
             database.
-        dummy_ratings (DummyRatings): Fixture providing dummy rating objects
+        dummy_drinks (DummyDrinks): Fixture providing dummy drink objects
             for testing.
         caplog (pytest.LogCaptureFixture): Fixture for capturing log messages.
     """
-    rating_1 = dummy_ratings.rating_1
-    rating_2 = dummy_ratings.rating_2
+    drink_1 = dummy_drinks.drink_1
+    drink_2 = dummy_drinks.drink_2
 
     with init_mongo.sync_probe_session.start_session() as session:
         session.client[settings.mongodb_database][
-            settings.mongodb_rating_collection
+            settings.mongodb_drink_collection
         ].insert_many(
             [
-                rating_1.model_dump(by_alias=True),
-                rating_2.model_dump(by_alias=True),
+                drink_1.model_dump(by_alias=True),
+                drink_2.model_dump(by_alias=True),
             ]
         )
 
-    test_crud = RatingCRUD(
-        settings.mongodb_database, settings.mongodb_rating_collection
+    test_crud = DrinkCRUD(
+        settings.mongodb_database, settings.mongodb_drink_collection
     )
 
     async with await init_mongo.asncy_session.start_session() as session:
-        result = await test_crud.delete(session, rating_1.id)
+        result = await test_crud.delete(session, drink_1.id)
 
         assert result is True
 
     with init_mongo.sync_probe_session.start_session() as session:
-        coffees_after_delete = list(
+        drinks_after_delete = list(
             session.client[settings.mongodb_database][
-                settings.mongodb_rating_collection
+                settings.mongodb_drink_collection
             ].find()
         )
-        assert len(coffees_after_delete) == 1
-        assert coffees_after_delete[0] == rating_2.model_dump(by_alias=True)
+        assert len(drinks_after_delete) == 1
+        assert drinks_after_delete[0] == drink_2.model_dump(by_alias=True)
 
-    assert f"Deleted rating with id {rating_1.id}" in caplog.messages
+    assert f"Deleted drink with id {drink_1.id}" in caplog.messages
 
 
 @pytest.mark.asyncio
-async def test_delete_nonexistent_rating(
+async def test_delete_nonexistent_drink(
     init_mongo: TestDBSessions,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test deleting a non-existent rating record from the database.
+    """Test deleting a non-existent drink record from the database.
 
     Args:
         init_mongo (TestDBSessions): Fixture for initializing the MongoDB test
             database.
-        dummy_ratings (DummyRatings): Fixture providing dummy rating objects
+        dummy_drinks (DummyDrinks): Fixture providing dummy drink objects
             for testing.
         caplog (pytest.LogCaptureFixture): Fixture for capturing log messages.
     """
 
     unkown_id = uuid7()
 
-    test_crud = RatingCRUD(
-        settings.mongodb_database, settings.mongodb_rating_collection
+    test_crud = DrinkCRUD(
+        settings.mongodb_database, settings.mongodb_drink_collection
     )
 
     with pytest.raises(ObjectNotFoundError) as not_found_error:
@@ -84,5 +84,5 @@ async def test_delete_nonexistent_rating(
 
     assert (
         str(not_found_error.value)
-        == f"Rating with id {unkown_id} not found in collection"
+        == f"Drink with id {unkown_id} not found in collection"
     )
