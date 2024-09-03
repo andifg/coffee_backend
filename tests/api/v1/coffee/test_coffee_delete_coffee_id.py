@@ -14,14 +14,14 @@ from tests.conftest import DummyCoffees, TestApp
 
 @patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.image_service.ImageService.delete_image")
-@patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
+@patch("coffee_backend.services.rating.DrinkService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id(
     coffee_service_mock: AsyncMock,
     coffee_service_get_by_id_mock: AsyncMock,
-    rating_service_mock: AsyncMock,
+    drink_service_mock: AsyncMock,
     image_service_mock: AsyncMock,
     authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
@@ -35,7 +35,7 @@ async def test_api_delete_coffee_by_id(
         coffee_service_mock (AsyncMock): The mocked CoffeeService delete coffee method.
         coffee_service_get_by_id_mock (AsyncMock): The mocked CoffeeService
             get_by_id method.
-        rating_service_mock (AsyncMock): The mocked RatingService.
+        drink_service_mock (AsyncMock): The mocked DrinkService.
         image_service_mock (AsyncMock): The mocked ImageService.
         authorize_coffee_edit_delete_mock (MagicMock): The mocked authorization check.
         test_app (TestApp): The test application.
@@ -64,7 +64,7 @@ async def test_api_delete_coffee_by_id(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
     )
 
-    rating_service_mock.assert_awaited_once_with(
+    drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock, coffee_id=dummy_coffees.coffee_1.id
     )
 
@@ -81,14 +81,14 @@ async def test_api_delete_coffee_by_id(
 
 @patch("coffee_backend.api.v1.coffees.authorize_coffee_edit_delete")
 @patch("coffee_backend.services.image_service.ImageService.delete_image")
-@patch("coffee_backend.services.rating.RatingService.delete_by_coffee_id")
+@patch("coffee_backend.services.rating.DrinkService.delete_by_coffee_id")
 @patch("coffee_backend.services.coffee.CoffeeService.get_by_id")
 @patch("coffee_backend.services.coffee.CoffeeService.delete_coffee")
 @pytest.mark.asyncio
 async def test_api_delete_coffee_by_id_with_unkown_id(
     coffee_service_mock: AsyncMock,
     coffee_service_get_by_id_mock: AsyncMock,
-    rating_service_mock: AsyncMock,
+    drink_service_mock: AsyncMock,
     image_service_mock: AsyncMock,
     authorize_coffee_edit_delete_mock: MagicMock,
     test_app: TestApp,
@@ -101,7 +101,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
         coffee_service_mock (AsyncMock): The mocked CoffeeService delete coffee method.
         coffee_service_get_by_id_mock (AsyncMock): The mocked CoffeeService
             get_by_id method.
-        rating_service_mock (AsyncMock): The mocked RatingService.
+        drink_service_mock (AsyncMock): The mocked DrinkService.
         image_service_mock (AsyncMock): The mocked ImageService.
         authorize_coffee_edit_delete_mock (MagicMock): The mocked authorization check.
         test_app (TestApp): The test application.
@@ -134,7 +134,7 @@ async def test_api_delete_coffee_by_id_with_unkown_id(
 
     authorize_coffee_edit_delete_mock.assert_not_called()
 
-    rating_service_mock.assert_not_awaited()
+    drink_service_mock.assert_not_awaited()
 
     image_service_mock.assert_not_called()
 

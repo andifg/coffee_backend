@@ -4,14 +4,11 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from fastapi.responses import Response
 from motor.core import AgnosticClientSession
 
-from coffee_backend.api.deps import (
-    get_coffee_images_service,
-    get_rating_service,
-)
+from coffee_backend.api.deps import get_coffee_images_service, get_drink_service
 from coffee_backend.mongo.database import get_db
 from coffee_backend.schemas import CoffeeDrinkImage, ImageType
+from coffee_backend.services.drink import DrinkService
 from coffee_backend.services.image_service import ImageService
-from coffee_backend.services.rating import RatingService
 
 router = APIRouter()
 
@@ -25,7 +22,7 @@ async def _create_image(
     ),
     db_session: AgnosticClientSession = Depends(get_db),
     image_service: ImageService = Depends(get_coffee_images_service),
-    coffee_drink_service: RatingService = Depends(get_rating_service),
+    coffee_drink_service: DrinkService = Depends(get_drink_service),
 ) -> Response:
     """Upload a coffee drink image associated with a coffee drink.
 

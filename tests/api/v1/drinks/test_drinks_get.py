@@ -8,24 +8,24 @@ from fastapi.encoders import jsonable_encoder
 
 from coffee_backend.application import app
 from coffee_backend.mongo.database import get_db
-from tests.conftest import DummyCoffees, DummyRatings, TestApp
+from tests.conftest import DummyDrinks, TestApp
 
 
-@patch("coffee_backend.services.rating.RatingService.list")
+@patch("coffee_backend.services.drink.DrinkService.list")
 @pytest.mark.asyncio
-async def test_api_get_ratings(
-    rating_service_mock: AsyncMock,
+async def test_api_get_drinks(
+    drink_service_mock: AsyncMock,
     test_app: TestApp,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     mock_security_dependency: Generator,
 ) -> None:
-    """Test the API endpoint to retrieve a list of ratings.
+    """Test the API endpoint to retrieve a list of drinks.
 
     Args:
-        rating_service_mock (AsyncMock): An asynchronous mock object for the
-            RatingService.
+        drink_service_mock (AsyncMock): An asynchronous mock object for the
+            DrinkService.
         test_app (TestApp): An instance of the TestApp for testing.
-        dummy_ratings (DummyRatings): A fixture providing dummy rating data.
+        dummy_drinks (DummyDrinks): A fixture providing dummy drink data.
         mock_security_dependency (Generator): Fixture to mock the authentication
             and authorization check within api to always return True.
     """
@@ -34,84 +34,84 @@ async def test_api_get_ratings(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    rating_service_mock.return_value = [
-        dummy_ratings.rating_1,
-        dummy_ratings.rating_2,
+    drink_service_mock.return_value = [
+        dummy_drinks.drink_1,
+        dummy_drinks.drink_2,
     ]
 
     response = await test_app.client.get(
-        "/api/v1/ratings",
+        "/api/v1/drinks",
         headers={"Content-Type": "application/json"},
     )
 
     assert response.status_code == 200
     assert response.json() == [
-        jsonable_encoder(dummy_ratings.rating_1.model_dump(by_alias=True)),
-        jsonable_encoder(dummy_ratings.rating_2.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_drinks.drink_1.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_drinks.drink_2.model_dump(by_alias=True)),
     ]
 
-    rating_service_mock.assert_awaited_once_with(
+    drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock,
-        coffee_id=None,
+        coffee_bean_id=None,
         page=1,
         page_size=5,
-        first_rating_id=None,
+        first_drink_id=None,
     )
 
     app.dependency_overrides = {}
 
 
-@patch("coffee_backend.services.rating.RatingService.list")
+@patch("coffee_backend.services.drink.DrinkService.list")
 @pytest.mark.asyncio
-async def test_api_get_ratings_with_query_params(
-    rating_service_mock: AsyncMock,
+async def test_api_get_drinks_with_query_params(
+    drink_service_mock: AsyncMock,
     test_app: TestApp,
-    dummy_ratings: DummyRatings,
+    dummy_drinks: DummyDrinks,
     mock_security_dependency: Generator,
 ) -> None:
     get_db_mock = AsyncMock()
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    rating_service_mock.return_value = [
-        dummy_ratings.rating_1,
-        dummy_ratings.rating_2,
+    drink_service_mock.return_value = [
+        dummy_drinks.drink_1,
+        dummy_drinks.drink_2,
     ]
 
     response = await test_app.client.get(
-        "/api/v1/ratings?coffee_id=0668fdc6-cf0d-7855-8000-24d389e2cbb7&page=1&page_size=5&first_rating_id=0668fdc7-5d12-7ddb-8000-53ff75679f05",
+        "/api/v1/drinks?coffee_bean_id=0668fdc6-cf0d-7855-8000-24d389e2cbb7&page=1&page_size=5&first_drink_id=0668fdc7-5d12-7ddb-8000-53ff75679f05",
         headers={"Content-Type": "application/json"},
     )
 
     assert response.status_code == 200
     assert response.json() == [
-        jsonable_encoder(dummy_ratings.rating_1.model_dump(by_alias=True)),
-        jsonable_encoder(dummy_ratings.rating_2.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_drinks.drink_1.model_dump(by_alias=True)),
+        jsonable_encoder(dummy_drinks.drink_2.model_dump(by_alias=True)),
     ]
 
-    rating_service_mock.assert_awaited_once_with(
+    drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock,
-        coffee_id=UUID("0668fdc6-cf0d-7855-8000-24d389e2cbb7"),
+        coffee_bean_id=None,
         page=1,
         page_size=5,
-        first_rating_id=UUID("0668fdc7-5d12-7ddb-8000-53ff75679f05"),
+        first_drink_id=UUID("0668fdc7-5d12-7ddb-8000-53ff75679f05"),
     )
 
     app.dependency_overrides = {}
 
 
-@patch("coffee_backend.services.rating.RatingService.list")
+@patch("coffee_backend.services.drink.DrinkService.list")
 @pytest.mark.asyncio
-async def test_api_get_ratings_with_emtpy_crud_response(
-    rating_service_mock: AsyncMock,
+async def test_api_get_drinks_with_emtpy_crud_response(
+    drink_service_mock: AsyncMock,
     test_app: TestApp,
     mock_security_dependency: Generator,
 ) -> None:
-    """Test the rating 'get ratings' endpoint with an empty rating database
+    """Test the drink 'get drinks' endpoint with an empty drink database
         collection.
 
     Args:
-        rating_service_mock (AsyncMock): A mocked RatingService.list method.
+        drink_service_mock (AsyncMock): A mocked DrinkService.list method.
         test_app (TestApp): An instance of the TestApp class for making test
             requests.
         mock_security_dependency (Generator): Fixture to mock the authentication
@@ -121,22 +121,22 @@ async def test_api_get_ratings_with_emtpy_crud_response(
 
     app.dependency_overrides[get_db] = lambda: get_db_mock
 
-    rating_service_mock.return_value = []
+    drink_service_mock.return_value = []
 
     response = await test_app.client.get(
-        "/api/v1/ratings",
+        "/api/v1/drinks",
         headers={"Content-Type": "application/json"},
     )
 
     assert response.status_code == 200
     assert response.json() == []
 
-    rating_service_mock.assert_awaited_once_with(
+    drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock,
-        coffee_id=None,
+        coffee_bean_id=None,
         page_size=5,
         page=1,
-        first_rating_id=None,
+        first_drink_id=None,
     )
 
     app.dependency_overrides = {}

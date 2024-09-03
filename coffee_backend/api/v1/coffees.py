@@ -9,13 +9,13 @@ from coffee_backend.api.authorization import authorize_coffee_edit_delete
 from coffee_backend.api.deps import (
     get_coffee_images_service,
     get_coffee_service,
-    get_rating_service,
+    get_drink_service,
 )
 from coffee_backend.mongo.database import get_db
 from coffee_backend.schemas import Coffee, CreateCoffee, ImageType, UpdateCoffee
 from coffee_backend.services.coffee import CoffeeService
+from coffee_backend.services.drink import DrinkService
 from coffee_backend.services.image_service import ImageService
-from coffee_backend.services.rating import RatingService
 
 router = APIRouter()
 
@@ -152,7 +152,7 @@ async def _delete_coffee_by_id(
     request: Request,
     db_session: AgnosticClientSession = Depends(get_db),
     coffee_service: CoffeeService = Depends(get_coffee_service),
-    rating_service: RatingService = Depends(get_rating_service),
+    drink_service: DrinkService = Depends(get_drink_service),
     image_service: ImageService = Depends(get_coffee_images_service),
 ) -> Response:
     """
@@ -164,7 +164,7 @@ async def _delete_coffee_by_id(
             object loaded via fastapi depends
         coffee_service (CoffeeService): The CoffeeService dependency loaded via
             fastapi depends
-        rating_service (RatingService): The RatingService dependency loaded via
+        drink_service (DrinkService): The DrinkService dependency loaded via
             fastapi depends
 
     Returns:
@@ -177,7 +177,7 @@ async def _delete_coffee_by_id(
 
     authorize_coffee_edit_delete(request, coffee_to_delete.owner_id)
 
-    await rating_service.delete_by_coffee_id(
+    await drink_service.delete_by_coffee_id(
         db_session=db_session, coffee_id=coffee_id
     )
 

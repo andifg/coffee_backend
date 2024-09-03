@@ -12,12 +12,12 @@ from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyImages, TestApp
 
 
-@patch("coffee_backend.services.rating.RatingService.get_by_id")
+@patch("coffee_backend.services.rating.DrinkService.get_by_id")
 @patch("coffee_backend.services.image_service.ImageService.add_image")
 @pytest.mark.asyncio
 async def test_api_create_coffee_drink_image(
     image_service_mock: MagicMock,
-    rating_service_mock: AsyncMock,
+    drink_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
     mock_security_dependency: Generator,
@@ -26,7 +26,7 @@ async def test_api_create_coffee_drink_image(
 
     Args:
         image_service_mock (MagicMock): A mock of the ImagesService.
-        rating_service_mock (AsyncMock): A mock of the RatingService.
+        drink_service_mock (AsyncMock): A mock of the DrinkService.
         test_app (TestApp): A FastAPI test client.
         dummy_coffee_images (DummyImages): An instance providing dummy
             image data.
@@ -36,7 +36,7 @@ async def test_api_create_coffee_drink_image(
 
     get_db_mock = MagicMock()
 
-    rating_service_mock.return_value = "Return without error"
+    drink_service_mock.return_value = "Return without error"
 
     image_service_mock.return_value = "Return without error"
 
@@ -62,10 +62,10 @@ async def test_api_create_coffee_drink_image(
     app.dependency_overrides = {}
 
 
-@patch("coffee_backend.services.rating.RatingService.get_by_id")
+@patch("coffee_backend.services.rating.DrinkService.get_by_id")
 @pytest.mark.asyncio
 async def test_api_create_image_for_nonexisting_coffee_drink(
-    rating_service_mock: AsyncMock,
+    drink_service_mock: AsyncMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
     mock_security_dependency: Generator,
@@ -74,7 +74,7 @@ async def test_api_create_image_for_nonexisting_coffee_drink(
         non-existing coffee.
 
     Args:
-        rating_service_mock (AsyncMock): A mock of the RatingService.
+        drink_service_mock (AsyncMock): A mock of the DrinkService.
         test_app (TestApp): A FastAPI test client.
         dummy_coffee_images (DummyImages): An instance providing dummy
             image data.
@@ -84,7 +84,7 @@ async def test_api_create_image_for_nonexisting_coffee_drink(
 
     get_db_mock = MagicMock()
 
-    rating_service_mock.side_effect = HTTPException(
+    drink_service_mock.side_effect = HTTPException(
         status_code=404, detail="Rating not found"
     )
 
