@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
+from coffee_backend.api.v1.coffee_image import router as coffee_images_router
+from coffee_backend.api.v1.coffees import router as coffees_router
 from coffee_backend.api.v1.drink_images import (
     router as coffee_drink_images_router,
 )
-from coffee_backend.api.v1.coffee_image import router as coffee_images_router
-from coffee_backend.api.v1.coffees import router as coffees_router
 from coffee_backend.api.v1.drinks import router as drinks_router
 
 router = APIRouter()

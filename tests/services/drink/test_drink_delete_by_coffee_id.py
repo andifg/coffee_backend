@@ -27,6 +27,9 @@ async def test_drink_service_delete_by_coffee_bean_id(
 
     test_drink_service = DrinkService(drink_crud=drink_crud_mock)
 
+    if drink_1.coffee_bean_id is None:
+        raise ValueError("Coffee bean ID must not be None for this test")
+
     await test_drink_service.delete_by_coffee_bean_id(
         db_session=db_session_mock, coffee_bean_id=drink_1.coffee_bean_id
     )

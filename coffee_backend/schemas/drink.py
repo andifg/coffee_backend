@@ -28,12 +28,14 @@ class Drink(BaseModel):
         examples=[UUID("123e4567-e89b-12d3-a456-426655440000")],
     )
     brewing_method: Optional[BrewingMethod] = Field(
-        description="If drink is a coffee, this field describes the brewing method",
+        description="If drink is a coffee, this field"
+        + " describes the brewing method",
         default=None,
     )
     rating: float = Field(..., description="Rating of the drink")
     coffee_bean_id: Optional[UUID] = Field(
-        description="If the drink is made from a specific coffee bean, this is the id of the coffee bean",
+        description="If the drink is made from a specific coffee bean "
+        + "this is the id of the coffee bean",
         examples=[UUID("123e4567-e89b-12d3-a456-426655440001")],
         default=None,
     )
@@ -72,7 +74,8 @@ class CreateDrink(BaseModel):
     )
     rating: float = Field(..., description="Rating of the drink")
     coffee_bean_id: Optional[UUID] = Field(
-        description="If the drink is made from a specific coffee bean, this is the id of the coffee bean",
+        description="If the drink is made from a specific coffee bean, this is"
+        + " the id of the coffee bean",
         examples=[UUID("123e4567-e89b-12d3-a456-426655440001")],
         default=None,
     )
