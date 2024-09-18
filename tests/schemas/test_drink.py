@@ -16,6 +16,8 @@ def test_drink_schema_creation_with_coffee_bean_and_image() -> None:
         user_id=UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
         user_name="test_user",
         image_exists=True,
+        coffee_bean_name="test_coffee_bean",
+        coffee_bean_roasting_company="test_roasting_company",
     )
 
     assert drink.model_dump(by_alias=True) == {
@@ -26,6 +28,8 @@ def test_drink_schema_creation_with_coffee_bean_and_image() -> None:
         "user_id": UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
         "user_name": "test_user",
         "image_exists": True,
+        "coffee_bean_name": "test_coffee_bean",
+        "coffee_bean_roasting_company": "test_roasting_company",
     }
 
 
@@ -47,6 +51,8 @@ def test_drink_schema_creation_without_coffee_bean_data() -> None:
         "user_id": UUID("c9ba633e-c39c-11ed-afb4-acde48001122"),
         "user_name": "test_user",
         "image_exists": True,
+        "coffee_bean_name": None,
+        "coffee_bean_roasting_company": None,
     }
 
 

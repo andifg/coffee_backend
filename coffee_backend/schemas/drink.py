@@ -53,6 +53,14 @@ class Drink(BaseModel):
         default=False,
         description="Whether drink was submitted with or without a picture",
     )
+    coffee_bean_name: Optional[str] = Field(
+        default=None,
+        description="Name of the coffee bean",
+    )
+    coffee_bean_roasting_company: Optional[str] = Field(
+        default=None,
+        description="Name of the roasting company",
+    )
 
 
 class CreateDrink(BaseModel):
