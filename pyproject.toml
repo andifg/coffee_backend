@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["aguentner <45008199+andifg@users.noreply.github.com>"]
 readme = "README.md"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -20,7 +19,7 @@ minio = "^7.1.16"
 python-multipart = "^0.0.9"
 pyjwt = "^2.8.0"
 cryptography = "^41.0.4"
-aiohttp = "^3.9.5"
+aiohttp = "3.9.3"
 pydantic-settings = "^2.3.3"
 
 [tool.poetry.group.dev.dependencies]
