@@ -1,3 +1,4 @@
+import logging
 from typing import Any, List, Optional
 from uuid import UUID
 
@@ -82,6 +83,46 @@ class DrinkService:
             return []
         return drinks
 
+    async def list_drinks_with_coffee_bean_information(
+        self,
+        db_session: AgnosticClientSession,
+        user_id: Optional[UUID] = None,
+        page: int = 1,
+        page_size: int = 10,
+        first_id: Optional[UUID] = None,
+        coffee_bean_id: Optional[UUID] = None,
+    ) -> List[Drink]:
+        """Retrieve a list of drinks objects from the database with coffee bean
+        information.
+
+        Args:
+            db_session (AgnosticClientSession): The database session object.
+
+
+        Returns:
+            List[Coffee]: A list of coffee objects retrieved from the crud
+                class.
+
+        """
+
+        pipeline = self._create_pipeline(
+            user_id=user_id,
+            page=page,
+            page_size=page_size,
+            first_id=first_id,
+            coffee_bean_id=coffee_bean_id,
+        )
+
+        try:
+            coffees = await self.drink_crud.aggregate_read(
+                db_session=db_session, pipeline=pipeline
+            )
+
+        except ObjectNotFoundError:
+            return []
+
+        return coffees
+
     async def get_by_id(
         self, db_session: AgnosticClientSession, drink_id: UUID
     ) -> Drink:
@@ -158,6 +199,69 @@ class DrinkService:
             )
         except ObjectNotFoundError:
             return None
+
+    def _create_pipeline(
+        self,
+        user_id: Optional[UUID] = None,
+        page: int = 1,
+        page_size: int = 10,
+        first_id: Optional[UUID] = None,
+        coffee_bean_id: Optional[UUID] = None,
+    ) -> List[dict]:
+        """Create a pipeline to retrieve drinks with coffee bean information."""
+
+        pipeline: List[dict[str, Any]] = [{"$sort": {"_id": -1}}]
+
+        if user_id:
+            pipeline.append({"$match": {"user_id": user_id}})
+
+        if first_id:
+            pipeline.append({"$match": {"_id": {"$lte": first_id}}})
+
+        if coffee_bean_id:
+            pipeline.append({"$match": {"coffee_bean_id": coffee_bean_id}})
+
+        pipeline.extend(
+            [
+                {
+                    "$lookup": {
+                        "from": "coffee",
+                        "localField": "coffee_bean_id",
+                        "foreignField": "_id",
+                        "as": "drink",
+                    }
+                },
+                {
+                    "$addFields": {
+                        "coffee_bean_name": {
+                            "$arrayElemAt": ["$drink.name", 0]
+                        },
+                        "coffee_bean_roasting_company": {
+                            "$arrayElemAt": ["$drink.roasting_company", 0]
+                        },
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "brewing_method": 1,
+                        "rating": 1,
+                        "coffee_bean_id": 1,
+                        "user_id": 1,
+                        "user_name": 1,
+                        "image_exists": 1,
+                        "coffee_bean_name": 1,
+                        "coffee_bean_roasting_company": 1,
+                    }
+                },
+                {"$limit": page_size * page},
+                {"$skip": (page - 1) * page_size},
+            ]
+        )
+
+        logging.debug("Executing pipeline: %s", pipeline)
+
+        return pipeline
 
 
 drink_service = DrinkService(drink_crud=drink_crud_instance)

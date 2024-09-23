@@ -50,6 +50,8 @@ async def test_mongo_drink_create(
             "user_name": "Berty",
             "coffee_bean_id": None,
             "image_exists": True,
+            "coffee_bean_name": None,
+            "coffee_bean_roasting_company": None,
         }
 
 

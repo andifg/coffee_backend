@@ -11,7 +11,9 @@ from coffee_backend.mongo.database import get_db
 from tests.conftest import DummyDrinks, TestApp
 
 
-@patch("coffee_backend.services.drink.DrinkService.list")
+@patch(
+    "coffee_backend.services.drink.DrinkService.list_drinks_with_coffee_bean_information"
+)
 @pytest.mark.asyncio
 async def test_api_get_drinks(
     drink_service_mock: AsyncMock,
@@ -23,7 +25,7 @@ async def test_api_get_drinks(
 
     Args:
         drink_service_mock (AsyncMock): An asynchronous mock object for the
-            DrinkService.
+            DrinkService.list_drinks_with_coffee_bean_information method
         test_app (TestApp): An instance of the TestApp for testing.
         dummy_drinks (DummyDrinks): A fixture providing dummy drink data.
         mock_security_dependency (Generator): Fixture to mock the authentication
@@ -52,16 +54,18 @@ async def test_api_get_drinks(
 
     drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock,
-        coffee_bean_id=None,
-        page=1,
         page_size=5,
-        first_drink_id=None,
+        page=1,
+        first_id=None,
+        coffee_bean_id=None,
     )
 
     app.dependency_overrides = {}
 
 
-@patch("coffee_backend.services.drink.DrinkService.list")
+@patch(
+    "coffee_backend.services.drink.DrinkService.list_drinks_with_coffee_bean_information"
+)
 @pytest.mark.asyncio
 async def test_api_get_drinks_with_query_params(
     drink_service_mock: AsyncMock,
@@ -91,16 +95,18 @@ async def test_api_get_drinks_with_query_params(
 
     drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock,
-        coffee_bean_id=None,
-        page=1,
         page_size=5,
-        first_drink_id=UUID("0668fdc7-5d12-7ddb-8000-53ff75679f05"),
+        page=1,
+        first_id=UUID("0668fdc7-5d12-7ddb-8000-53ff75679f05"),
+        coffee_bean_id=None,
     )
 
     app.dependency_overrides = {}
 
 
-@patch("coffee_backend.services.drink.DrinkService.list")
+@patch(
+    "coffee_backend.services.drink.DrinkService.list_drinks_with_coffee_bean_information"
+)
 @pytest.mark.asyncio
 async def test_api_get_drinks_with_emtpy_crud_response(
     drink_service_mock: AsyncMock,
@@ -111,7 +117,7 @@ async def test_api_get_drinks_with_emtpy_crud_response(
         collection.
 
     Args:
-        drink_service_mock (AsyncMock): A mocked DrinkService.list method.
+        drink_service_mock (AsyncMock): A mocked DrinkService.list_drinks_with_coffee_bean_information method.
         test_app (TestApp): An instance of the TestApp class for making test
             requests.
         mock_security_dependency (Generator): Fixture to mock the authentication
@@ -133,10 +139,10 @@ async def test_api_get_drinks_with_emtpy_crud_response(
 
     drink_service_mock.assert_awaited_once_with(
         db_session=get_db_mock,
-        coffee_bean_id=None,
         page_size=5,
         page=1,
-        first_drink_id=None,
+        first_id=None,
+        coffee_bean_id=None,
     )
 
     app.dependency_overrides = {}

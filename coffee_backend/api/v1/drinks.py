@@ -28,12 +28,12 @@ async def _list_drinks(
     first_drink_id: Optional[UUID] = None,
     coffee_id: Optional[UUID] = None,
 ) -> List[Drink]:
-    return await drink_service.list(
+    return await drink_service.list_drinks_with_coffee_bean_information(
         db_session=db_session,
-        coffee_bean_id=coffee_id,
         page_size=page_size,
         page=page,
-        first_drink_id=first_drink_id,
+        first_id=first_drink_id,
+        coffee_bean_id=coffee_id,
     )
 
 
