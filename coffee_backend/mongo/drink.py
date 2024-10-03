@@ -3,29 +3,29 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from motor.core import AgnosticClientSession
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
-from coffee_backend.schemas.rating import Rating
+from coffee_backend.schemas import Drink
 from coffee_backend.settings import settings
 
 
-class RatingCRUD:
-    """CRUD class for rating schema.
+class DrinkCRUD:
+    """CRUD class for drink schema.
     Args:
         database(str): Name of the database to use for collection transactions.
 
     """
 
-    def __init__(self, database: str, rating_collection: str) -> None:
+    def __init__(self, database: str, drink_collection: str) -> None:
         self.database = database
-        self.rating_collection = rating_collection
-        self.first_rating = True
+        self.drink_collection = drink_collection
+        self.first_drink = True
 
     async def create(
-        self, db_session: AgnosticClientSession, rating: Rating
-    ) -> Rating:
-        """Create a new rating document in the database.
+        self, db_session: AgnosticClientSession, drink: Drink
+    ) -> Drink:
+        """Create a new drink document in the database.
 
         Args:
             coffee (Coffee): The coffee document to insert.
@@ -38,19 +38,19 @@ class RatingCRUD:
             ValueError: If a key duplication error occurs when inserting the
                 document.
         """
-        document = rating.model_dump(by_alias=True)
+        document = drink.model_dump(by_alias=True)
         try:
             await db_session.client[self.database][
-                self.rating_collection
+                self.drink_collection
             ].insert_one(document)
 
-            if self.first_rating:
+            if self.first_drink:
                 logging.debug("Ensuring index for coffee_id attribute exists")
                 await db_session.client[self.database][
-                    self.rating_collection
+                    self.drink_collection
                 ].create_index("coffee_id")
 
-                self.first_rating = False
+                self.first_drink = False
 
         except DuplicateKeyError:
             raise ValueError(  # pylint: disable=raise-missing-from
@@ -58,7 +58,7 @@ class RatingCRUD:
             )
         logging.info("Stored new entry in database")
         logging.debug("Entry: %s", document)
-        return rating
+        return drink
 
     async def read(
         self,
@@ -67,24 +67,24 @@ class RatingCRUD:
         limit: int = 50,
         skip: int = 0,
         projection: Optional[Dict[str, int]] = None,
-    ) -> List[Rating]:
-        """Find ratings based on mongo search query.
+    ) -> List[Drink]:
+        """Find drinks based on mongo search query.
 
         Args:
             db_session (AgnosticClientSession): The MongoDB client session.
-            rating_id (UUID): The ID of the rating document to retrieve.
+            drink_id (UUID): The ID of the drink document to retrieve.
             max_results (int): max number of entries retrieved from db
             projection (Optional[Dict[str, int]]): Selection of columns to
                 include or exclude in result.
 
         Returns:
-            Rating: A `Rating` instance representing the retrieved document.
+            Drink: A `Drink` instance representing the retrieved document.
         """
 
-        documents: List[Rating] = [
+        documents: List[Drink] = [
             doc
             async for doc in db_session.client[self.database][
-                self.rating_collection
+                self.drink_collection
             ]
             .find(filter=query, projection=projection)
             .sort("_id", -1)
@@ -94,28 +94,66 @@ class RatingCRUD:
 
         if documents:
             logging.debug("Received %s entries from database", len(documents))
-            return [Rating.model_validate(document) for document in documents]
+            return [Drink.model_validate(document) for document in documents]
 
         raise ObjectNotFoundError("Couldn't find entry for search query")
+
+    async def aggregate_read(
+        self, db_session: AgnosticClientSession, pipeline: List[dict[str, Any]]
+    ) -> List[Drink]:
+        """Perform an aggregation operation on the drink collection.
+
+        Args:
+            db_session (AgnosticClientSession): The MongoDB client session.
+            pipeline (List[dict[str, Any]]): The aggregation pipeline to
+                execute.
+
+
+        Returns:
+            List[Drink]: A list of `Drink` instances representing the
+                retrieved documents.
+        """
+        try:
+            documents: List[Drink] = [
+                doc
+                async for doc in db_session.client[self.database][
+                    self.drink_collection
+                ].aggregate(pipeline)
+            ]
+            if documents:
+                logging.debug(
+                    "Received %s entries from database", len(documents)
+                )
+                return [
+                    Drink.model_validate(document) for document in documents
+                ]
+
+            raise ObjectNotFoundError("Couldn't find entry for search query")
+
+        except OperationFailure as mongo_error:
+            logging.error("Error during aggregation: %s", mongo_error)
+            raise ValueError(
+                "Unable to perform aggregation operation"
+            ) from mongo_error
 
     async def update(
         self,
         db_session: AgnosticClientSession,
-        rating_id: UUID,
-        rating: Rating,
-    ) -> Rating:
+        drink_id: UUID,
+        drink: Drink,
+    ) -> Drink:
         """
-        Updates the rating document with the specified ID in the database with
-        the given rating data.
+        Updates the drink document with the specified ID in the database with
+        the given drink data.
 
         Args:
             db_session (AgnosticClientSession): The MongoDB database
                   session to use.
-            rating_id (UUID): The UUID of the rating document to update.
-            rating (Rating): The new data to update the rating document with.
+            drink_id (UUID): The UUID of the drink document to update.
+            drink (Drink): The new data to update the drink document with.
 
         Returns:
-            Coffee: The updated rating document.
+            Coffee: The updated drink document.
 
         Raises:
             ObjectNotFoundError: If no coffee document exists in the database
@@ -123,34 +161,34 @@ class RatingCRUD:
             ValidationError: If the provided coffee data is invalid.
         """
         result = await db_session.client[self.database][
-            self.rating_collection
+            self.drink_collection
         ].update_one(
-            {"_id": rating_id},
-            {"$set": rating.model_dump(by_alias=True, exclude={"id"})},
+            {"_id": drink_id},
+            {"$set": drink.model_dump(by_alias=True, exclude={"id"})},
         )
         if result.matched_count == 0:
             raise ObjectNotFoundError(
-                f"Rating with id {rating_id} not found in collection"
+                f"Drink with id {drink_id} not found in collection"
             )
-        logging.info("Updated rating with id %s", rating_id)
+        logging.info("Updated drink with id %s", drink_id)
         search_result = await self.read(
-            db_session=db_session, query={"_id": rating_id}, limit=1, skip=0
+            db_session=db_session, query={"_id": drink_id}, limit=1, skip=0
         )
-        updated_rating = search_result[0]
-        logging.debug("Updated value: %s", updated_rating.model_dump_json())
-        return updated_rating
+        updated_drink = search_result[0]
+        logging.debug("Updated value: %s", updated_drink.model_dump_json())
+        return updated_drink
 
     async def delete(
         self,
         db_session: AgnosticClientSession,
-        rating_id: UUID,
+        drink_id: UUID,
     ) -> bool:
-        """Deletes a rating record from the database.
+        """Deletes a drink record from the database.
 
         Args:
             db_session (AgnosticClientSession): The database session to
                 use for the operation.
-            rating_id (UUID): The unique identifier of the rating to delete.
+            drink_id (UUID): The unique identifier of the drink to delete.
 
         Returns:
             bool: True if the coffee record was successfully deleted.
@@ -160,14 +198,14 @@ class RatingCRUD:
                 found in the collection.
         """
         result = await db_session.client[self.database][
-            self.rating_collection
-        ].delete_one({"_id": rating_id})
+            self.drink_collection
+        ].delete_one({"_id": drink_id})
 
-        logging.info("Deleted rating with id %s", rating_id)
+        logging.info("Deleted drink with id %s", drink_id)
 
         if result.deleted_count != 1:
             raise ObjectNotFoundError(
-                f"Rating with id {rating_id} not found in collection"
+                f"Drink with id {drink_id} not found in collection"
             )
 
         return True
@@ -175,7 +213,7 @@ class RatingCRUD:
     async def delete_many(
         self, db_session: AgnosticClientSession, query: dict[str, Any]
     ) -> bool:
-        """Deletes multiple rating records from the database.
+        """Deletes multiple drink records from the database.
 
         Args:
             db_session (AgnosticClientSession): The database session to
@@ -190,18 +228,18 @@ class RatingCRUD:
                 found in the collection.
         """
         result = await db_session.client[self.database][
-            self.rating_collection
+            self.drink_collection
         ].delete_many(query)
 
-        logging.info("Deleted ratings for query %s", query)
+        logging.info("Deleted drinks for query %s", query)
 
         if result.deleted_count == 0:
-            raise ObjectNotFoundError(f"No ratings found for query {query}")
+            raise ObjectNotFoundError(f"No drinks found for query {query}")
 
         return True
 
 
-rating_crud = RatingCRUD(
+drink_crud = DrinkCRUD(
     database=settings.mongodb_database,
-    rating_collection=settings.mongodb_rating_collection,
+    drink_collection=settings.mongodb_drink_collection,
 )

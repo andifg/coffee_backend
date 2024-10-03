@@ -4,17 +4,15 @@ from uuid import UUID
 
 import pytest
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
-from uuid_extensions.uuid7 import uuid7
 
 from coffee_backend.application import app
 from coffee_backend.mongo.database import get_db
-from tests.conftest import DummyCoffees, DummyImages, TestApp
+from tests.conftest import DummyImages, TestApp
 
 
 @patch("coffee_backend.services.image_service.ImageService.get_image")
 @pytest.mark.asyncio
-async def test_api_get_coffee_drink_image_by_id(
+async def test_api_get_drink_image_by_id(
     image_service_mock: MagicMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
@@ -38,10 +36,10 @@ async def test_api_get_coffee_drink_image_by_id(
         "jpg",
     )
 
-    coffee_drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
+    drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
 
     response = await test_app.client.get(
-        f"/api/v1/coffee-drink/{coffee_drink_id}/image",
+        f"/api/v1/drinks/{drink_id}/image",
         headers={"Content-Type": "multipart/form-data"},
     )
 
@@ -52,7 +50,7 @@ async def test_api_get_coffee_drink_image_by_id(
 
     assert (
         response.headers["Content-Disposition"]
-        == f"attachment; filename={coffee_drink_id}.jpg"
+        == f"attachment; filename={drink_id}.jpg"
     )
 
     image_service_mock.assert_called_once()
@@ -62,7 +60,7 @@ async def test_api_get_coffee_drink_image_by_id(
 
 @patch("coffee_backend.services.image_service.ImageService.get_image")
 @pytest.mark.asyncio
-async def test_api_get_coffee_drink_image_by_id_nonexisting(
+async def test_api_get_drink_image_by_id_nonexisting(
     image_service_mock: MagicMock,
     test_app: TestApp,
     dummy_coffee_images: DummyImages,
@@ -86,10 +84,10 @@ async def test_api_get_coffee_drink_image_by_id_nonexisting(
         status_code=404, detail="Coffee image not found"
     )
 
-    coffee_drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
+    drink_id = UUID("123e4567-e19b-12d3-a456-426655440000")
 
     response = await test_app.client.get(
-        f"/api/v1/coffee-drink/{coffee_drink_id}/image",
+        f"/api/v1/drinks/{drink_id}/image",
         headers={"Content-Type": "multipart/form-data"},
     )
 

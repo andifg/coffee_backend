@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     mongodb_database: str = "coffee_backend"
     mongodb_coffee_collection: str = "coffee"
-    mongodb_rating_collection: str = "rating"
+    mongodb_drink_collection: str = "drink"
 
     mongodb_host: str = "localhost"
     mongodb_port: int = 27017

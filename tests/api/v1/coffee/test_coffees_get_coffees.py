@@ -47,6 +47,7 @@ async def test_api_get_coffees(
         page_size=10,
         owner_id=None,
         first_id=None,
+        search_query=None,
     )
 
     app.dependency_overrides = {}
@@ -83,6 +84,7 @@ async def test_api_get_coffees_with_emtpy_crud_response(
         page_size=10,
         owner_id=None,
         first_id=None,
+        search_query=None,
     )
 
     app.dependency_overrides = {}
@@ -108,7 +110,7 @@ async def test_api_get_coffees_with_query_params(
     ]
 
     response = await test_app.client.get(
-        "/api/v1/coffees?page=1&page_size=10&owner_id=12345678-1234-5678-1234-567812345678&first_id=123e4567-e19b-12d3-a456-426655440000",
+        "/api/v1/coffees?page=1&page_size=10&owner_id=12345678-1234-5678-1234-567812345678&first_id=123e4567-e19b-12d3-a456-426655440000&search_query=test",
         headers={"Content-Type": "application/json"},
     )
 
@@ -124,6 +126,7 @@ async def test_api_get_coffees_with_query_params(
         page_size=10,
         owner_id=UUID("12345678-1234-5678-1234-567812345678"),
         first_id=UUID("123e4567-e19b-12d3-a456-426655440000"),
+        search_query="test",
     )
 
     app.dependency_overrides = {}

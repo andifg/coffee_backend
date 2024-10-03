@@ -12,7 +12,7 @@ from tests.conftest import TestDBSessions
 
 @pytest.mark.asyncio
 async def test_mongo_coffee_aggregate_read(
-    insert_coffees_with_matching_ratings: None,
+    insert_coffees_with_matching_drinks: None,
     init_mongo: TestDBSessions,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
@@ -27,9 +27,9 @@ async def test_mongo_coffee_aggregate_read(
             {"$sort": {"_id": -1}},
             {
                 "$lookup": {
-                    "from": "rating",
+                    "from": "drink",
                     "localField": "_id",
-                    "foreignField": "coffee_id",
+                    "foreignField": "coffee_bean_id",
                     "as": "rating",
                 }
             },
@@ -115,7 +115,7 @@ async def test_mongo_coffee_aggregate_read(
 
 @pytest.mark.asyncio
 async def test_mongo_coffee_aggregate_with_invalid_pipeline(
-    insert_coffees_with_matching_ratings: None,
+    insert_coffees_with_matching_drinks: None,
     init_mongo: TestDBSessions,
 ) -> None:
     """Test aggregate read from mongodb with invalid pipeline."""
@@ -141,7 +141,7 @@ async def test_mongo_coffee_aggregate_with_invalid_pipeline(
 
 @pytest.mark.asyncio
 async def test_mongo_coffee_aggregate_with_empty_return(
-    insert_coffees_with_matching_ratings: None,
+    insert_coffees_with_matching_drinks: None,
     init_mongo: TestDBSessions,
 ) -> None:
     """Test aggregate read from mongodb with empty return."""
@@ -151,9 +151,9 @@ async def test_mongo_coffee_aggregate_with_empty_return(
             {"$match": {"_id": "Non existing id"}},
             {
                 "$lookup": {
-                    "from": "rating",
+                    "from": "drink",
                     "localField": "_id",
-                    "foreignField": "coffee_id",
+                    "foreignField": "coffee_bean_id",
                     "as": "rating",
                 }
             },
@@ -191,7 +191,7 @@ async def test_mongo_coffee_aggregate_with_empty_return(
 
 @pytest.mark.asyncio
 async def test_mongo_coffee_aggregate_with_first_id(
-    insert_coffees_with_matching_ratings: None,
+    insert_coffees_with_matching_drinks: None,
     init_mongo: TestDBSessions,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
@@ -217,9 +217,9 @@ async def test_mongo_coffee_aggregate_with_first_id(
             },
             {
                 "$lookup": {
-                    "from": "rating",
+                    "from": "drink",
                     "localField": "_id",
-                    "foreignField": "coffee_id",
+                    "foreignField": "coffee_bean_id",
                     "as": "rating",
                 }
             },
