@@ -91,6 +91,7 @@ class CoffeeService:
         page: int = 1,
         page_size: int = 10,
         first_id: Optional[UUID] = None,
+        search_query: Optional[str] = None,
     ) -> List[Coffee]:
         """Retrieve a list of coffee objects from the database with rating
             summary.
@@ -106,7 +107,11 @@ class CoffeeService:
         """
 
         pipeline = self._create_pipeline(
-            owner_id=owner_id, page=page, page_size=page_size, first_id=first_id
+            owner_id=owner_id,
+            page=page,
+            page_size=page_size,
+            first_id=first_id,
+            search_query=search_query,
         )
 
         try:
@@ -125,6 +130,7 @@ class CoffeeService:
         page: int = 1,
         page_size: int = 10,
         first_id: Optional[UUID] = None,
+        search_query: Optional[str] = None,
     ) -> List[dict]:
         pipeline: List[dict[str, Any]] = [{"$sort": {"_id": -1}}]
 
@@ -133,6 +139,29 @@ class CoffeeService:
 
         if first_id:
             pipeline.append({"$match": {"_id": {"$lte": first_id}}})
+
+        if search_query:
+            pipeline.append(
+                {
+                    "$match": {
+                        "$or": [
+                            {"name": {"$regex": search_query, "$options": "i"}},
+                            {
+                                "roasting_company": {
+                                    "$regex": search_query,
+                                    "$options": "i",
+                                }
+                            },
+                            {
+                                "owner_name": {
+                                    "$regex": search_query,
+                                    "$options": "i",
+                                }
+                            },
+                        ]
+                    }
+                }
+            )
 
         pipeline.extend(
             [

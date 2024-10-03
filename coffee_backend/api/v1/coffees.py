@@ -57,6 +57,7 @@ async def _list_coffees_with_rating_summary(
     page_size: int = Query(default=10, ge=1, description="Page size"),
     owner_id: Optional[UUID] = None,
     first_id: Optional[UUID] = None,
+    search_query: Optional[str] = None,
 ) -> List[Coffee]:
     return await coffee_service.list_coffees_with_rating_summary(
         db_session=db_session,
@@ -64,6 +65,7 @@ async def _list_coffees_with_rating_summary(
         page_size=page_size,
         owner_id=owner_id,
         first_id=first_id,
+        search_query=search_query,
     )
 
 
