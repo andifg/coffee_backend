@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import AsyncGenerator, Generator
 from uuid import UUID
 
-import motor.motor_asyncio  # type: ignore
+import motor.motor_asyncio
 import pytest
 import pytest_asyncio
 from fastapi import Request, UploadFile
@@ -142,10 +142,12 @@ async def setup_mongo_db(mongo_service: str) -> AsyncGenerator:
     Yields:
         TestDBSessions object with sync and asnyc session
     """
-    async_client = motor.motor_asyncio.AsyncIOMotorClient(
-        mongo_service,
-        serverSelectionTimeoutMS=5000,
-        uuidRepresentation="standard",
+    async_client: motor.motor_asyncio.AsyncIOMotorClient = (
+        motor.motor_asyncio.AsyncIOMotorClient(
+            mongo_service,
+            serverSelectionTimeoutMS=5000,
+            uuidRepresentation="standard",
+        )
     )
     sync_client: MongoClient = MongoClient(
         mongo_service,

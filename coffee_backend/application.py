@@ -2,7 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-import motor.motor_asyncio  # type: ignore
+import motor.motor_asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from minio import Minio  # type: ignore
