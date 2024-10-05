@@ -11,8 +11,8 @@ from fastapi.datastructures import State
 from httpx import AsyncClient
 from motor.core import AgnosticClient
 from pymongo import MongoClient
-from pytest_docker.plugin import Services  # type: ignore
 from starlette.datastructures import Headers
+from testcontainers.mongodb import MongoDbContainer  # type: ignore
 
 from coffee_backend.api import auth
 from coffee_backend.application import app, lifespan
@@ -117,19 +117,14 @@ class TestApp:
     __test__: bool = False
 
 
-@pytest_asyncio.fixture(name="mongo_service")
-async def fixture_mongo_service(
-    docker_ip: str, docker_services: Services
-) -> str:
+@pytest_asyncio.fixture(name="mongo_service", scope="session")
+async def fixture_mongo_service() -> AsyncGenerator[str, None]:
     """Ensure that HTTP service is up and responsive."""
 
-    # `port_for` takes a container port and returns the corresponding host port
-    port = docker_services.port_for("mongo", 27017)
-    connection_string = f"mongodb://root:example@{docker_ip}:{port}"
-    docker_services.wait_until_responsive(
-        timeout=30.0, pause=0.1, check=lambda: test_mongo(connection_string)
-    )
-    return connection_string
+    with MongoDbContainer("mongo:6.0.8") as mongo:
+        db_uri = mongo.get_connection_url()
+
+        yield db_uri
 
 
 @pytest_asyncio.fixture(name="init_mongo")
@@ -253,7 +248,7 @@ async def test_app(
     """Sets up an instance of the FastAPI application under test.
 
     Settings are mocked so that only test resources running within docker
-    compose are used during test execution.
+    containers are used during test execution.
 
     Args:
         monkeypatch: The pytest monkeypatch to change settings to point to the
