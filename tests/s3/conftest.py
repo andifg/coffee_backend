@@ -1,36 +1,29 @@
 from typing import AsyncGenerator
 
+import pytest
 import pytest_asyncio
 from minio import Minio  # type: ignore
 from minio.commonconfig import ENABLED  # type: ignore
 from minio.deleteobjects import DeleteObject  # type: ignore
 from minio.error import S3Error  # type: ignore
 from minio.versioningconfig import VersioningConfig  # type: ignore
-from pytest_docker.plugin import Services  # type: ignore
+from testcontainers.minio import MinioContainer  # type: ignore
 
 from coffee_backend.settings import settings
 
 
-@pytest_asyncio.fixture(name="minio_service")
-async def fixture_minio_service(
-    docker_ip: str, docker_services: Services
-) -> Minio:
-    """Ensure that HTTP service is up and responsive."""
+@pytest.mark.usefixtures("patch_testcontainers_config")
+@pytest_asyncio.fixture(name="minio_service", scope="session")
+async def fixture_minio_service() -> AsyncGenerator[Minio, None]:
+    """Creates a minio service for testing running in container."""
 
-    # `port_for` takes a container port and returns the corresponding host port
-    port = docker_services.port_for("minio", 9000)
-    connection_string = f"{docker_ip}:{port}"
-    test_client = Minio(
-        connection_string,
-        settings.minio_access_key,
-        settings.minio_secret_key,
-        secure=False,
-    )
-    print(connection_string)
-    docker_services.wait_until_responsive(
-        timeout=30.0, pause=0.1, check=lambda: test_minio(test_client)
-    )
-    return test_client
+    with MinioContainer(
+        access_key=settings.minio_access_key,
+        secret_key=settings.minio_secret_key,
+    ) as minio:
+        test_client: Minio = minio.get_client()
+
+        yield test_client
 
 
 @pytest_asyncio.fixture()

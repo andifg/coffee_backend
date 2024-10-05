@@ -11,7 +11,9 @@ from fastapi.datastructures import State
 from httpx import AsyncClient
 from motor.core import AgnosticClient
 from pymongo import MongoClient
+from pytest import MonkeyPatch
 from starlette.datastructures import Headers
+from testcontainers.core.config import testcontainers_config  # type: ignore
 from testcontainers.mongodb import MongoDbContainer  # type: ignore
 
 from coffee_backend.api import auth
@@ -23,6 +25,11 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 logger = logging.getLogger("faker")
 logger.setLevel(logging.INFO)  # Quiet faker locale messages down in tests.
+
+logger_pymong = logging.getLogger("pymongo")
+logger_pymong.setLevel(
+    logging.INFO
+)  # Quiet pymongo connection messages down in tests.
 
 logger_urllib = logging.getLogger("urllib3")
 logger_urllib.setLevel(
@@ -115,6 +122,17 @@ class TestApp:
     state: State
     client: AsyncClient
     __test__: bool = False
+
+
+@pytest_asyncio.fixture(scope="session")
+async def patch_testcontainers_config() -> None:
+    """Fixture to patch testcontainers configuration for testing."""
+
+    print("Set testcontainers configuration")
+
+    monkeypatch = MonkeyPatch()
+
+    monkeypatch.setattr(testcontainers_config, "max_tries", 3)
 
 
 @pytest_asyncio.fixture(name="mongo_service", scope="session")
