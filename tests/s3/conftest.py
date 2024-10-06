@@ -1,6 +1,5 @@
 from typing import AsyncGenerator
 
-import pytest
 import pytest_asyncio
 from minio import Minio  # type: ignore
 from minio.commonconfig import ENABLED  # type: ignore
@@ -12,9 +11,10 @@ from testcontainers.minio import MinioContainer  # type: ignore
 from coffee_backend.settings import settings
 
 
-@pytest.mark.usefixtures("patch_testcontainers_config")
 @pytest_asyncio.fixture(name="minio_service", scope="session")
-async def fixture_minio_service() -> AsyncGenerator[Minio, None]:
+async def fixture_minio_service(
+    _init_testcontainer: None,
+) -> AsyncGenerator[Minio, None]:
     """Creates a minio service for testing running in container."""
 
     with MinioContainer(

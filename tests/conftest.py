@@ -124,7 +124,7 @@ class TestApp:
     __test__: bool = False
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session", name="_init_testcontainer")
 async def patch_testcontainers_config() -> None:
     """Fixture to patch testcontainers configuration for testing."""
 
@@ -136,7 +136,9 @@ async def patch_testcontainers_config() -> None:
 
 
 @pytest_asyncio.fixture(name="mongo_service", scope="session")
-async def fixture_mongo_service() -> AsyncGenerator[str, None]:
+async def fixture_mongo_service(
+    _init_testcontainer: None,
+) -> AsyncGenerator[str, None]:
     """Ensure that HTTP service is up and responsive."""
 
     with MongoDbContainer("mongo:6.0.8") as mongo:
