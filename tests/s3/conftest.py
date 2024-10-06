@@ -6,7 +6,7 @@ from minio.commonconfig import ENABLED  # type: ignore
 from minio.deleteobjects import DeleteObject  # type: ignore
 from minio.error import S3Error  # type: ignore
 from minio.versioningconfig import VersioningConfig  # type: ignore
-from testcontainers.minio import MinioContainer  # type: ignore
+from testcontainers.core.container import DockerContainer  # type: ignore
 
 from coffee_backend.settings import settings
 
@@ -17,13 +17,22 @@ async def fixture_minio_service(
 ) -> AsyncGenerator[Minio, None]:
     """Creates a minio service for testing running in container."""
 
-    with MinioContainer(
-        access_key=settings.minio_access_key,
-        secret_key=settings.minio_secret_key,
-    ) as minio:
-        test_client: Minio = minio.get_client()
+    minio_testcontainer = (
+        DockerContainer(image="bitnami/minio:2024.3.5")
+        .with_exposed_ports(9000)
+        .with_env("MINIO_ROOT_USER", settings.minio_access_key)
+        .with_env("MINIO_ROOT_PASSWORD", settings.minio_secret_key)
+    )
 
-        yield test_client
+    with minio_testcontainer as container:
+        host_ip = container.get_container_host_ip()
+        exposed_port = container.get_exposed_port(9000)
+        yield Minio(
+            f"{host_ip}:{exposed_port}",
+            access_key=settings.minio_access_key,
+            secret_key=settings.minio_secret_key,
+            secure=False,
+        )
 
 
 @pytest_asyncio.fixture()
