@@ -14,6 +14,7 @@ from pymongo import MongoClient
 from pytest import MonkeyPatch
 from starlette.datastructures import Headers
 from testcontainers.core.config import testcontainers_config  # type: ignore
+from testcontainers.core.waiting_utils import wait_for_logs  # type: ignore
 from testcontainers.mongodb import MongoDbContainer  # type: ignore
 
 from coffee_backend.api import auth
@@ -142,6 +143,9 @@ async def fixture_mongo_service(
     """Ensure that HTTP service is up and responsive."""
 
     with MongoDbContainer("mongo:6.0.8") as mongo:
+        wait_for_logs(
+            mongo, "child process started successfully, parent exiting"
+        )
         db_uri = mongo.get_connection_url()
 
         yield db_uri

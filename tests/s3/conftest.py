@@ -7,6 +7,7 @@ from minio.deleteobjects import DeleteObject  # type: ignore
 from minio.error import S3Error  # type: ignore
 from minio.versioningconfig import VersioningConfig  # type: ignore
 from testcontainers.core.container import DockerContainer  # type: ignore
+from testcontainers.core.waiting_utils import wait_for_logs  # type: ignore
 
 from coffee_backend.settings import settings
 
@@ -25,6 +26,7 @@ async def fixture_minio_service(
     )
 
     with minio_testcontainer as container:
+        wait_for_logs(container, "Starting MinIO")
         host_ip = container.get_container_host_ip()
         exposed_port = container.get_exposed_port(9000)
         yield Minio(
