@@ -7,7 +7,7 @@ from minio.deleteobjects import DeleteObject  # type: ignore
 from minio.error import S3Error  # type: ignore
 from minio.versioningconfig import VersioningConfig  # type: ignore
 from testcontainers.core.container import DockerContainer  # type: ignore
-from testcontainers.core.waiting_utils import wait_for_logs  # type: ignore
+from testcontainers.core.waiting_utils import wait_for  # type: ignore
 
 from coffee_backend.settings import settings
 
@@ -26,15 +26,16 @@ async def fixture_minio_service(
     )
 
     with minio_testcontainer as container:
-        wait_for_logs(container, "Starting MinIO")
         host_ip = container.get_container_host_ip()
         exposed_port = container.get_exposed_port(9000)
-        yield Minio(
+        minio = Minio(
             f"{host_ip}:{exposed_port}",
             access_key=settings.minio_access_key,
             secret_key=settings.minio_secret_key,
             secure=False,
         )
+        wait_for(lambda: test_minio(minio))
+        yield minio
 
 
 @pytest_asyncio.fixture()
@@ -74,7 +75,11 @@ def test_minio(test_client: Minio) -> bool:
         Return true if no error occured
     """
     print("Try connection")
-    test_client.list_buckets()
+    try:
+        test_client.list_buckets()
+    except S3Error as e:
+        print(e)
+        return False
     return True
 
 
