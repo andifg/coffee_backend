@@ -6,31 +6,36 @@ from minio.commonconfig import ENABLED  # type: ignore
 from minio.deleteobjects import DeleteObject  # type: ignore
 from minio.error import S3Error  # type: ignore
 from minio.versioningconfig import VersioningConfig  # type: ignore
-from pytest_docker.plugin import Services  # type: ignore
+from testcontainers.core.container import DockerContainer  # type: ignore
+from testcontainers.core.waiting_utils import wait_for  # type: ignore
 
 from coffee_backend.settings import settings
 
 
-@pytest_asyncio.fixture(name="minio_service")
+@pytest_asyncio.fixture(name="minio_service", scope="session")
 async def fixture_minio_service(
-    docker_ip: str, docker_services: Services
-) -> Minio:
-    """Ensure that HTTP service is up and responsive."""
+    _init_testcontainer: None,
+) -> AsyncGenerator[Minio, None]:
+    """Creates a minio service for testing running in container."""
 
-    # `port_for` takes a container port and returns the corresponding host port
-    port = docker_services.port_for("minio", 9000)
-    connection_string = f"{docker_ip}:{port}"
-    test_client = Minio(
-        connection_string,
-        settings.minio_access_key,
-        settings.minio_secret_key,
-        secure=False,
+    minio_testcontainer = (
+        DockerContainer(image="bitnami/minio:2024.3.5")
+        .with_exposed_ports(9000)
+        .with_env("MINIO_ROOT_USER", settings.minio_access_key)
+        .with_env("MINIO_ROOT_PASSWORD", settings.minio_secret_key)
     )
-    print(connection_string)
-    docker_services.wait_until_responsive(
-        timeout=30.0, pause=0.1, check=lambda: test_minio(test_client)
-    )
-    return test_client
+
+    with minio_testcontainer as container:
+        host_ip = container.get_container_host_ip()
+        exposed_port = container.get_exposed_port(9000)
+        minio = Minio(
+            f"{host_ip}:{exposed_port}",
+            access_key=settings.minio_access_key,
+            secret_key=settings.minio_secret_key,
+            secure=False,
+        )
+        wait_for(lambda: test_minio(minio))
+        yield minio
 
 
 @pytest_asyncio.fixture()
@@ -70,7 +75,11 @@ def test_minio(test_client: Minio) -> bool:
         Return true if no error occured
     """
     print("Try connection")
-    test_client.list_buckets()
+    try:
+        test_client.list_buckets()
+    except S3Error as e:
+        print(e)
+        return False
     return True
 
 

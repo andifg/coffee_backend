@@ -11,8 +11,11 @@ from fastapi.datastructures import State
 from httpx import AsyncClient
 from motor.core import AgnosticClient
 from pymongo import MongoClient
-from pytest_docker.plugin import Services  # type: ignore
+from pytest import MonkeyPatch
 from starlette.datastructures import Headers
+from testcontainers.core.config import testcontainers_config  # type: ignore
+from testcontainers.core.waiting_utils import wait_for  # type: ignore
+from testcontainers.mongodb import MongoDbContainer  # type: ignore
 
 from coffee_backend.api import auth
 from coffee_backend.application import app, lifespan
@@ -23,6 +26,11 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 logger = logging.getLogger("faker")
 logger.setLevel(logging.INFO)  # Quiet faker locale messages down in tests.
+
+logger_pymong = logging.getLogger("pymongo")
+logger_pymong.setLevel(
+    logging.INFO
+)  # Quiet pymongo connection messages down in tests.
 
 logger_urllib = logging.getLogger("urllib3")
 logger_urllib.setLevel(
@@ -117,19 +125,28 @@ class TestApp:
     __test__: bool = False
 
 
-@pytest_asyncio.fixture(name="mongo_service")
+@pytest_asyncio.fixture(scope="session", name="_init_testcontainer")
+async def patch_testcontainers_config() -> None:
+    """Fixture to patch testcontainers configuration for testing."""
+
+    print("Set testcontainers configuration")
+
+    monkeypatch = MonkeyPatch()
+
+    monkeypatch.setattr(testcontainers_config, "max_tries", 3)
+
+
+@pytest_asyncio.fixture(name="mongo_service", scope="session")
 async def fixture_mongo_service(
-    docker_ip: str, docker_services: Services
-) -> str:
+    _init_testcontainer: None,
+) -> AsyncGenerator[str, None]:
     """Ensure that HTTP service is up and responsive."""
 
-    # `port_for` takes a container port and returns the corresponding host port
-    port = docker_services.port_for("mongo", 27017)
-    connection_string = f"mongodb://root:example@{docker_ip}:{port}"
-    docker_services.wait_until_responsive(
-        timeout=30.0, pause=0.1, check=lambda: test_mongo(connection_string)
-    )
-    return connection_string
+    with MongoDbContainer("mongo:6.0.8") as mongo:
+        db_uri = mongo.get_connection_url()
+        wait_for(lambda: test_mongo(db_uri))
+
+        yield db_uri
 
 
 @pytest_asyncio.fixture(name="init_mongo")
@@ -253,7 +270,7 @@ async def test_app(
     """Sets up an instance of the FastAPI application under test.
 
     Settings are mocked so that only test resources running within docker
-    compose are used during test execution.
+    containers are used during test execution.
 
     Args:
         monkeypatch: The pytest monkeypatch to change settings to point to the
@@ -304,7 +321,12 @@ def test_mongo(connection_string: str) -> bool:
     """
     print("Try connection")
     client: MongoClient = MongoClient(connection_string)
-    client.server_info()
+    try:
+        client.server_info()
+    except ConnectionError as e:
+        print(e)
+        return False
+
     return True
 
 
