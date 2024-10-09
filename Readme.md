@@ -46,17 +46,14 @@ docker build -t coffee_backend:v1 -f ./Containerfile .
 docker run -it -p 9000:8000  --name coffee_backend coffee_backend:v1
 ```
 
-## Devservices
+## Local End To End Dev & Test Environment
 
-In Order to do a full end to end test locally you can start the compose files
-inside the [devservices](devservices) directory to launch dependent services that are not
-spawn up during the pytest execution (these services can be run executing the
-compose file inside the [tests](tests) directory)
-Currently available devservices:
-- Keycloak
-
-
-## TODOs:
-- Include pagination in coffee read endpoint
-- Remove the db_session depens from API Layer to Service layer
-- Include responses in the api endpoints to document error message styles
+In order to execute local end to end test for the coffee app its possible to
+start the docker-compose inside the devservice directory. It will spin up an
+environment with frontend, backend, resizer as well as all dependent systems.
+In order to work properly the hostname "keycloak" must resolve to localhost.
+The following environment variables need to be defined to point to the local
+directories of the repositories:
+FRONTEND_PATH=<aboslut path of frontend git repository>
+BACKEND_PATH=<absolut path of backend git repository>
+RESIZER_PATH=<absolut path of resizer git respository>
