@@ -11,6 +11,7 @@ def main() -> None:
         port=settings.port,
         log_level=None,
         log_config=None,
+        reload=settings.uvicorn_reload,
     )
 
 
