@@ -4,7 +4,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Request, Response
 from motor.core import AgnosticClientSession
 
-from coffee_backend.api.deps import get_coffee_service, get_drink_service
+from coffee_backend.api.deps import (
+    get_coffee_service,
+    get_drink_service,
+    get_unique_user_metric,
+)
+from coffee_backend.metrics import DailyActiveUsersMetric
 from coffee_backend.mongo.database import get_db
 from coffee_backend.schemas import CreateDrink, Drink
 from coffee_backend.services.coffee import CoffeeService
@@ -21,13 +26,20 @@ router = APIRouter()
     response_model=List[Drink],
 )
 async def _list_drinks(
+    request: Request,
     db_session: AgnosticClientSession = Depends(get_db),
     drink_service: DrinkService = Depends(get_drink_service),
+    unique_user_metric: DailyActiveUsersMetric = Depends(
+        get_unique_user_metric
+    ),
     page: int = Query(default=1, ge=1, description="Page number"),
     page_size: int = Query(default=5, ge=1, description="Page size"),
     first_drink_id: Optional[UUID] = None,
     coffee_id: Optional[UUID] = None,
 ) -> List[Drink]:
+    unique_user_metric.add_user(
+        user_id=request.state.token["preferred_username"]
+    )
     return await drink_service.list_drinks_with_coffee_bean_information(
         db_session=db_session,
         page_size=page_size,
