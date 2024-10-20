@@ -3,6 +3,7 @@ from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic_extra_types.coordinate import Coordinate
 
 
 class BrewingMethod(Enum):
@@ -61,6 +62,10 @@ class Drink(BaseModel):
         default=None,
         description="Name of the roasting company",
     )
+    coordinate: Optional[Coordinate] = Field(
+        default=None,
+        description="Location where the drink was consumed",
+    )
 
 
 class CreateDrink(BaseModel):
@@ -90,4 +95,8 @@ class CreateDrink(BaseModel):
     image_exists: Optional[bool] = Field(
         default=False,
         description="Whether drink was submitted with or without a picture",
+    )
+    coordinate: Optional[Coordinate] = Field(
+        default=None,
+        description="Location where the drink was consumed",
     )

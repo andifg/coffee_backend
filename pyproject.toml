@@ -23,6 +23,7 @@ cryptography = "^41.0.4"
 aiohttp = "^3.9.5"
 pydantic-settings = "^2.3.3"
 prometheus-client = "^0.21.0"
+pydantic-extra-types = "^2.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pylint-pytest = "^1.1.7"

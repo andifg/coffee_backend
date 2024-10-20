@@ -21,6 +21,7 @@ from coffee_backend.api import auth
 from coffee_backend.application import app, lifespan
 from coffee_backend.schemas import BrewingMethod, Coffee, Drink
 from coffee_backend.settings import settings
+from pydantic_extra_types.coordinate import Coordinate
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -219,6 +220,7 @@ def dummy_drinks() -> DummyDrinks:
         user_id=UUID("018ee105-66b3-7f89-b6f3-807782e40350"),
         user_name="Jdoe",
         image_exists=False,
+        coordinate=Coordinate(latitude=-48.876667, longitude=-123.393333),
     )
 
     drink_2 = Drink(
@@ -227,6 +229,7 @@ def dummy_drinks() -> DummyDrinks:
         user_id=UUID("123e4567-e89b-12d3-a456-426655440000"),
         user_name="Berty",
         image_exists=True,
+        coordinate={"latitude": 1.0, "longitude": 1.0},
     )
 
     return DummyDrinks(drink_1=drink_1, drink_2=drink_2)
@@ -407,6 +410,7 @@ async def insert_coffees_with_matching_drinks(
             user_name="Jdoe",
             coffee_bean_id=UUID("0664ddeb-3b5d-73ba-8000-df8bd19c35bf"),
             image_exists=True,
+            coordinate={"latitude": 1.0, "longitude": 1.0},
         ),
         Drink(
             _id=UUID("06635e50-f65b-70ab-8000-200f4cd71333"),
@@ -425,6 +429,7 @@ async def insert_coffees_with_matching_drinks(
             user_name="Jdoe",
             coffee_bean_id=UUID("0664ddeb-3b5d-73ba-8000-df8bd19c35bf"),
             image_exists=True,
+            coordinate={"latitude": -48.876667, "longitude": -123.393333},
         ),
         # Dummy ratings for coffee 2
         Drink(

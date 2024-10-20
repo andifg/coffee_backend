@@ -39,6 +39,7 @@ async def test_api_create_drink_with_existing_coffee_bean_id(
         brewing_method=dummy_drinks.drink_1.brewing_method,
         coffee_bean_id=dummy_drinks.drink_1.coffee_bean_id,
         image_exists=dummy_drinks.drink_1.image_exists,
+        coordinate=dummy_drinks.drink_1.coordinate,
     )
 
     create_coffee_jsonable = jsonable_encoder(
@@ -80,6 +81,7 @@ async def test_api_create_drink_with_not_existing_coffee_bean_id(
         rating=dummy_drinks.drink_1.rating,
         brewing_method=dummy_drinks.drink_1.brewing_method,
         coffee_bean_id=dummy_drinks.drink_1.coffee_bean_id,
+        coordinate=dummy_drinks.drink_1.coordinate,
     )
 
     create_coffee_jsonable = jsonable_encoder(
@@ -119,6 +121,7 @@ async def test_api_create_drink_without_coffee_bean_reference(
         brewing_method=dummy_drinks.drink_2.brewing_method,
         rating=dummy_drinks.drink_2.rating,
         image_exists=dummy_drinks.drink_2.image_exists,
+        coordinate=dummy_drinks.drink_2.coordinate,
     )
 
     create_coffee_jsonable = jsonable_encoder(

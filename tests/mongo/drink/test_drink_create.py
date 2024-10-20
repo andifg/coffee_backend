@@ -52,6 +52,7 @@ async def test_mongo_drink_create(
             "image_exists": True,
             "coffee_bean_name": None,
             "coffee_bean_roasting_company": None,
+            "coordinate": {"latitude": 1.0, "longitude": 1.0},
         }
 
 
