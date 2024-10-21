@@ -6,9 +6,12 @@ import motor.motor_asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from minio import Minio  # type: ignore
+from prometheus_client import make_asgi_app
 
 from coffee_backend.api import router
+from coffee_backend.config.log_filter import HealthCheckFilter
 from coffee_backend.config.log_levels import log_levels
+from coffee_backend.metrics import daily_active_users_metric
 from coffee_backend.s3.object import ObjectCRUD
 from coffee_backend.services.coffee import coffee_service
 from coffee_backend.services.drink import drink_service
@@ -16,6 +19,7 @@ from coffee_backend.services.image_service import ImageService
 from coffee_backend.settings import settings
 
 logging.basicConfig(level=log_levels.get(settings.log_level, logging.INFO))
+logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
 
 
 @asynccontextmanager
@@ -45,6 +49,8 @@ async def lifespan(application: FastAPI) -> AsyncGenerator[None, None]:
     application.state.coffee_service = coffee_service
     application.state.drink_service = drink_service
 
+    application.state.daily_active_users_metric = daily_active_users_metric
+
     yield
 
     logging.info("Shutting down...")
@@ -57,6 +63,9 @@ app = FastAPI(
     redoc_url=None,
     lifespan=lifespan,
 )
+
+metrics_app = make_asgi_app()
+app.mount("/metrics", metrics_app)
 
 app.state.mongodb_uri = (
     f"mongodb://{settings.mongodb_username}"
