@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock
 from uuid import UUID
 
 import pytest
+from pydantic_extra_types.coordinate import Coordinate, Latitude, Longitude
 
 from coffee_backend.exceptions.exceptions import ObjectNotFoundError
 from coffee_backend.mongo.drink import DrinkCRUD
@@ -44,6 +45,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information(
                 image_exists=True,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e63-b09f-7633-8000-e99ea17e1de8"),
@@ -55,6 +60,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e62-fd4b-72c8-8000-de84ff1656c1"),
@@ -66,6 +75,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e60-c620-79fe-8000-5ed342f1b972"),
@@ -77,6 +90,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information(
                 image_exists=True,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e60-3ba7-7221-8000-aca3d8f9c9ce"),
@@ -88,6 +105,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
         ]
 
@@ -128,6 +149,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_first_id_(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e62-fd4b-72c8-8000-de84ff1656c1"),
@@ -139,6 +164,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_first_id_(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e60-c620-79fe-8000-5ed342f1b972"),
@@ -150,6 +179,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_first_id_(
                 image_exists=True,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e60-3ba7-7221-8000-aca3d8f9c9ce"),
@@ -161,6 +194,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_first_id_(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e5f-b150-7b41-8000-cbf059c2f8f6"),
@@ -172,6 +209,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_first_id_(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
         ]
 
@@ -213,6 +254,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_coffee_bean_filter(
                 image_exists=True,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e63-b09f-7633-8000-e99ea17e1de8"),
@@ -224,6 +269,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_coffee_bean_filter(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e62-fd4b-72c8-8000-de84ff1656c1"),
@@ -235,6 +284,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_coffee_bean_filter(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 5",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
         ]
 
@@ -275,6 +328,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_user(
                 image_exists=True,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e60-3ba7-7221-8000-aca3d8f9c9ce"),
@@ -286,6 +343,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_user(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e5f-b150-7b41-8000-cbf059c2f8f6"),
@@ -297,6 +358,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_user(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 4",
                 coffee_bean_roasting_company="Martermühle",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
             Drink(
                 _id=UUID("06635e56-fbd6-7b54-8000-2ddb1b362019"),
@@ -308,6 +373,10 @@ async def test_drink_service_list_drinks_with_coffee_bean_information_user(
                 image_exists=False,
                 coffee_bean_name="Test Coffee 2",
                 coffee_bean_roasting_company="Starbucks",
+                coordinate=Coordinate(
+                    latitude=Latitude(-48.876667),
+                    longitude=Longitude(-123.393333),
+                ),
             ),
         ]
 
