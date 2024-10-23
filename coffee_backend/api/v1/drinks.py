@@ -77,6 +77,7 @@ async def _create_drink(
         user_id=request.state.token["sub"],
         user_name=request.state.token["preferred_username"],
         image_exists=getattr(create_drink, "image_exists", False),
+        coordinate=getattr(create_drink, "coordinate", None),
     )
 
     return await drink_service.add_drink(db_session=db_session, drink=drink)
