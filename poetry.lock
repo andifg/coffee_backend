@@ -156,13 +156,13 @@ trio = ["trio (>=0.22)"]
 
 [[package]]
 name = "astroid"
-version = "3.2.2"
+version = "3.3.5"
 description = "An abstract syntax tree for Python with inference support."
 optional = false
-python-versions = ">=3.8.0"
+python-versions = ">=3.9.0"
 files = [
-    {file = "astroid-3.2.2-py3-none-any.whl", hash = "sha256:e8a0083b4bb28fcffb6207a3bfc9e5d0a68be951dd7e336d5dcf639c682388c0"},
-    {file = "astroid-3.2.2.tar.gz", hash = "sha256:8ead48e31b92b2e217b6c9733a21afafe479d52d6e164dd25fb1a770c7c3cf94"},
+    {file = "astroid-3.3.5-py3-none-any.whl", hash = "sha256:a9d1c946ada25098d790e079ba2a1b112157278f3fb7e718ae6a9252f5835dc8"},
+    {file = "astroid-3.3.5.tar.gz", hash = "sha256:5cfc40ae9f68311075d27ef68a4841bdc5cc7f6cf86671b49f00607d30188e2d"},
 ]
 
 [[package]]
@@ -1439,6 +1439,28 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pydantic-extra-types"
+version = "2.9.0"
+description = "Extra Pydantic types."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pydantic_extra_types-2.9.0-py3-none-any.whl", hash = "sha256:f0bb975508572ba7bf3390b7337807588463b7248587e69f43b1ad7c797530d0"},
+    {file = "pydantic_extra_types-2.9.0.tar.gz", hash = "sha256:e061c01636188743bb69f368dcd391f327b8cfbfede2fe1cbb1211b06601ba3b"},
+]
+
+[package.dependencies]
+pydantic = ">=2.5.2"
+
+[package.extras]
+all = ["pendulum (>=3.0.0,<4.0.0)", "phonenumbers (>=8,<9)", "pycountry (>=23)", "python-ulid (>=1,<2)", "python-ulid (>=1,<3)", "pytz (>=2024.1)", "semver (>=3.0.2)", "tzdata (>=2024.1)"]
+pendulum = ["pendulum (>=3.0.0,<4.0.0)"]
+phonenumbers = ["phonenumbers (>=8,<9)"]
+pycountry = ["pycountry (>=23)"]
+python-ulid = ["python-ulid (>=1,<2)", "python-ulid (>=1,<3)"]
+semver = ["semver (>=3.0.2)"]
+
+[[package]]
 name = "pydantic-settings"
 version = "2.3.3"
 description = "Settings management using Pydantic"
@@ -1490,17 +1512,17 @@ tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pylint"
-version = "3.2.2"
+version = "3.3.1"
 description = "python code static checker"
 optional = false
-python-versions = ">=3.8.0"
+python-versions = ">=3.9.0"
 files = [
-    {file = "pylint-3.2.2-py3-none-any.whl", hash = "sha256:3f8788ab20bb8383e06dd2233e50f8e08949cfd9574804564803441a4946eab4"},
-    {file = "pylint-3.2.2.tar.gz", hash = "sha256:d068ca1dfd735fb92a07d33cb8f288adc0f6bc1287a139ca2425366f7cbe38f8"},
+    {file = "pylint-3.3.1-py3-none-any.whl", hash = "sha256:2f846a466dd023513240bc140ad2dd73bfc080a5d85a710afdb728c420a5a2b9"},
+    {file = "pylint-3.3.1.tar.gz", hash = "sha256:9f3dcc87b1203e612b78d91a896407787e708b3f189b5fa0b307712d49ff0c6e"},
 ]
 
 [package.dependencies]
-astroid = ">=3.2.2,<=3.3.0-dev0"
+astroid = ">=3.3.4,<=3.4.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
@@ -1546,18 +1568,18 @@ pylint-plugin-utils = "*"
 
 [[package]]
 name = "pylint-pytest"
-version = "1.1.7"
+version = "1.1.8"
 description = "A Pylint plugin to suppress pytest-related false positives."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "pylint-pytest-1.1.7.tar.gz", hash = "sha256:7a38be02c014eb6d98791eb978e79ed292f1904d3a518289c6d7ac4fb4122e98"},
-    {file = "pylint_pytest-1.1.7-py3-none-any.whl", hash = "sha256:5d687a2f4b17e85654fc2a8f04944761efb11cb15dc46d008f420c377b149151"},
+    {file = "pylint_pytest-1.1.8-py3-none-any.whl", hash = "sha256:8a532c1709c161406b8459bfc414c57a32a4ab488efd4bc97a22a21cb235331f"},
+    {file = "pylint_pytest-1.1.8.tar.gz", hash = "sha256:5c862c88870aa8eb1b376df48ab9e820b5bdadfe37d965aa9ac567a6305955ca"},
 ]
 
 [package.dependencies]
 pylint = ">=2"
-pytest = ">=4.6"
+pytest = ">=4.6,<=8.2.0"
 
 [[package]]
 name = "pymongo"
@@ -2541,4 +2563,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "931fc7f76396769742bd6e72b37a9ce928baa48da0f6265d6ec5a82967b9f500"
+content-hash = "6119c221b5679df01a175beaaedd2f98faa6b8274444118d14fa89ea04e9da47"

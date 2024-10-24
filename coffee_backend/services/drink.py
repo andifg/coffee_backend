@@ -252,6 +252,7 @@ class DrinkService:
                         "image_exists": 1,
                         "coffee_bean_name": 1,
                         "coffee_bean_roasting_company": 1,
+                        "coordinate": 1,
                     }
                 },
                 {"$limit": page_size * page},
