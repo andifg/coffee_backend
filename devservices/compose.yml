@@ -24,7 +24,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   mongo:
-    image: mongo:6.0.9
+    image: mongo:6.0.19
     restart: always
     ports:
       - '27017:27017'
